@@ -22,10 +22,13 @@ find_package(PkgConfig)
 
 include_directories(${libslater_SOURCE_DIR} ${libslater_SOURCE_DIR}/include)
 
-add_library(libslater SHARED src/libslater.cpp)
+add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp)
 
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})
+
+find_package(spdlog REQUIRED)
+target_link_libraries(libslater PUBLIC spdlog::spdlog)
 
 add_executable(simple examples/simple.cpp)
 add_dependencies(simple libslater)

@@ -9,12 +9,12 @@ public:
     using Catch::EventListenerBase::EventListenerBase;
 
     void testRunStarting(Catch::TestRunInfo const&) override {
-        libslater_global_init();
+        slater::libslater_global_init();
         srand(time(NULL));
     }
 
     void testRunEnded( Catch::TestRunStats const& testRunStats ) override {
-        libslater_global_cleanup();
+        slater::libslater_global_cleanup();
     }
 
 };
