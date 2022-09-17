@@ -22,7 +22,7 @@ find_package(PkgConfig)
 
 include_directories(${libslater_SOURCE_DIR} ${libslater_SOURCE_DIR}/include)
 
-add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp)
+add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp src/basis_set.cpp src/engine.cpp include/homeier.h src/homeier.cpp)
 
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})
@@ -35,6 +35,7 @@ add_dependencies(simple libslater)
 target_include_directories(simple PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(simple PUBLIC ${COMPILE_FLAGS})
 target_link_options(simple PUBLIC ${LINK_FLAGS})
+target_link_libraries(simple libslater)
 
 if(COVERAGE)
     message(STATUS "Enabling coverage")

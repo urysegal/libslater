@@ -5,6 +5,10 @@
 
 namespace slater {
 
+/// Parameter to specify if we use normalized B functions
+static constexpr const char *Normalized_B_Functions_Parameter_Name = "use_normalized_b_functions" ;
+
+
 /// Initialize the library
 void libslater_global_init();
 
@@ -60,7 +64,20 @@ public:
 class STO_Integration_Parameters
 {
 public:
+
     void add(const std::string &name, bool value);
+
+    /// Check if the given parameter was set
+    /// \param name parameter name to check
+    /// \return true if the parameter was set
+    bool has(const std::string &name) const;
+
+
+    /// Get a boolean parameter by name
+    /// \param name parameter name to get
+    /// \param value parameter value retuned in this refrence
+    /// \return true if this parameter was set at all. If false, there is no value given to "name"
+    bool get(const std::string &name, bool &value) const;
 };
 
 
