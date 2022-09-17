@@ -15,9 +15,9 @@
 - The code assumes that everything that can fail, will fail.
 - All  input is checked for correctness
 - comments are on what, not how.
-- Anything the can be const , make const.
+- Anything that can be const , make const.
 - All code is covered with unit tests, (and tests pass) - 100% of code lines.
-
+- All declarations are Doxygened
 - Error messages contain:
   - What the software tried to do
   - What went wrong

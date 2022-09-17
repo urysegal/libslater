@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <array>
+#include <string>
 
 namespace slater {
 
@@ -44,8 +45,8 @@ public:
 /// One STO basis function, located at a given center.
 class STO_Basis_Function  {
 
-    STO_Basis_Function_Info function_info;
-    center_t center;
+    STO_Basis_Function_Info function_info; /// Basis function parameters
+    center_t center; /// the center of the function
 
 public:
 
@@ -55,6 +56,33 @@ public:
     STO_Basis_Function(STO_Basis_Function_Info function_info_, center_t location_);
 
 };
+
+class STO_Integration_Parameters
+{
+public:
+    void add(const std::string &name, bool value);
+};
+
+
+class STO_Integrator {
+
+public:
+    STO_Integrator();
+    virtual ~STO_Integrator() = default;
+
+    virtual void init(const STO_Integration_Parameters &params) = 0 ;
+    virtual integral_value overlap(const std::array<STO_Basis_Function, 4> &) = 0;
+};
+
+
+class STO_Integration_Engine {
+
+public:
+    STO_Integration_Engine();
+    STO_Integrator *create(const std::string &engine_type);
+
+};
+
 
 
 

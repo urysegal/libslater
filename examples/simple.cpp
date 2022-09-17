@@ -1,4 +1,6 @@
+#include <iostream>
 #include "libslater.h"
+
 
 using namespace slater;
 
@@ -15,10 +17,14 @@ main()
     STO_Basis_Function hydrogen_1_s(hydrogen_s, {0.70710678,0,0.56568542});
     STO_Basis_Function hydrogen_2_s(hydrogen_s, {-0.70710678,0,0.56568542});
 
-    STO_Integrator engine("default");
-    engine.init();
-    integral_value result = engine.overlap(oxygen_1_s, oxygen_2_p, hydrogen_1_s, hydrogen_2_s) ;
-    engine.cleanup();
+    auto engine = STO_Integration_Engine().create("default");
+    STO_Integration_Parameters parameters;
+    parameters.add("normalized", false);
 
+    engine->init(parameters);
+    integral_value result = engine->overlap({oxygen_1_s, oxygen_2_p, hydrogen_1_s, hydrogen_2_s}) ;
+    delete engine;
+
+    std::cout << result << std::endl;
 	return 0;
 }
