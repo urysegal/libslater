@@ -6,7 +6,7 @@
 namespace slater {
 
 /// Parameter to specify if we use normalized B functions
-static constexpr const char *Normalized_B_Functions_Parameter_Name = "use_normalized_b_functions" ;
+static constexpr const char *Use_Normalized_B_Functions_Parameter_Name = "use_normalized_b_functions" ;
 
 
 /// Initialize the library
@@ -61,23 +61,29 @@ public:
 
 };
 
-class STO_Integration_Parameters
+/// Class to maintain the various parameters and options that can be used to twick integration implementations
+class STO_Integration_Options
 {
+
+    STO_Integration_Options *implementation = nullptr;
+
 public:
 
-    void add(const std::string &name, bool value);
+    STO_Integration_Options();
 
-    /// Check if the given parameter was set
-    /// \param name parameter name to check
-    /// \return true if the parameter was set
-    bool has(const std::string &name) const;
+    virtual ~STO_Integration_Options();
 
+    /// set ( or override previous setting ) of a boolean parameter
+    /// \param name parameter name to set
+    /// \param value paramter boolean value to set
+    virtual void set(const std::string &name, bool value);
 
-    /// Get a boolean parameter by name
+    /// Get a boolean parameter by name. If the parameter is not set, "value" will not be touched, so that
+    /// default values can be kept as it.
     /// \param name parameter name to get
-    /// \param value parameter value retuned in this refrence
+    /// \param value parameter value returned in this reference
     /// \return true if this parameter was set at all. If false, there is no value given to "name"
-    bool get(const std::string &name, bool &value) const;
+    virtual bool get(const std::string &name, bool &value) const;
 };
 
 
@@ -87,21 +93,23 @@ public:
     STO_Integrator();
     virtual ~STO_Integrator() = default;
 
-    virtual void init(const STO_Integration_Parameters &params) = 0 ;
+    virtual void init(const STO_Integration_Options &params) = 0 ;
     virtual integral_value overlap(const std::array<STO_Basis_Function, 4> &) = 0;
 };
 
 
+/// Integrator creation factory that creates the desired type of STO integrator. Don't forget to free the pointer retunred by create()
 class STO_Integration_Engine {
 
 public:
     STO_Integration_Engine();
+
+    /// Create an STO integration engine. Use "default" as engine type to get the default implementation
+    /// or your preferred implementation if you have another.
+    /// \param engine_type name of engine to create. Use "default" for the library default one (currently Homeier B-functions)
+    /// \return a pointer to the engine, which must be released by called to free resources. nullptr if there was no implementation matching the string given
     STO_Integrator *create(const std::string &engine_type);
-
 };
-
-
-
 
 }
 

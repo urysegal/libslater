@@ -22,7 +22,7 @@ find_package(PkgConfig)
 
 include_directories(${libslater_SOURCE_DIR} ${libslater_SOURCE_DIR}/include)
 
-add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp src/basis_set.cpp src/engine.cpp include/homeier.h src/homeier.cpp)
+add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp src/basis_set.cpp src/engine.cpp include/homeier.h src/homeier.cpp src/parameters.cpp)
 
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})

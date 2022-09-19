@@ -14,7 +14,7 @@ public:
 
     virtual ~Homeier_Integrator();
 
-    virtual void init(const STO_Integration_Parameters &params) ;
+    virtual void init(const STO_Integration_Options &params) ;
     virtual integral_value overlap(const std::array<STO_Basis_Function, 4> &) ;
 
 };

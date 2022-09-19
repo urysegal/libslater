@@ -19,8 +19,8 @@ main()
 
     auto engine = STO_Integration_Engine().create("default");
     if (engine) {
-        STO_Integration_Parameters parameters;
-        parameters.add(Normalized_B_Functions_Parameter_Name, true);
+        STO_Integration_Options parameters;
+        parameters.add(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(parameters);
         integral_value result = engine->overlap({oxygen_1_s, oxygen_2_p, hydrogen_1_s, hydrogen_2_s});
