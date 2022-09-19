@@ -61,11 +61,13 @@ public:
 
 };
 
+class STO_Integration_Options_Impl;
+
 /// Class to maintain the various parameters and options that can be used to twick integration implementations
 class STO_Integration_Options
 {
 
-    STO_Integration_Options *implementation = nullptr;
+    STO_Integration_Options_Impl *implementation = nullptr;
 
 public:
 
@@ -87,14 +89,22 @@ public:
 };
 
 
+/// Implementation of all the integrals needed for HF or DFT calculation in STO basis set.
+
 class STO_Integrator {
 
 public:
     STO_Integrator();
-    virtual ~STO_Integrator() = default;
+    virtual ~STO_Integrator() ;
 
-    virtual void init(const STO_Integration_Options &params) = 0 ;
-    virtual integral_value overlap(const std::array<STO_Basis_Function, 4> &) = 0;
+    /// Initialize the integration engine with a set of (possibly empty) options
+    /// \param options A set of option that may modify the behaviour of the algorithms in this class
+    virtual void init(const STO_Integration_Options &options) = 0 ;
+
+    /// Calculate the Overlap Integral <f|g> over the given two STO basis functions
+    /// \param functions The two funciton whose overlap is to be calculated
+    /// \return The value of the overlap integral
+    virtual integral_value overlap(const std::array<STO_Basis_Function, 2> &functions) = 0;
 };
 
 

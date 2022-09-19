@@ -33,9 +33,9 @@ public:
             logger->set_level(spdlog::level::trace);
             logger->info("Logger started");
         } catch ( std::exception &e){
-            std::cerr << "Cannot set up logger: " << e.what();
-            exit(1);
-        }
+            std::cerr << "Cannot set up logger: " << e.what(); // LCOV_EXCL_LINE
+            exit(1); // LCOV_EXCL_LINE
+        } // LCOV_EXCL_LINE
     }
 };
 

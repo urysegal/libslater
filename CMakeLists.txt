@@ -19,6 +19,7 @@ set(LINK_FLAGS -fsanitize=address)
 #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
 
 find_package(PkgConfig)
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 include_directories(${libslater_SOURCE_DIR} ${libslater_SOURCE_DIR}/include)
 
@@ -29,6 +30,8 @@ target_link_options(libslater PUBLIC ${LINK_FLAGS})
 
 find_package(spdlog REQUIRED)
 target_link_libraries(libslater PUBLIC spdlog::spdlog)
+target_link_libraries (libslater PUBLIC Eigen3::Eigen)
+
 
 add_executable(simple examples/simple.cpp)
 add_dependencies(simple libslater)

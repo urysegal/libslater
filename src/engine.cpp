@@ -16,6 +16,12 @@ STO_Integrator::STO_Integrator()
 {
 }
 
+STO_Integrator::~STO_Integrator()
+{
+
+}
+
+
 STO_Integrator *STO_Integration_Engine::create(const std::string &engine_type)
 {
     STO_Integrator *res = nullptr;
@@ -23,7 +29,7 @@ STO_Integrator *STO_Integration_Engine::create(const std::string &engine_type)
     if ( engine_type == "default" ) {
         type_to_use = default_engine;
     }
-    if ( engine_type == "B-functions-homeier" ) {
+    if ( type_to_use == "B-functions-homeier" ) {
         res = new Homeier_Integrator();
     }
 
