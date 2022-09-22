@@ -17,7 +17,10 @@ void libslater_global_cleanup();
 
 typedef double sto_exponent_t;
 typedef double sto_coefficient_t;
+
 typedef unsigned int moment_quantum_number_t;
+typedef int principal_quantum_number_t;
+typedef int orientation_quantum_number_t;
 
 typedef double spatial_coordinate_t;
 typedef std::array<spatial_coordinate_t, 3> center_t;
@@ -28,20 +31,23 @@ typedef double integral_value;
 /// One STO style basis function details. STO have radial part and angular part.
 /// the radial part is the form f(r)=N*r^(n-1)*exp(-ar). N and a are the first two parameters of the constructor.
 /// the angular part is a spherical harmonic which is given by the third parameter.
-/// n is limited to be equal to l in this library, as in GTO-based basis sets.
 
 class STO_Basis_Function_Info {
 
-    sto_coefficient_t coefficient; /// Coefficient of the radial part.
+    sto_coefficient_t coefficient; /// Coefficient of the radial part. also known as N
     sto_exponent_t exponent; /// exponent of the radial part.
     moment_quantum_number_t moment_quantum_number; /// Angular moment number, also known as 'l'
-
+    principal_quantum_number_t principal_quantum_number; /// principal quantum number, also known as 'n'
+    orientation_quantum_number_t orientation; /// also known as 'm'
 public:
     /// Contruct an STO style basis function detail object.
     /// \param coefficient_  Coefficient of the radial part.
     /// \param exponent_ exponent of the radial part.
-    /// \param moment_quantum_number_ Angular moment number
-    STO_Basis_Function_Info(sto_coefficient_t coefficient_, sto_exponent_t exponent_, moment_quantum_number_t moment_quantum_number_);
+    /// \param moment_quantum_number_ Angular moment number, also known as 'l'
+    /// \param principal_quantum_number_ principal quantum number, also known as 'n'
+    /// \param orientation orientation of the function, also known as 'm'
+    STO_Basis_Function_Info(sto_coefficient_t coefficient_, sto_exponent_t exponent_, moment_quantum_number_t moment_quantum_number_,
+                            principal_quantum_number_t principal_quantum_number_, orientation_quantum_number_t orientation_);
 
 };
 

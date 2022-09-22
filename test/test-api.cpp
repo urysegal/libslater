@@ -25,8 +25,8 @@ public:
 CATCH_REGISTER_LISTENER(testRunListener)
 
 TEST_CASE( "One overlap integral", "[overlap]" ) {
-    STO_Basis_Function_Info oxygen_s(43.5, 0.252, 0);
-    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, 0);
+    STO_Basis_Function_Info oxygen_s(43.5, 0.252, 0,0,0);
+    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, 0,0,0);
 
     STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, -0.14142136});
     STO_Basis_Function hydrogen_1_s(hydrogen_s, {0.70710678, 0, 0.56568542});

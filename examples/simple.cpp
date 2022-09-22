@@ -8,10 +8,10 @@ using namespace slater;
 int
 main()
 {
-    STO_Basis_Function_Info oxygen_s(43.5, 0.252, 0);
-    STO_Basis_Function_Info oxygen_p(0.5, 1.29872, 1);
+    STO_Basis_Function_Info oxygen_s(43.5, 0.252, 0,0,0);
+    STO_Basis_Function_Info oxygen_p(0.5, 1.29872, 1, 0, 0);
 
-    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, 0);
+    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, 0,0 ,0);
 
     STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, -0.14142136});
     STO_Basis_Function oxygen_2_p(oxygen_p, {0, 0, -0.14142136});
