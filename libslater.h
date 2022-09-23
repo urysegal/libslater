@@ -7,6 +7,8 @@ namespace slater {
 
 /// Parameter to specify if we use normalized B functions
 static constexpr const char *Use_Normalized_B_Functions_Parameter_Name = "use_normalized_b_functions" ;
+/// Parameter to specify if we use normalized B functions
+static constexpr const char *Number_of_quadrature_points_Parameter_Name = "number_of_quadrature_points" ;
 
 
 /// Initialize the library
@@ -18,15 +20,24 @@ void libslater_global_cleanup();
 typedef double sto_exponent_t;
 typedef double sto_coefficient_t;
 
-typedef unsigned int moment_quantum_number_t;
-typedef int principal_quantum_number_t;
-typedef int orientation_quantum_number_t;
+typedef unsigned int angular_quantum_number_t;
+typedef unsigned int principal_quantum_number_t;
+typedef int magnetic_quantum_number_t;
 
 typedef double spatial_coordinate_t;
 typedef std::array<spatial_coordinate_t, 3> center_t;
 
 typedef double integral_value;
 
+enum class spin_quantum_number_t  { UNDEFINED, UP, DOWN } ;
+
+
+struct Quantum_Numbers {
+    principal_quantum_number_t n = 0; /// principal quantum number, also known as 'n'
+    angular_quantum_number_t l = 0; /// Angular moment number, also known as 'l'
+    magnetic_quantum_number_t m = 0; /// Marnetic/Orientation quntum number, also known as 'm' or 'ml'
+    spin_quantum_number_t ms = spin_quantum_number_t::UNDEFINED; /// Spin Quantum number, a.k.a. 'ms'
+};
 
 /// One STO style basis function details. STO have radial part and angular part.
 /// the radial part is the form f(r)=N*r^(n-1)*exp(-ar). N and a are the first two parameters of the constructor.
@@ -36,18 +47,26 @@ class STO_Basis_Function_Info {
 
     sto_coefficient_t coefficient; /// Coefficient of the radial part. also known as N
     sto_exponent_t exponent; /// exponent of the radial part.
-    moment_quantum_number_t moment_quantum_number; /// Angular moment number, also known as 'l'
-    principal_quantum_number_t principal_quantum_number; /// principal quantum number, also known as 'n'
-    orientation_quantum_number_t orientation; /// also known as 'm'
+    Quantum_Numbers quantum_numbers;     /// Quantum numbers for this basis function
+
+public:
+
+    const Quantum_Numbers &get_quantum_numbers() const;
+    void set_quantum_numbers(const Quantum_Numbers &quantumNumbers);
+
+    sto_exponent_t get_exponent() const { return exponent; }
+    void set_exponent(sto_exponent_t &e) { exponent = e; }
+
+    sto_coefficient_t get_coefficient() const { return coefficient; }
+    void set_coefficient(sto_coefficient_t &c) { coefficient = c; }
+
+
 public:
     /// Contruct an STO style basis function detail object.
     /// \param coefficient_  Coefficient of the radial part.
     /// \param exponent_ exponent of the radial part.
-    /// \param moment_quantum_number_ Angular moment number, also known as 'l'
-    /// \param principal_quantum_number_ principal quantum number, also known as 'n'
-    /// \param orientation orientation of the function, also known as 'm'
-    STO_Basis_Function_Info(sto_coefficient_t coefficient_, sto_exponent_t exponent_, moment_quantum_number_t moment_quantum_number_,
-                            principal_quantum_number_t principal_quantum_number_, orientation_quantum_number_t orientation_);
+    /// \param quantum_numbers_ Set of quantum numbers for this function
+    STO_Basis_Function_Info(sto_coefficient_t coefficient_, sto_exponent_t exponent_, const Quantum_Numbers &quantum_numbers);
 
 };
 
@@ -65,6 +84,15 @@ public:
     /// \param location Cartesian center of the function
     STO_Basis_Function(STO_Basis_Function_Info function_info_, center_t location_);
 
+    const Quantum_Numbers &get_quantum_numbers() const;
+
+    sto_exponent_t get_exponent() const ;
+
+    sto_coefficient_t get_coefficient() const ;
+
+    center_t get_center() const { return center; }
+
+
 };
 
 class STO_Integration_Options_Impl;
@@ -81,17 +109,17 @@ public:
 
     virtual ~STO_Integration_Options();
 
-    /// set ( or override previous setting ) of a boolean parameter
+    /// set ( or override previous setting )  a parameter
     /// \param name parameter name to set
-    /// \param value paramter boolean value to set
-    virtual void set(const std::string &name, bool value);
+    /// \param value  value to set
+    template <class T> void set(const std::string &name, const T& value);
 
     /// Get a boolean parameter by name. If the parameter is not set, "value" will not be touched, so that
     /// default values can be kept as it.
     /// \param name parameter name to get
     /// \param value parameter value returned in this reference
     /// \return true if this parameter was set at all. If false, there is no value given to "name"
-    virtual bool get(const std::string &name, bool &value) const;
+    template <class T> bool get(const std::string &name, T &value) const;
 };
 
 

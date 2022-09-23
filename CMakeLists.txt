@@ -14,6 +14,10 @@ option(COVERAGE "Coverage" ON)
 set(COMPILE_FLAGS -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread)
 set(LINK_FLAGS -fsanitize=address)
 
+
+find_package(Boost 1.71 REQUIRED )
+
+
 #SET(GCC_WERR_COMPILE_FLAGS "-Wall -Werror")
 #SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} ${GCC_WERR_COMPILE_FLAGS} -fsanitize=address")
 #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
@@ -23,7 +27,7 @@ find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 include_directories(${libslater_SOURCE_DIR} ${libslater_SOURCE_DIR}/include)
 
-add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp src/basis_set.cpp src/engine.cpp include/homeier.h src/homeier.cpp src/parameters.cpp)
+add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp src/basis_set.cpp src/engine.cpp include/homeier.h src/homeier.cpp src/parameters.cpp include/bfunctions.h src/bfunctions.cpp)
 
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})
@@ -31,6 +35,7 @@ target_link_options(libslater PUBLIC ${LINK_FLAGS})
 find_package(spdlog REQUIRED)
 target_link_libraries(libslater PUBLIC spdlog::spdlog)
 target_link_libraries (libslater PUBLIC Eigen3::Eigen)
+target_link_libraries (libslater PUBLIC ${Boost_LIBRARIES})
 
 
 add_executable(simple examples/simple.cpp)
