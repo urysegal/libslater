@@ -48,7 +48,15 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
     return final_result;
 }
 
-double Homeier_Integrator::calculate_guassian_point(const B_function_details &f1, const B_function_details &f2, double s)
+energy_unit_t Homeier_Integrator::integrate_with_b_functions(const B_function_details &f1, const B_function_details &f2) const
+{
+    auto f = [&](const double& s) { return this->calculate_guassian_point(f1, f2, s) ;};
+    double Q = boost::math::quadrature::gauss<double, 7>::integrate(f, 0, 1);
+    return Q;
+}
+
+
+double Homeier_Integrator::calculate_guassian_point(const B_function_details &f1, const B_function_details &f2, double s) const
 {
     double W_hat = calculate_W_hat(f1, f2, s);
     double S = calculate_S(f1, f2 ,s);
@@ -56,12 +64,17 @@ double Homeier_Integrator::calculate_guassian_point(const B_function_details &f1
 }
 
 
-energy_unit_t Homeier_Integrator::integrate_with_b_functions(const B_function_details &f1, const B_function_details &f2)
+
+double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s) const
 {
-    auto f = [&](const double& s) { return this->calculate_guassian_point(f1, f2, s) ;};
-    double Q = boost::math::quadrature::gauss<double, 7>::integrate(f, 0, 1);
-    return Q;
+    return f1.get_exponent() * f2.get_quantum_numbers().l * s;
 }
+
+double Homeier_Integrator::calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const
+{
+    return f2.get_quantum_numbers().n * f1.get_coefficient() + s;
+}
+
 
 
 }

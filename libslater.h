@@ -85,12 +85,11 @@ public:
     /// \param location Cartesian center of the function
     STO_Basis_Function(STO_Basis_Function_Info function_info_, center_t location_);
 
-    const Quantum_Numbers &get_quantum_numbers() const;
+    const Quantum_Numbers &get_quantum_numbers() const { return function_info.get_quantum_numbers(); }
 
-    sto_exponent_t get_exponent() const ;
+    sto_exponent_t get_exponent() const { return function_info.get_exponent(); }
 
-    sto_coefficient_t get_coefficient() const ;
-
+    sto_coefficient_t get_coefficient() const { return function_info.get_coefficient(); }
     center_t get_center() const { return center; }
 
 

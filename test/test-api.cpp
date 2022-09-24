@@ -25,8 +25,11 @@ public:
 CATCH_REGISTER_LISTENER(testRunListener)
 
 TEST_CASE( "One overlap integral", "[overlap]" ) {
-    STO_Basis_Function_Info oxygen_s(43.5, 0.252, 0,0,0);
-    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, 0,0,0);
+
+    Quantum_Numbers quantum_numbers = {0,1,0};
+
+    STO_Basis_Function_Info oxygen_s(43.5, 0.252, quantum_numbers);
+    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, quantum_numbers);
 
     STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, -0.14142136});
     STO_Basis_Function hydrogen_1_s(hydrogen_s, {0.70710678, 0, 0.56568542});
@@ -39,7 +42,7 @@ TEST_CASE( "One overlap integral", "[overlap]" ) {
         parameters.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(parameters);
-        integral_value result = engine->overlap({ oxygen_1_s, hydrogen_1_s });
+        energy_unit_t result = engine->overlap({ oxygen_1_s, hydrogen_1_s });
         delete engine;
         CHECK(result == 0);
     }

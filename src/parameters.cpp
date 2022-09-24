@@ -61,4 +61,12 @@ template <class T>
     return implementation->get(name, value);
 }
 
+template bool STO_Integration_Options::get<bool>(const std::string &name, bool &value) const;
+template void STO_Integration_Options::set<bool>(const std::string &name, const bool &value) ;
+template bool STO_Integration_Options::get<int>(const std::string &name, int &value) const;
+template void STO_Integration_Options::set<int>(const std::string &name, const int &value) ;
+template bool STO_Integration_Options::get<double>(const std::string &name, double &value) const;
+template void STO_Integration_Options::set<double>(const std::string &name, const double &value) ;
+
+
 }
