@@ -9,7 +9,6 @@ namespace slater {
 
 Homeier_Integrator::~Homeier_Integrator()
 {
-
 }
 
 void Homeier_Integrator::init(const STO_Integration_Options &params)
@@ -21,10 +20,11 @@ void Homeier_Integrator::init(const STO_Integration_Options &params)
 
 void Homeier_Integrator::create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2)
 {
-    for ( auto i : f1)
-        for ( auto  j : f2 )
+    for ( auto i : f1) {
+        for (auto j: f2) {
             equivalence_series.emplace_back(i, j);
-
+        }
+    }
 }
 
 energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2> &functions)
@@ -50,13 +50,13 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
 
 energy_unit_t Homeier_Integrator::integrate_with_b_functions(const B_function_details &f1, const B_function_details &f2) const
 {
-    auto f = [&](const double& s) { return this->calculate_guassian_point(f1, f2, s) ;};
+    auto f = [&](const double& s) { return this->calculate_gaussian_point(f1, f2, s) ;};
     double Q = boost::math::quadrature::gauss<double, 7>::integrate(f, 0, 1);
     return Q;
 }
 
 
-double Homeier_Integrator::calculate_guassian_point(const B_function_details &f1, const B_function_details &f2, double s) const
+double Homeier_Integrator::calculate_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s) const
 {
     double W_hat = calculate_W_hat(f1, f2, s);
     double S = calculate_S(f1, f2 ,s);
@@ -67,6 +67,7 @@ double Homeier_Integrator::calculate_guassian_point(const B_function_details &f1
 
 double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s) const
 {
+    /// Gautam - Equation 30 in the second paper
     return f1.get_exponent() * f2.get_quantum_numbers().l * s;
 }
 

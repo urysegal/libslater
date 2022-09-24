@@ -15,6 +15,11 @@ private:
     center_t center; /// the center of the function
 
 public:
+    /// Initialized details about one B functions
+    /// \param coefficient_ a coefficient for the function, if desired. Use 1 if irrelevant for your case
+    /// \param exponent_ the exponnt used
+    /// \param quantum_numbers
+    /// \param center
     B_function_details(sto_coefficient_t coefficient_, sto_exponent_t exponent_, const Quantum_Numbers &quantum_numbers,
         const center_t& center);
 

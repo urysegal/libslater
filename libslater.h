@@ -136,7 +136,7 @@ public:
     virtual void init(const STO_Integration_Options &options) = 0 ;
 
     /// Calculate the Overlap Integral <f|g> over the given two STO basis functions
-    /// \param functions The two funciton whose overlap is to be calculated
+    /// \param functions The two function whose overlap is to be calculated
     /// \return The value of the overlap integral
     virtual energy_unit_t overlap(const std::array<STO_Basis_Function, 2> &functions) = 0;
 };
