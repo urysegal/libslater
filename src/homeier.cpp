@@ -19,35 +19,36 @@ void Homeier_Integrator::init(const STO_Integration_Options &params)
 }
 
 
-void Homeier_Integrator::create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2) const
+void Homeier_Integrator::create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2)
 {
-    for ( int i = 0 ; i < f1.size() ; i++)
-        for ( int j = 0 ; i < fj.size() ; i++ )
-            components.emplace_back(f1.get(i), f2.get(j));
+    for ( auto i : f1)
+        for ( auto  j : f2 )
+            equivalence_series.emplace_back(i, j);
 
 }
 
-integral_value Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2> &functions)
+energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2> &functions)
 {
     B_functions_representation_of_STO f1(functions[0]);
     B_functions_representation_of_STO f2(functions[1]);
 
-    create_integration_pairs();
+    create_integration_pairs(f1, f2);
 
-    std::vector<double> partial_results;
-    for ( auto const &p : components )
+    std::vector<energy_unit_t> partial_results;
+    for ( auto const &p : equivalence_series )
     {
-        partial_results.emplace_back(integrate_with_b_functions(p.first, p.second));
+        energy_unit_t partial_result = integrate_with_b_functions(p.first, p.second);
+        partial_results.emplace_back(partial_result);
     }
 
-    double final_result = 0 ;
+    energy_unit_t final_result = 0 ;
     for ( auto &pr : partial_results )
         final_result += pr;
 
     return final_result;
 }
 
-double Homeier_Integrator::calculate_one_weight(const B_function_details &f1, const B_function_details &f2, double s)
+double Homeier_Integrator::calculate_guassian_point(const B_function_details &f1, const B_function_details &f2, double s)
 {
     double W_hat = calculate_W_hat(f1, f2, s);
     double S = calculate_S(f1, f2 ,s);
@@ -55,9 +56,9 @@ double Homeier_Integrator::calculate_one_weight(const B_function_details &f1, co
 }
 
 
-double Homeier_Integrator::integrate_with_b_functions(const B_function_details &f1, const B_function_details &f2)
+energy_unit_t Homeier_Integrator::integrate_with_b_functions(const B_function_details &f1, const B_function_details &f2)
 {
-    auto f = [&](const double& s) { this->calculate_one_weight(f1, f2, s) };
+    auto f = [&](const double& s) { return this->calculate_guassian_point(f1, f2, s) ;};
     double Q = boost::math::quadrature::gauss<double, 7>::integrate(f, 0, 1);
     return Q;
 }

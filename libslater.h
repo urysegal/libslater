@@ -17,6 +17,9 @@ void libslater_global_init();
 /// Clean up the library
 void libslater_global_cleanup();
 
+typedef double energy_unit_t;
+
+
 typedef double sto_exponent_t;
 typedef double sto_coefficient_t;
 
@@ -26,8 +29,6 @@ typedef int magnetic_quantum_number_t;
 
 typedef double spatial_coordinate_t;
 typedef std::array<spatial_coordinate_t, 3> center_t;
-
-typedef double integral_value;
 
 enum class spin_quantum_number_t  { UNDEFINED, UP, DOWN } ;
 
@@ -138,7 +139,7 @@ public:
     /// Calculate the Overlap Integral <f|g> over the given two STO basis functions
     /// \param functions The two funciton whose overlap is to be calculated
     /// \return The value of the overlap integral
-    virtual integral_value overlap(const std::array<STO_Basis_Function, 2> &functions) = 0;
+    virtual energy_unit_t overlap(const std::array<STO_Basis_Function, 2> &functions) = 0;
 };
 
 
