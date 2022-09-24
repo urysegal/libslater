@@ -7,6 +7,11 @@
 
 namespace slater {
 
+Homeier_Integrator::Homeier_Integrator() : STO_Integrator()
+{
+
+}
+
 Homeier_Integrator::~Homeier_Integrator()
 {
 }

@@ -54,11 +54,11 @@ public:
     const Quantum_Numbers &get_quantum_numbers() const;
     void set_quantum_numbers(const Quantum_Numbers &quantumNumbers);
 
-    sto_exponent_t get_exponent() const { return exponent; }
-    void set_exponent(sto_exponent_t e) { exponent = e; }
+    sto_exponent_t get_exponent() const ;
+    void set_exponent(sto_exponent_t e) ;
 
-    sto_coefficient_t get_coefficient() const { return coefficient; }
-    void set_coefficient(sto_coefficient_t c) { coefficient = c; }
+    sto_coefficient_t get_coefficient() const ;
+    void set_coefficient(sto_coefficient_t c) ;
 
 
 public:
@@ -86,12 +86,12 @@ public:
 
     /// Get the set of quantum numbers for this basis function
     /// \return set of quantum numbers
-    const Quantum_Numbers &get_quantum_numbers() const { return function_info.get_quantum_numbers(); }
+    const Quantum_Numbers &get_quantum_numbers() const ;
 
-    sto_exponent_t get_exponent() const { return function_info.get_exponent(); }
+    sto_exponent_t get_exponent() const ;
 
-    sto_coefficient_t get_coefficient() const { return function_info.get_coefficient(); }
-    center_t get_center() const { return center; }
+    sto_coefficient_t get_coefficient() const ;
+    center_t get_center() const ;
 
 
 };
@@ -129,8 +129,8 @@ public:
 class STO_Integrator {
 
 public:
-    STO_Integrator();
-    virtual ~STO_Integrator() ;
+    STO_Integrator() = default;
+    virtual ~STO_Integrator() = default ;
 
     /// Initialize the integration engine with a set of (possibly empty) options
     /// \param options A set of option that may modify the behaviour of the algorithms in this class
@@ -148,7 +148,7 @@ class STO_Integration_Engine {
 
 public:
     /// Construct an integration engines factory
-    STO_Integration_Engine();
+    STO_Integration_Engine() ;
 
     /// Create an STO integration engine. Use "default" as engine type to get the default implementation
     /// or your preferred implementation if you have another.

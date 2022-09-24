@@ -9,18 +9,8 @@ const std::string default_engine = "B-functions-homeier";
 
 STO_Integration_Engine::STO_Integration_Engine()
 {
+    logger()->debug("Engine factory created");
 }
-
-
-STO_Integrator::STO_Integrator()
-{
-}
-
-STO_Integrator::~STO_Integrator()
-{
-
-}
-
 
 STO_Integrator *STO_Integration_Engine::create(const std::string &engine_type)
 {

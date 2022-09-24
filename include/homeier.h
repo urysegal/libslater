@@ -15,6 +15,9 @@ class Homeier_Integrator : public STO_Integrator {
 
 public:
 
+    /// Build an Homeier-style integrator
+    Homeier_Integrator();
+
     /// Release any memory used by the integrator
     virtual ~Homeier_Integrator();
 

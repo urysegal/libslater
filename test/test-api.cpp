@@ -36,7 +36,8 @@ TEST_CASE( "One overlap integral", "[overlap]" ) {
     STO_Basis_Function hydrogen_1_s(hydrogen_s, {0.70710678, 0, 0.56568542});
 
 
-    auto engine = STO_Integration_Engine().create("default");
+    STO_Integration_Engine engine_factory;
+    auto engine = engine_factory.create("default");
     if (engine) {
 
         STO_Integration_Options parameters;
@@ -59,11 +60,31 @@ TEST_CASE( "nonexistent engine", "[api]" )
 TEST_CASE("Options behavior", "[api]")
 {
     STO_Integration_Options options;
-    options.set(Use_Normalized_B_Functions_Parameter_Name, true);
-    bool check_value = false;
-    options.get(Use_Normalized_B_Functions_Parameter_Name, check_value);
-    CHECK(check_value == true );
-    CHECK(options.get("no such option as this", check_value) == false );
+
+    bool no_value = false;
+    CHECK(options.get("no such option as this", no_value) == false);
+
+    {
+        options.set(Use_Normalized_B_Functions_Parameter_Name, true);
+        bool check_value = false;
+        options.get(Use_Normalized_B_Functions_Parameter_Name, check_value);
+        CHECK(check_value == true);
+    }
+
+    {
+        options.set(Number_of_quadrature_points_Parameter_Name, int(180));
+        int check_value = false;
+        options.get(Number_of_quadrature_points_Parameter_Name, check_value);
+        CHECK(check_value == 180);
+    }
+
+    {
+        options.set(Number_of_quadrature_points_Parameter_Name, (double)0.45);
+        double check_value = false;
+        options.get(Number_of_quadrature_points_Parameter_Name, check_value);
+        CHECK(check_value == 0.45);
+    }
+
 }
 
 TEST_CASE("Getters and Setters", "[api]")

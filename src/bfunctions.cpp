@@ -10,6 +10,24 @@ B_function_details::B_function_details(sto_coefficient_t coefficient_, sto_expon
                                        quantum_numbers(quantum_numbers_), center(center_)
 {}
 
+
+sto_coefficient_t B_function_details::get_coefficient() const
+{
+    return coefficient;
+}
+
+sto_exponent_t B_function_details::get_exponent() const
+{
+    return exponent;
+}
+
+const Quantum_Numbers &B_function_details::get_quantum_numbers() const
+{
+    return quantum_numbers;
+}
+
+
+
 B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_Basis_Function &sto)
 {
     /// Gautam: create all the necessary B functions from the given sto. Here I just make up two.
@@ -20,7 +38,7 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
     }
 
     {
-        // Gotham - You can play with the quantum numbers too.
+        // Gautam - You can play with the quantum numbers too.
         auto quantum_numbers = sto.get_quantum_numbers();
         quantum_numbers.l++;
 

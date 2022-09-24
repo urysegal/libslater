@@ -23,10 +23,9 @@ public:
     B_function_details(sto_coefficient_t coefficient_, sto_exponent_t exponent_, const Quantum_Numbers &quantum_numbers,
         const center_t& center);
 
-    sto_coefficient_t get_coefficient() const {return coefficient;} /// Normalization Coefficient of the B function
-    sto_exponent_t get_exponent() const {return exponent;}; /// exponent of the radial part.
-    const Quantum_Numbers &get_quantum_numbers() const {return quantum_numbers;}; /// Set of quantum numbers for this function
-    center_t get_center() const {return center;} /// the center of the function
+    sto_coefficient_t get_coefficient() const ;
+    sto_exponent_t get_exponent() const;
+    const Quantum_Numbers &get_quantum_numbers() const;
 
 
 };
