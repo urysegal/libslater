@@ -19,7 +19,6 @@ void libslater_global_cleanup();
 
 typedef double energy_unit_t;
 
-
 typedef double sto_exponent_t;
 typedef double sto_coefficient_t;
 
@@ -56,10 +55,10 @@ public:
     void set_quantum_numbers(const Quantum_Numbers &quantumNumbers);
 
     sto_exponent_t get_exponent() const { return exponent; }
-    void set_exponent(sto_exponent_t &e) { exponent = e; }
+    void set_exponent(sto_exponent_t e) { exponent = e; }
 
     sto_coefficient_t get_coefficient() const { return coefficient; }
-    void set_coefficient(sto_coefficient_t &c) { coefficient = c; }
+    void set_coefficient(sto_coefficient_t c) { coefficient = c; }
 
 
 public:
@@ -85,6 +84,8 @@ public:
     /// \param location Cartesian center of the function
     STO_Basis_Function(STO_Basis_Function_Info function_info_, center_t location_);
 
+    /// Get the set of quantum numbers for this basis function
+    /// \return set of quantum numbers
     const Quantum_Numbers &get_quantum_numbers() const { return function_info.get_quantum_numbers(); }
 
     sto_exponent_t get_exponent() const { return function_info.get_exponent(); }
@@ -101,7 +102,7 @@ class STO_Integration_Options_Impl;
 class STO_Integration_Options
 {
 
-    STO_Integration_Options_Impl *implementation = nullptr;
+    STO_Integration_Options_Impl *implementation = nullptr; /// Implementation-dependant storage for option values
 
 public:
 
@@ -146,6 +147,7 @@ public:
 class STO_Integration_Engine {
 
 public:
+    /// Construct an integration engines factory
     STO_Integration_Engine();
 
     /// Create an STO integration engine. Use "default" as engine type to get the default implementation
