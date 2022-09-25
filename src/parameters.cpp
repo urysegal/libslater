@@ -14,7 +14,7 @@ class STO_Integration_Options_Impl
 public:
 
     STO_Integration_Options_Impl() = default ;
-    virtual ~STO_Integration_Options_Impl() = default;
+    ~STO_Integration_Options_Impl() = default;
 
 
     template<class T> void set(const std::string &name, const T& value)

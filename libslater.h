@@ -17,16 +17,23 @@ void libslater_global_init();
 /// Clean up the library
 void libslater_global_cleanup();
 
+/// Some quantity of energy, which is returned from the integration routines
 typedef double energy_unit_t;
 
+/// An STO exponent
 typedef double sto_exponent_t;
+
+/// A coefficient or Normalization coefficient
 typedef double sto_coefficient_t;
 
 typedef unsigned int angular_quantum_number_t;
 typedef unsigned int principal_quantum_number_t;
 typedef int magnetic_quantum_number_t;
 
+/// A coordinate in 1D space
 typedef double spatial_coordinate_t;
+
+/// A coordinate in 3D space
 typedef std::array<spatial_coordinate_t, 3> center_t;
 
 enum class spin_quantum_number_t  { UNDEFINED, UP, DOWN } ;
@@ -35,7 +42,7 @@ enum class spin_quantum_number_t  { UNDEFINED, UP, DOWN } ;
 struct Quantum_Numbers {
     principal_quantum_number_t n = 0; /// principal quantum number, also known as 'n'
     angular_quantum_number_t l = 0; /// Angular moment number, also known as 'l'
-    magnetic_quantum_number_t m = 0; /// Marnetic/Orientation quntum number, also known as 'm' or 'ml'
+    magnetic_quantum_number_t m = 0; /// Magnetic/Orientation quantum number, also known as 'm' or 'ml'
     spin_quantum_number_t ms = spin_quantum_number_t::UNDEFINED; /// Spin Quantum number, a.k.a. 'ms'
 };
 
@@ -51,18 +58,33 @@ class STO_Basis_Function_Info {
 
 public:
 
+    /// Get the set of quantum numbers for this basis function
+    /// \return set of quantum numbers for this basis function
     const Quantum_Numbers &get_quantum_numbers() const;
-    void set_quantum_numbers(const Quantum_Numbers &quantumNumbers);
 
+    /// Set the quantum numbers for this basis function
+    /// \param quantum_numbers set of quantum numbers to use
+    void set_quantum_numbers(const Quantum_Numbers &quantum_numbers);
+
+    /// Get the exponent used by this basis function
+    /// \return the exponent used by this basis function
     sto_exponent_t get_exponent() const ;
+
+    /// Set the exponent used by this basis function
+    /// \param e exponent to use
     void set_exponent(sto_exponent_t e) ;
 
+    /// Get the coefficient used by this basis function
+    /// \return the coefficient used by this basis function
     sto_coefficient_t get_coefficient() const ;
+
+    /// Set the coefficient used by this basis function
+    /// \param c coefficient to use
     void set_coefficient(sto_coefficient_t c) ;
 
 
 public:
-    /// Contruct an STO style basis function detail object.
+    /// Construct an STO style basis function detail object.
     /// \param coefficient_  Coefficient of the radial part.
     /// \param exponent_ exponent of the radial part.
     /// \param quantum_numbers_ Set of quantum numbers for this function
@@ -88,9 +110,16 @@ public:
     /// \return set of quantum numbers
     const Quantum_Numbers &get_quantum_numbers() const ;
 
+    /// Get the exponent used by this basis function
+    /// \return the exponent used by this basis function
     sto_exponent_t get_exponent() const ;
 
+    /// Get the coefficient used by this basis function
+    /// \return the coefficient used by this basis function
     sto_coefficient_t get_coefficient() const ;
+
+    /// Get the spatial center of this basis function
+    /// \return the spatial center of this basis function
     center_t get_center() const ;
 
 
@@ -143,7 +172,7 @@ public:
 };
 
 
-/// Integrator creation factory that creates the desired type of STO integrator. Don't forget to free the pointer retunred by create()
+/// Integrator creation factory that creates the desired type of STO integrator. Don't forget to free the pointer returned by create()
 class STO_Integration_Engine {
 
 public:
@@ -158,4 +187,3 @@ public:
 };
 
 }
-

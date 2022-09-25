@@ -66,7 +66,4 @@ center_t STO_Basis_Function::get_center() const
     return center;
 }
 
-
-
-
 }

@@ -42,7 +42,7 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
     std::vector<energy_unit_t> partial_results;
     for ( auto const &p : equivalence_series )
     {
-        energy_unit_t partial_result = integrate_with_b_functions(p.first, p.second);
+        energy_unit_t partial_result = integrate_overlap_using_b_functions(p.first, p.second);
         partial_results.emplace_back(partial_result);
     }
 
@@ -53,15 +53,15 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
     return final_result;
 }
 
-energy_unit_t Homeier_Integrator::integrate_with_b_functions(const B_function_details &f1, const B_function_details &f2) const
+energy_unit_t Homeier_Integrator::integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const
 {
-    auto f = [&](const double& s) { return this->calculate_gaussian_point(f1, f2, s) ;};
+    auto f = [&](const double& s) { return this->calculate_overlap_gaussian_point(f1, f2, s) ;};
     double Q = boost::math::quadrature::gauss<double, 7>::integrate(f, 0, 1);
     return Q;
 }
 
 
-double Homeier_Integrator::calculate_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s) const
+double Homeier_Integrator::calculate_overlap_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s) const
 {
     double W_hat = calculate_W_hat(f1, f2, s);
     double S = calculate_S(f1, f2 ,s);

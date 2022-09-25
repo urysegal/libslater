@@ -27,7 +27,7 @@ find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 include_directories(${libslater_SOURCE_DIR} ${libslater_SOURCE_DIR}/include)
 
-add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp src/basis_set.cpp src/engine.cpp include/homeier.h src/homeier.cpp src/parameters.cpp include/bfunctions.h src/bfunctions.cpp)
+add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp src/basis_functions.cpp src/engine.cpp include/homeier.h src/homeier.cpp src/parameters.cpp include/bfunctions.h src/bfunctions.cpp)
 
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})
@@ -67,7 +67,6 @@ add_custom_target(cleancov
         COMMAND find ${CMAKE_BINARY_DIR} -name '*.gc??' -delete
         )
 
-# first we can indicate the documentation build as an option and set it to ON by default
 option(BUILD_DOC "Build documentation" )
 
 if (BUILD_DOC)
