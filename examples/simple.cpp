@@ -8,10 +8,13 @@ using namespace slater;
 int
 main()
 {
-    STO_Basis_Function_Info oxygen_s(43.5, 0.252, 0,0,0);
-    STO_Basis_Function_Info oxygen_p(0.5, 1.29872, 1, 0, 0);
 
-    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, 0,0 ,0);
+    Quantum_Numbers quantum_numbers = {1,1,0};
+
+    STO_Basis_Function_Info oxygen_s(43.5, 0.252, quantum_numbers);
+    STO_Basis_Function_Info oxygen_p(0.5, 1.29872, quantum_numbers);
+
+    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, quantum_numbers);
 
     STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, -0.14142136});
     STO_Basis_Function oxygen_2_p(oxygen_p, {0, 0, -0.14142136});
@@ -27,7 +30,7 @@ main()
         options.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(options);
-        integral_value result = engine->overlap({basis_set[2], basis_set[0]});
+        auto result = engine->overlap({basis_set[2], basis_set[0]});
         std::cout << result << std::endl;
 
         delete engine;
