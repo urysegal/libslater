@@ -30,7 +30,7 @@ public:
         if ( it == all_options.end() ) {
             res = false;
         } else {
-            value = any_cast<T>(it->second);
+            value = std::any_cast<T>(it->second);
         }
         return res;
     }

@@ -9,7 +9,7 @@ int
 main()
 {
 
-    Quantum_Numbers quantum_numbers = {1,1,0};
+    Quantum_Numbers quantum_numbers = {4,2,0};
 
     STO_Basis_Function_Info oxygen_s(43.5, 0.252, quantum_numbers);
     STO_Basis_Function_Info oxygen_p(0.5, 1.29872, quantum_numbers);
