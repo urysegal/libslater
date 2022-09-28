@@ -72,8 +72,30 @@ double Homeier_Integrator::calculate_overlap_gaussian_point(const B_function_det
 
 double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s) const
 {
-    /// Gautam - Equation 30 in the second paper
-    return f1.get_exponent() * f2.get_quantum_numbers().l * s;
+    //TESTING NEEDED
+    //Equation 30 in On the Evaluation of Overlap Integrals with Exponential-Type Basis Functions
+    //HERBERT H. H. HOMEIER AND E. OTTO STEINBORN
+    //W_hat(s) is the new weight function after mobius transformation
+    auto quantum_numbers_1 = f1.get_quantum_numbers();
+    auto quantum_numbers_2 = f2.get_quantum_numbers();
+
+    auto n1 = quantum_numbers_1.n;
+    auto l1 = quantum_numbers_1.l;
+    
+    auto n2 = quantum_numbers_2.n;
+    auto l2 = quantum_numbers_2.l;
+
+    auto alpha = f1.get_exponent();
+    auto beta = f2.get_exponent();
+    
+    double eta = beta/alpha;
+
+    double numerator = pow(1-s,n1+l1) * pow(s,n2+l2);
+    double denominator1 = pow(s+(1-s)*eta,(l1+l2+3)/2);
+    double denominator2 = pow( (1-s)*eta*alpha*alpha + s*beta*beta,n1+n2+(l1+l2+1)/2);
+    double prefactor  = pow(eta, n1+l1+1);
+    
+    return prefactor * numerator / (denominator1*denominator2);
 }
 
 double Homeier_Integrator::calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const
