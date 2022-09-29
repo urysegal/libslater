@@ -57,6 +57,7 @@ energy_unit_t Homeier_Integrator::integrate_overlap_using_b_functions(const B_fu
 {
     auto f = [&](const double& s) { return this->calculate_overlap_gaussian_point(f1, f2, s) ;};
     double Q = boost::math::quadrature::gauss<double, 7>::integrate(f, 0, 1);
+    //need to add multiply with another prefactor here - Equation 20
     return Q;
 }
 
@@ -102,6 +103,10 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
 
 double Homeier_Integrator::calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const
 {
+    // We compute S_{n1,l1,m1}^{n2,l2,m2}(d,d,R) using Equation 13
+    // d = delta(alpha,beta,s)
+    // We will need Gaunt coefficients here
+
     return f2.get_quantum_numbers().n * f1.get_coefficient() + s;
 }
 
