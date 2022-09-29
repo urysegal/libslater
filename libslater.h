@@ -3,11 +3,13 @@
 #include <array>
 #include <string>
 
+
+
 namespace slater {
 
 /// Parameter to specify if we use normalized B functions
 static constexpr const char *Use_Normalized_B_Functions_Parameter_Name = "use_normalized_b_functions" ;
-/// Parameter to specify if we use normalized B functions
+/// Parameter to specify number of quadrature points
 static constexpr const char *Number_of_quadrature_points_Parameter_Name = "number_of_quadrature_points" ;
 
 
@@ -53,7 +55,7 @@ struct Quantum_Numbers {
 class STO_Basis_Function_Info {
 
     sto_coefficient_t coefficient; /// Coefficient of the radial part. also known as N
-    sto_exponent_t exponent; /// exponent of the radial part.
+    sto_exponent_t exponent; /// exponent of the radial part. also known as alpha
     Quantum_Numbers quantum_numbers;     /// Quantum numbers for this basis function
 
 public:

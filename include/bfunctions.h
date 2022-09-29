@@ -27,15 +27,15 @@ public:
     sto_exponent_t get_exponent() const;
     const Quantum_Numbers &get_quantum_numbers() const;
 
-
 };
 
 
 class B_functions_representation_of_STO {
 
     std::vector<B_function_details> components;
+    std::vector<double> components_coefficients;
 
-    double calculate_coefficient(const B_function_details &) const;
+    double calculate_coefficient(const B_function_details &bfd,const unsigned int p) const;
 public:
     B_functions_representation_of_STO(const STO_Basis_Function &sto);
     auto size() { return components.size(); }
