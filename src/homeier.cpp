@@ -4,6 +4,8 @@
 #include "homeier.h"
 #include "bfunctions.h"
 #include "logger.h"
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/special_functions/binomial.hpp>
 
 namespace slater {
 
@@ -57,13 +59,18 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
     std::vector<energy_unit_t> partial_results;
     for ( auto const &p : equivalence_series )
     {
-        energy_unit_t partial_result = integrate_overlap_using_b_functions(p.first, p.second);
+        energy_unit_t partial_result = integrate_overlap_using_b_functions(p.first.second, p.second.second);
+        partial_result *= p.first.first*p.second.first;
         partial_results.emplace_back(partial_result);
     }
 
     energy_unit_t final_result = 0 ;
     for ( auto &pr : partial_results )
         final_result += pr;
+
+    final_result *= functions[0].get_coefficient() * functions[1].get_coefficient() ;
+
+    final_result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient() ;
 
     return final_result;
 }
@@ -103,8 +110,8 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
     auto n2 = quantum_numbers_2.n;
     auto l2 = quantum_numbers_2.l;
 
-    auto alpha = f1.get_exponent();
-    auto beta = f2.get_exponent();
+    auto alpha = f1.get_alpha();
+    auto beta = f2.get_alpha();
     
     double eta = beta/alpha;
 
@@ -116,14 +123,84 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
     return prefactor * numerator / (denominator1*denominator2);
 }
 
+double calculate_delta(const B_function_details &f1, const B_function_details &f2, double s)
+{
+    return f1.get_alpha() * f2.get_quantum_numbers().l * s;
+}
+int get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2)
+{
+    return std::min(q1.l, q2.l); // wrong , Gautam please write
+}
+
+
+double get_gaunt_coeff(std::array<const int, 6>)
+{
+    return 1; /// Gautam please put correct expression
+}
+
+double calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point)
+{
+    return 1;
+}
+
+double get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l)
+{
+    double total_sum = 0;
+    const Quantum_Numbers &q1 = f1.get_quantum_numbers();
+    const Quantum_Numbers &q2 = f2.get_quantum_numbers();
+
+    int delta_l = (q1.l + q2.l - l );
+    assert( delta_l % 2 == 0);
+    delta_l/=2;
+
+    for (auto j = 0 ; j < delta_l ; j++) {
+        Quantum_Numbers B_function_parameters = {q1.n+q2.n+2*delta_l+1-j, (unsigned int)l, q2.m - q1.m };
+        total_sum += pow(-1, j) * boost::math::binomial_coefficient<double>(delta_l, j) *
+                calculate_B_function_value(B_function_parameters, alpha, f2.get_center());
+    }
+    return total_sum; }
+
+double get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha)
+{
+
+    const Quantum_Numbers &q1 = f1.get_quantum_numbers();
+    const Quantum_Numbers &q2 = f2.get_quantum_numbers();
+
+    int l_min = get_l_min(q1, q2);
+
+    int l_max = f1.get_quantum_numbers().l + f2.get_quantum_numbers().l;
+
+    double total_sum = 0;
+    for ( auto l = l_min ; l < l_max ; l+=2 )
+    {
+        auto gaunt_coeff = get_gaunt_coeff({(int)q2.l, q2.m, (int)q1.l,q1.m, l, q2.m - q1.m});
+        double B_function_sum = get_B_function_sum(f1, f2, alpha, l);
+        total_sum += gaunt_coeff * B_function_sum;
+    }
+    return total_sum;
+}
+
+
 double Homeier_Integrator::calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const
 {
+    // formula 13 second paper or 19 first paper
     // We compute S_{n1,l1,m1}^{n2,l2,m2}(d,d,R) using Equation 13
     // d = delta(alpha,beta,s)
     // We will need Gaunt coefficients here
 
-    return f2.get_quantum_numbers().n  + s;
+    auto l2 = f2.get_quantum_numbers().l;
+    auto delta = calculate_delta(f1,f2,s);
+    auto pi = boost::math::constants::pi<double>();
+
+
+    auto gaunt_sum = get_gaunt_sum(f1, f2, delta);
+
+
+    double result = pow(-1, l2 ) * (4*pi/pow(delta,3)) * gaunt_sum ;
+
+    return result;
 }
+
 
 
 

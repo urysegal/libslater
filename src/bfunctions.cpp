@@ -17,7 +17,7 @@ B_function_details::B_function_details( sto_exponent_t exponent_,
 
 
 
-sto_exponent_t B_function_details::get_exponent() const
+sto_exponent_t B_function_details::get_alpha() const
 {
     return alpha;
 }
@@ -77,8 +77,7 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
         double Bcoeff_p = calculate_coefficient(B_func_p, p);
 
         //store in vectors
-        components.emplace_back(B_func_p);
-        components_coefficients.emplace_back(Bcoeff_p);
+        components.emplace_back(Bcoeff_p,B_func_p);
     }
 
 }//B_functions_representation_of_STO

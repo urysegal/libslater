@@ -37,7 +37,9 @@ private:
 
     /// When integrating of each pair of functions in this vector and then summing up the values, you get the
     /// Overlap integral value
-    std::vector<std::pair<B_function_details, B_function_details> > equivalence_series;
+    std::vector<std::pair<
+    std::pair<double,B_function_details>,
+    std::pair<double, B_function_details> > > equivalence_series;
 
     /// Create all the pair of B functions and their normalization coefficients from the two given sequences of B functions,
     /// each representing an STO. The result is kept in the "equivalence_series" member
