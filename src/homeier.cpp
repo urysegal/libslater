@@ -76,6 +76,8 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
     //Equation 30 in On the Evaluation of Overlap Integrals with Exponential-Type Basis Functions
     //HERBERT H. H. HOMEIER AND E. OTTO STEINBORN
     //W_hat(s) is the new weight function after mobius transformation
+    //eta is computed as per Equation 35
+
     auto quantum_numbers_1 = f1.get_quantum_numbers();
     auto quantum_numbers_2 = f2.get_quantum_numbers();
 

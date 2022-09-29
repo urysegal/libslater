@@ -54,7 +54,6 @@ double B_functions_representation_of_STO::calculate_coefficient(const B_function
 B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_Basis_Function &sto)
 {
     //TESTING NEEDED
-
     // B function representation of an STO is 
     // X_{n,l}^m (alpha,r) = N * sum_p ^{n-l} Bcoeff * B_{p,l}^m (alpha,r)
     // p depends on even/odd n-l
