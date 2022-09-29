@@ -32,10 +32,25 @@ void Homeier_Integrator::create_integration_pairs(const B_functions_representati
     }
 }
 
+/// Shift the centers of the B functions so that one for f1 is (0,0,0) and the other shifted accordingly
+/// \param c1  First center to shift. This one shifts to (0,0,0)
+/// \param c2 Second center to shift
+/// \param new_centers
+void shift_first_center_to_origin(const center_t &c1, const center_t c2, center_t *new_centers)
+{
+    /// Gautam - make the right calculation
+    new_centers[0] = c1;
+    new_centers[1] = c2;
+}
+
+
 energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2> &functions)
 {
-    B_functions_representation_of_STO f1(functions[0]);
-    B_functions_representation_of_STO f2(functions[1]);
+    center_t new_centers[2];
+    shift_first_center_to_origin(functions[0].get_center(), functions[1].get_center(), new_centers);
+
+    B_functions_representation_of_STO f1(functions[0] , new_centers[0]);
+    B_functions_representation_of_STO f2(functions[1], new_centers[1]);
 
     create_integration_pairs(f1, f2);
 
@@ -53,10 +68,10 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
     return final_result;
 }
 
-energy_unit_t Homeier_Integrator::integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const
+double Homeier_Integrator::integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const
 {
     auto f = [&](const double& s) { return this->calculate_overlap_gaussian_point(f1, f2, s) ;};
-    double Q = boost::math::quadrature::gauss<double, 7>::integrate(f, 0, 1);
+    double Q = boost::math::quadrature::gauss<double, 30>::integrate(f, 0, 1);
     //need to add multiply with another prefactor here - Equation 20
     return Q;
 }
@@ -107,7 +122,7 @@ double Homeier_Integrator::calculate_S(const B_function_details &f1, const B_fun
     // d = delta(alpha,beta,s)
     // We will need Gaunt coefficients here
 
-    return f2.get_quantum_numbers().n * f1.get_coefficient() + s;
+    return f2.get_quantum_numbers().n  + s;
 }
 
 

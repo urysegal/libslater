@@ -49,7 +49,7 @@ private:
     /// \param f1 First B function
     /// \param f2 Second B function
     /// \return Partial overlap integral value
-    energy_unit_t integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const;
+    double integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const;
 
     /// This function is called back from the Gaussian Quadrature mechanism to get one value, at s, of the overlap
     /// integral.
@@ -58,6 +58,8 @@ private:
     /// \param s point at which to calculate the integral
     /// \return overlap integral value at s
     double calculate_overlap_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s) const;
+
+
 
     double calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s) const ;
     double calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const;
