@@ -27,7 +27,7 @@ CATCH_REGISTER_LISTENER(testRunListener)
 
 TEST_CASE( "One overlap integral", "[overlap]" ) {
 
-    Quantum_Numbers quantum_numbers = {0,1,0};
+    Quantum_Numbers quantum_numbers = {2,1,0};
 
     STO_Basis_Function_Info oxygen_s(43.5, 0.252, quantum_numbers);
     STO_Basis_Function_Info hydrogen_s(3.15, 0.952, quantum_numbers);
@@ -89,7 +89,7 @@ TEST_CASE("Options behavior", "[api]")
 
 TEST_CASE("Getters and Setters", "[api]")
 {
-    Quantum_Numbers quantum_numbers = {0,1,0};
+    Quantum_Numbers quantum_numbers = {2,1,0};
     STO_Basis_Function_Info oxygen_s(43.5, 0.252, quantum_numbers);
     oxygen_s.set_coefficient(1.0);
     oxygen_s.set_exponent(2.0);

@@ -5,8 +5,8 @@ namespace slater {
 
 STO_Basis_Function_Info::STO_Basis_Function_Info(sto_coefficient_t coefficient_, sto_exponent_t exponent_,
                                                  const Quantum_Numbers &quantum_numbers_) :
-                                                 coefficient(coefficient_), exponent(exponent_),
-                                                 quantum_numbers(quantum_numbers_)
+        normalization_coefficient(coefficient_), exponent(exponent_),
+        quantum_numbers(quantum_numbers_)
 {}
 
 const Quantum_Numbers &STO_Basis_Function_Info::get_quantum_numbers() const
@@ -26,13 +26,13 @@ void STO_Basis_Function_Info::set_exponent(sto_exponent_t e)
 
 sto_coefficient_t STO_Basis_Function_Info::get_coefficient() const
 {
-    return coefficient;
+    return normalization_coefficient;
 }
 
 
 void STO_Basis_Function_Info::set_coefficient(sto_coefficient_t c)
 {
-    coefficient = c;
+    normalization_coefficient = c;
 }
 
 

@@ -22,10 +22,10 @@ void libslater_global_cleanup();
 /// Some quantity of energy, which is returned from the integration routines
 typedef double energy_unit_t;
 
-/// An STO exponent
+/// An STO alpha
 typedef double sto_exponent_t;
 
-/// A coefficient or Normalization coefficient
+/// A normalization_coefficient or Normalization normalization_coefficient
 typedef double sto_coefficient_t;
 
 typedef unsigned int angular_quantum_number_t;
@@ -54,8 +54,8 @@ struct Quantum_Numbers {
 
 class STO_Basis_Function_Info {
 
-    sto_coefficient_t coefficient; /// Coefficient of the radial part. also known as N
-    sto_exponent_t exponent; /// exponent of the radial part. also known as alpha
+    sto_coefficient_t normalization_coefficient; /// Normalization Coefficient N(n,alpha) of the radial part. also known as N
+    sto_exponent_t exponent; /// alpha of the radial part. also known as alpha
     Quantum_Numbers quantum_numbers;     /// Quantum numbers for this basis function
 
 public:
@@ -68,27 +68,27 @@ public:
     /// \param quantum_numbers set of quantum numbers to use
     void set_quantum_numbers(const Quantum_Numbers &quantum_numbers);
 
-    /// Get the exponent used by this basis function
-    /// \return the exponent used by this basis function
+    /// Get the alpha used by this basis function
+    /// \return the alpha used by this basis function
     sto_exponent_t get_exponent() const ;
 
-    /// Set the exponent used by this basis function
-    /// \param e exponent to use
+    /// Set the alpha used by this basis function
+    /// \param e alpha to use
     void set_exponent(sto_exponent_t e) ;
 
-    /// Get the coefficient used by this basis function
-    /// \return the coefficient used by this basis function
+    /// Get the normalization_coefficient used by this basis function
+    /// \return the normalization_coefficient used by this basis function
     sto_coefficient_t get_coefficient() const ;
 
-    /// Set the coefficient used by this basis function
-    /// \param c coefficient to use
+    /// Set the normalization_coefficient used by this basis function
+    /// \param c normalization_coefficient to use
     void set_coefficient(sto_coefficient_t c) ;
 
 
 public:
     /// Construct an STO style basis function detail object.
     /// \param coefficient_  Coefficient of the radial part.
-    /// \param exponent_ exponent of the radial part.
+    /// \param exponent_ alpha of the radial part.
     /// \param quantum_numbers_ Set of quantum numbers for this function
     STO_Basis_Function_Info(sto_coefficient_t coefficient_, sto_exponent_t exponent_, const Quantum_Numbers &quantum_numbers);
 
@@ -112,12 +112,12 @@ public:
     /// \return set of quantum numbers
     const Quantum_Numbers &get_quantum_numbers() const ;
 
-    /// Get the exponent used by this basis function
-    /// \return the exponent used by this basis function
+    /// Get the alpha used by this basis function
+    /// \return the alpha used by this basis function
     sto_exponent_t get_exponent() const ;
 
-    /// Get the coefficient used by this basis function
-    /// \return the coefficient used by this basis function
+    /// Get the normalization_coefficient used by this basis function
+    /// \return the normalization_coefficient used by this basis function
     sto_coefficient_t get_coefficient() const ;
 
     /// Get the spatial center of this basis function

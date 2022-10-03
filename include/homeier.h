@@ -2,6 +2,7 @@
 
 #include "libslater.h"
 #include "bfunctions.h"
+#include "gaunt.h"
 
 namespace slater {
 
@@ -35,9 +36,14 @@ private:
     bool use_normalized_b_functions = 0; /// Should we calculate with normalized B functions?
     int number_of_quadrature_points = 1024; /// How many quadrature points we should calculate
 
+    Gaunt_Coefficient_Engine gaunt_engine; /// Gaunt Coefficient Evaluator
+    B_function_Engine B_function_engine; /// B-functions evaluator
+
     /// When integrating of each pair of functions in this vector and then summing up the values, you get the
     /// Overlap integral value
-    std::vector<std::pair<B_function_details, B_function_details> > equivalence_series;
+    std::vector<std::pair<
+    std::pair<double,B_function_details>,
+    std::pair<double, B_function_details> > > equivalence_series;
 
     /// Create all the pair of B functions and their normalization coefficients from the two given sequences of B functions,
     /// each representing an STO. The result is kept in the "equivalence_series" member
@@ -49,7 +55,7 @@ private:
     /// \param f1 First B function
     /// \param f2 Second B function
     /// \return Partial overlap integral value
-    energy_unit_t integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const;
+    double integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const;
 
     /// This function is called back from the Gaussian Quadrature mechanism to get one value, at s, of the overlap
     /// integral.
@@ -59,8 +65,16 @@ private:
     /// \return overlap integral value at s
     double calculate_overlap_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s) const;
 
+
+
     double calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s) const ;
     double calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const;
+    double get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha) const;
+    double get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l) const;
+    double calculate_delta(const B_function_details &f1, const B_function_details &f2, double s) const;
+    int get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2) const ;
+    double get_gaunt_coeff(const std::array<const int, 6> &) const;
+    double calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point) const;
 
 };
 
