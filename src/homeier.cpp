@@ -123,27 +123,12 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
     return prefactor * numerator / (denominator1*denominator2);
 }
 
-double calculate_delta(const B_function_details &f1, const B_function_details &f2, double s)
+double Homeier_Integrator::calculate_delta(const B_function_details &f1, const B_function_details &f2, double s) const
 {
     return f1.get_alpha() * f2.get_quantum_numbers().l * s;
 }
-int get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2)
-{
-    return std::min(q1.l, q2.l); // wrong , Gautam please write
-}
 
-
-double get_gaunt_coeff(std::array<const int, 6>)
-{
-    return 1; /// Gautam please put correct expression
-}
-
-double calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point)
-{
-    return 1;
-}
-
-double get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l)
+double Homeier_Integrator::get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l) const
 {
     double total_sum = 0;
     const Quantum_Numbers &q1 = f1.get_quantum_numbers();
@@ -160,7 +145,7 @@ double get_B_function_sum(const B_function_details &f1, const B_function_details
     }
     return total_sum; }
 
-double get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha)
+double Homeier_Integrator::get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha) const
 {
 
     const Quantum_Numbers &q1 = f1.get_quantum_numbers();
@@ -200,6 +185,25 @@ double Homeier_Integrator::calculate_S(const B_function_details &f1, const B_fun
 
     return result;
 }
+
+double Homeier_Integrator::get_gaunt_coeff(const std::array<const int, 6> &args) const
+{
+    return gaunt_engine.calculate(args);
+}
+
+
+double Homeier_Integrator::calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point) const
+{
+    return B_function_engine.calculate(quantum_numbers, alpha, point);
+}
+
+
+int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2) const
+{
+    return std::min(q1.l, q2.l); // Wrong , Gautam please write
+}
+
+
 
 
 

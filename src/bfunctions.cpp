@@ -82,4 +82,11 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
 
 }//B_functions_representation_of_STO
 
+
+double B_function_Engine::calculate(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &r) const
+{
+    return quantum_numbers.n + alpha + r[1]; /// Gotham please implement
+}
+
+
 }//namespace slater

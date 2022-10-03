@@ -44,6 +44,19 @@ public:
 };
 
 
+class B_function_Engine {
+public:
+
+    /// Return the value of a B-function with the given parameters at the point "r". A B-functions is completly
+    /// defined by the three quantum numbers and alpha.
+    /// \param quantum_numbers set of Quantum numbers, paramter
+    /// \param alpha alpha parameter of the function
+    /// \param r Point to calculate the value for
+    /// \return value of the function at "r"
+    double calculate(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &r) const;
+
+private:
+};
 
 
 }
