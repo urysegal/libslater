@@ -27,16 +27,14 @@ const Quantum_Numbers &B_function_details::get_quantum_numbers() const
     return quantum_numbers;
 }
 
-double B_functions_representation_of_STO::calculate_coefficient(const B_function_details &bfd,const unsigned int p) const
+double B_functions_representation_of_STO::calculate_coefficient(const Quantum_Numbers quantum_numbers,const unsigned int p) const
 {
     //TESTING NEEDED
 
     // B function representation of an STO is 
-    // X_{n,l}^m (alpha,r) = N * sum_p ^{n-l} Bcoeff * B_{p,l}^m (alpha,r) // MAY CHANGE REPRESENTATION 
+    // X_{n,l}^m (alpha,r) = N * sum_p ^{n-l} Bcoeff * B_{p,l}^m (alpha,r)
     //calculate the individual coefficients Bcoeff
 
-     
-    auto quantum_numbers = bfd.get_quantum_numbers();
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
 
@@ -54,8 +52,6 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
     // X_{n,l}^m (alpha,r) = N * sum_p ^{n-l} Bcoeff * B_{p,l}^m (alpha,r)
     // p depends on even/odd n-l
     // Bcoeff is computed via calculate_coefficient
-
-
     auto quantum_numbers = sto.get_quantum_numbers();
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
@@ -71,10 +67,14 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
     }
 
     //loop over p to create all Bcoeffs and Bfunctions
+    auto quantum_numbers_p = sto.get_quantum_numbers();
     for (unsigned int p = min_p; p <= (n - l); p++) {
-        quantum_numbers.n = p;
-        B_function_details B_func_p = B_function_details(sto.get_exponent(), quantum_numbers, new_center);
-        double Bcoeff_p = calculate_coefficient(B_func_p, p);
+        //Create  B_{p,l}^m (alpha,r)
+        quantum_numbers_p.n = p;
+        B_function_details B_func_p = B_function_details(sto.get_exponent(), quantum_numbers_p, new_center);
+
+        //Compute summing coefficient for B_{p,l}^m (alpha,r)
+        double Bcoeff_p = calculate_coefficient(quantum_numbers, p);
 
         //store in vectors
         components.emplace_back(Bcoeff_p,B_func_p);
