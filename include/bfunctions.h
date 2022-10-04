@@ -1,7 +1,12 @@
 #pragma once
 #include <vector>
 #include "libslater.h"
-
+#include <complex>
+#include <iostream> //REMOVE - only added for my primitive caveman style debugging
+#include <boost/math/special_functions/factorials.hpp>
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/special_functions/bessel.hpp>
+#include <boost/geometry.hpp>
 namespace slater {
 
 
@@ -53,7 +58,8 @@ public:
     /// \param alpha alpha parameter of the function
     /// \param r Point to calculate the value for
     /// \return value of the function at "r"
-    double calculate(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &r) const;
+    std::complex<double> calculate(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &r) const;
+    std::complex<double> eval_spherical_harmonics(const Quantum_Numbers quantumNumbers,const double theta,const double phi) const;
 
 private:
 };
