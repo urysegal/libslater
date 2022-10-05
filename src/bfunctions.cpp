@@ -87,27 +87,32 @@ std::complex<double> B_function_Engine::eval_spherical_harmonics(const Quantum_N
     return 1;
 }//eval_spherical_harmonics
 
-std::vector<double> B_function_Engine::cart2spher(const center_t &r) const{
+std::vector<double> B_function_Engine::cartesian_to_spherical(const center_t &r) const{
     bg::model::point<double, 3, bg::cs::cartesian> r_cart(r[0],r[1],r[2]);
     bg::model::point<double, 3, bg::cs::spherical<bg::radian>> r_spherical;
     bg::transform(r_cart, r_spherical);
-    std::vector<double> spher{r_spherical.get<0>(),r_spherical.get<1>(),r_spherical.get<2>()};
+
+    //RADIUS IS THIRD COORDINATE IN BOOST --(theta, phi, r)
+    //We rearrange it as (r,theta,phi)
+    std::vector<double> spher{r_spherical.get<2>(),r_spherical.get<0>(),r_spherical.get<1>()};
+
     return spher;
-}//cart2spher
+}//cartesian_to_spherical
 
 std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &r) const
 {
     //COMPLEX ARITHMETIC NEEDS TO BE FIXED
-    
     auto pi = bm::constants::pi<double>();
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
 
     // Cartesian Representation of r to Spherical representation
-    std::vector<double> spherical_coords = cart2spher(r);
+
+    std::vector<double> spherical_coords = cartesian_to_spherical(r);
     double radius = spherical_coords[0];
     double phi = spherical_coords[1];
     double theta = spherical_coords[2];
+    std::cout << "alpha is " << alpha << std::endl;
 
     auto prefactor1 = pow(2.0/pi,1.0/2.0);
     auto prefactor2 = 1 / (pow(2.0,n+l) * bm::factorial<double>(n+l) );

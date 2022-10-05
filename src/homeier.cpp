@@ -40,9 +40,9 @@ void Homeier_Integrator::create_integration_pairs(const B_functions_representati
 /// \param new_centers
 void shift_first_center_to_origin(const center_t &c1, const center_t c2, center_t *new_centers)
 {
-    /// Gautam - make the right calculation
-    new_centers[0] = c1;
-    new_centers[1] = c2;
+    /// R = R_2 - R_1
+    new_centers[1] = {c2[0]-c1[0],c2[1]-c1[1],c2[2]-c1[2]};
+    new_centers[0] = {0,0,0};
 }
 
 
@@ -135,6 +135,7 @@ std::complex<double> Homeier_Integrator::get_B_function_sum(const B_function_det
     const Quantum_Numbers &q2 = f2.get_quantum_numbers();
 
     int delta_l = (q1.l + q2.l - l );
+
     assert( delta_l % 2 == 0);
     delta_l/=2;
 
@@ -200,7 +201,16 @@ std::complex<double> Homeier_Integrator::calculate_B_function_value(const Quantu
 
 int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2) const
 {
-    return std::min(q1.l, q2.l); // Wrong , Gautam please write
+    /// l_min depends on whether max( |l1 - l2|, |m1-m2|) + l_max is even or odd
+    int l_min = 0;
+    auto switch_condition = std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m))+q1.l+q2.l;
+    if (switch_condition%2==0){
+       l_min  =  std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m));
+    }
+    else{
+        l_min  =  std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m)) + 1;
+    }
+    return l_min; // Wrong , Gautam please write
 }
 
 
