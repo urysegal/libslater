@@ -5,10 +5,17 @@
 
 using namespace slater;
 
+namespace slater {
+long  make_sum(long i);
+}
+
 int
 main()
 {
 
+    auto l = slater::make_sum(5);
+
+    printf("%ld\n",l);
     Quantum_Numbers quantum_numbers = {4,2,0};
 
     STO_Basis_Function_Info oxygen_s(43.5, 0.252, quantum_numbers);
