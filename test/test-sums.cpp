@@ -9,27 +9,45 @@
 
 using namespace slater;
 
+struct sum_state : public Summation_State {
+    int i ;
+    int j;
+};
+
+
+class Integer_Sum : public Nested_Summation<long, Last_Nested_Summation<long> > {
+
+protected:
+
+    virtual long scaling_factor() { return static_cast<sum_state *> (state)->j; }
+
+    virtual void rename_current_value() { static_cast<sum_state *> (state)->j = current_index_value ;}
+
+public:
+    Integer_Sum(int from_, int to_, Summation_State *s, int step_ = 1) : Nested_Summation(from_, to_, s, step_)
+    {}
+
+};
+
+TEST_CASE( "simple sum", "[sums]" ) {
+
+    sum_state s;
+    Integer_Sum ins(0,5,&s);
+
+    CHECK(ins.get_value() == 1+2+3+4+5 );
+}
+
+TEST_CASE( "simple sum with step", "[sums]" ) {
+
+    sum_state s;
+    Integer_Sum ins(3,15,&s,2);
+
+    CHECK(ins.get_value() == 3+5+7+9+11+13+15 );
+}
+
+
 
 TEST_CASE( "two simple sums", "[sums]" ) {
-
-    struct sum_state : public Summation_State {
-        int i ;
-        int j;
-    };
-
-    class Integer_Sum : public Nested_Summation<long, Last_Nested_Summation<long> > {
-
-    protected:
-
-        virtual long scaling_factor() { return static_cast<sum_state *> (state)->j; }
-
-        virtual void rename_current_value() { static_cast<sum_state *> (state)->j = current_value ;}
-
-    public:
-        Integer_Sum(int from_, int to_, Summation_State *s) : Nested_Summation(from_, to_, s)
-        {}
-
-    };
 
     class Integer_Sum_Sum : public Nested_Summation<long, Integer_Sum> {
 
@@ -37,7 +55,7 @@ TEST_CASE( "two simple sums", "[sums]" ) {
 
         virtual long scaling_factor() { return static_cast<sum_state *> (state)->i; }
 
-        virtual void rename_current_value() { static_cast<sum_state *> (state)->i = current_value ;}
+        virtual void rename_current_value() { static_cast<sum_state *> (state)->i = current_index_value ;}
 
         virtual indexing_t  get_next_sum_from() { return 0 ;}
         virtual indexing_t  get_next_sum_to() { return static_cast<sum_state *> (state)->i; }
@@ -47,7 +65,6 @@ TEST_CASE( "two simple sums", "[sums]" ) {
         {}
 
     };
-
 
 
     sum_state s;
