@@ -112,7 +112,6 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
     double radius = spherical_coords[0];
     double phi = spherical_coords[1];
     double theta = spherical_coords[2];
-    std::cout << "alpha is " << alpha << std::endl;
 
     auto prefactor1 = pow(2.0/pi,1.0/2.0);
     auto prefactor2 = 1 / (pow(2.0,n+l) * bm::factorial<double>(n+l) );
