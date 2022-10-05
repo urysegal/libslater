@@ -60,7 +60,7 @@ public:
     /// \return value of the function at "r"
     std::complex<double> calculate(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &r) const;
     std::complex<double> eval_spherical_harmonics(const Quantum_Numbers quantumNumbers,const double theta,const double phi) const;
-
+    std::vector<double> cart2spher(const center_t &r) const;
 private:
 };
 

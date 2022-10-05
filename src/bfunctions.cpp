@@ -87,6 +87,14 @@ std::complex<double> B_function_Engine::eval_spherical_harmonics(const Quantum_N
     return 1;
 }//eval_spherical_harmonics
 
+std::vector<double> B_function_Engine::cart2spher(const center_t &r) const{
+    bg::model::point<double, 3, bg::cs::cartesian> r_cart(r[0],r[1],r[2]);
+    bg::model::point<double, 3, bg::cs::spherical<bg::radian>> r_spherical;
+    bg::transform(r_cart, r_spherical);
+    std::vector<double> spher{r_spherical.get<0>(),r_spherical.get<1>(),r_spherical.get<2>()};
+    return spher;
+}//cart2spher
+
 std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &r) const
 {
     //COMPLEX ARITHMETIC NEEDS TO BE FIXED
@@ -96,12 +104,10 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
     auto l = quantum_numbers.l;
 
     // Cartesian Representation of r to Spherical representation
-    bg::model::point<double, 3, bg::cs::cartesian> r_cart(r[0],r[1],r[2]);
-    bg::model::point<double, 3, bg::cs::spherical<bg::radian> > r_spherical;
-    bg::transform(r_cart, r_spherical);
-    auto radius = r_spherical.get<0>();
-    auto theta = r_spherical.get<1>();
-    auto phi = r_spherical.get<2>();
+    std::vector<double> spherical_coords = cart2spher(r);
+    double radius = spherical_coords[0];
+    double phi = spherical_coords[1];
+    double theta = spherical_coords[2];
 
     auto prefactor1 = pow(2.0/pi,1.0/2.0);
     auto prefactor2 = 1 / (pow(2.0,n+l) * bm::factorial<double>(n+l) );
