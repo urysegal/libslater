@@ -15,6 +15,8 @@ auto pi = boost::math::constants::pi<double>();
 using complex = std::complex<double>;
 namespace bm = boost::math;
 
+#define STATE (static_cast<Sum_State *> (state))
+
 namespace slater {
 
 
@@ -58,14 +60,30 @@ struct Sum_State : public Summation_State {
 
 };
 
+
+
+// Second line in [1] eqn. 28 , first summation
+class Sum_2 : public Nested_Summation<complex , Last_Nested_Summation<complex> > {
+
+protected:
+
+    virtual void rename_current_value() override { STATE->l1_tag = current_index_value; }
+    virtual indexing_t  get_next_sum_from() override { return - STATE->l1_tag; }
+    virtual indexing_t  get_next_sum_to() override { return STATE->l1_tag; }
+
+public:
+    Sum_2( int from_, int to_, Summation_State *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+};
+
+
 // First line in [1] eqn. 28
-class Sum_1 : public Nested_Summation<complex , Last_Nested_Summation<complex> > {
+class Sum_1 : public Nested_Summation<complex , Sum_2 > {
 
 protected:
 
     virtual complex expression() override
     {
-        auto s = static_cast<Sum_State *> (state);
+        auto s = STATE;
         s->setup_parameters();
         double enumerator =
             8 * pow ( 4 * pi , 2 ) * pow (-1, s->l1 + s->l2)
@@ -80,7 +98,7 @@ protected:
 
     virtual void rename_current_value() override { }
     virtual indexing_t  get_next_sum_from() override { return 0 ;}
-    virtual indexing_t  get_next_sum_to() override { return static_cast<Sum_State *> (state)->l1; }
+    virtual indexing_t  get_next_sum_to() override { return STATE->l1; }
 
 public:
     Sum_1( Summation_State *s) : Nested_Summation(1, 1, s)
