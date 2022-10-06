@@ -2,6 +2,7 @@
 #include <vector>
 #include <array>
 #include <string>
+#include <complex>
 
 
 
@@ -20,7 +21,7 @@ void libslater_global_init();
 void libslater_global_cleanup();
 
 /// Some quantity of energy, which is returned from the integration routines
-typedef double energy_unit_t;
+typedef std::complex<double> energy_unit_t;
 
 /// An STO alpha
 typedef double sto_exponent_t;

@@ -3,9 +3,12 @@
 #include "libslater.h"
 #include "bfunctions.h"
 #include "gaunt.h"
+#include <boost/math/special_functions/factorials.hpp>
+
 
 namespace slater {
 
+void shift_first_center_to_origin(const center_t &c1, const center_t c2, center_t *new_centers);
 
 /// This class implements the calculation of the Overlap integral between two STOs using B functions, using
 /// this work:
@@ -55,7 +58,7 @@ private:
     /// \param f1 First B function
     /// \param f2 Second B function
     /// \return Partial overlap integral value
-    double integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const;
+    std::complex<double> integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const;
 
     /// This function is called back from the Gaussian Quadrature mechanism to get one value, at s, of the overlap
     /// integral.
@@ -63,18 +66,18 @@ private:
     /// \param f2 details of the second B functions
     /// \param s point at which to calculate the integral
     /// \return overlap integral value at s
-    double calculate_overlap_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s) const;
+    std::complex<double> calculate_overlap_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s) const;
 
 
 
     double calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s) const ;
-    double calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const;
-    double get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha) const;
-    double get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l) const;
+    std::complex<double> calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const;
+    std::complex<double> get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha) const;
+    std::complex<double> get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l) const;
     double calculate_delta(const B_function_details &f1, const B_function_details &f2, double s) const;
     int get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2) const ;
     double get_gaunt_coeff(const std::array<const int, 6> &) const;
-    double calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point) const;
+    std::complex<double> calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point) const;
 
 };
 
