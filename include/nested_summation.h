@@ -28,6 +28,9 @@ protected:
     indexing_t step = 1; /// How much the index is incremented by
     Summation_State *state = nullptr; /// Point to the state of the whole nested summation so far
 
+
+    virtual indexing_t & get_index_variable() { return state->_dummy; }
+
     /// Calculate the expression for the current itaration (you can fine it in current_index_value). The index values
     /// of the outer summations is accessible in the "state" member (as long as you implement  rename_current_value() and save them
     /// in "state" member... )
@@ -37,7 +40,7 @@ protected:
         return 1;
     }
 
-    ///
+    /// The three following funcitons are about the NEXT iteration.
 
 
     /// Implement this to control the starting point of the next iteration
@@ -60,7 +63,6 @@ protected:
         return 1;
     }
 
-    virtual indexing_t & get_index_variable() { return state->_dummy; }
 
 public:
 

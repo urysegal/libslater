@@ -188,7 +188,7 @@ double Homeier_Integrator::calculate_S(const B_function_details &f1, const B_fun
 
 double Homeier_Integrator::get_gaunt_coeff(const std::array<const int, 6> &args) const
 {
-    return gaunt_engine.calculate(args);
+    return Gaunt_Coefficient_Engine::get()->calculate(args);
 }
 
 
