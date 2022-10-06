@@ -47,10 +47,10 @@ struct Sum_State : public Summation_State<indexer_t> {
 
     /// These are parameters that change every iteration, see [1] eqn. 29
     int n_gamma ;
-    double v  ; // Alexandra - is it really double
+    double v  ;
     int u   ;
     int nx   ;
-    double delta_l;// Alexandra - is it really double ; why the square bracket
+    int delta_l;
 
 
     /// This function is called every time the iteration goes forward (at any level of the nesting) to
