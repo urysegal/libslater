@@ -10,9 +10,9 @@ class Summation_State
 {
 };
 
-/// One step in a nested summation. Each step is assumed to have some expression, returned by scaling_factor(),
+/// One step in a nested summation. Each step is assumed to have some expression, returned by expression(),
 /// times another summation, of class "Next_Summation". e.g.  overall value is:
-/// sigma(i=from->to) { scaling_factor(i)*Next_Summation}
+/// sigma(i=from->to) { expression(i)*Next_Summation}
 /// You set the from, to and step of the NEXT summation by implementing get_next_sum_from,get_next_sum_to, get_next_sum_step.
 /// If inner sum needs to know the value of the indices of the outer sums, subclass Summation_State and implement rename_current_value()
 /// so it saved the current value in there according the the nomenclature of your expression.
@@ -33,7 +33,7 @@ protected:
     /// of the outer summations is accessible in the "state" member (as long as you implement  rename_current_value() and save them
     /// in "state" member... )
     /// \return value for this iteration
-    virtual T scaling_factor()
+    virtual T expression()
     {
         return 1;
     }
@@ -71,7 +71,7 @@ public:
     Nested_Summation(indexing_t from_, indexing_t to_, Summation_State *state_, int step_ = 1) :
         from(from_), to(to_), step(step_), state(state_)
     {}
-
+    virtual ~Nested_Summation() = default;
 
 
     T get_value( )
@@ -83,7 +83,7 @@ public:
 
             rename_current_value();
 
-            auto scaling = scaling_factor();
+            auto scaling = expression();
             Next_Summation inner_summation(get_next_sum_from(), get_next_sum_to(), state, get_next_sum_step());
 
             total_sum +=  scaling * inner_summation.get_value() ;
@@ -96,7 +96,7 @@ public:
 template<class T>
 class Last_Nested_Summation {
 public:
-    Last_Nested_Summation(indexing_t from_, indexing_t to_, Summation_State *state_)
+    Last_Nested_Summation(indexing_t from_, indexing_t to_, Summation_State *state_, indexing_t step_)
     { }
 
     T get_value() { return 1;}

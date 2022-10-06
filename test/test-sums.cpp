@@ -3,7 +3,6 @@
 #include <math.h>
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/reporters/catch_reporter_event_listener.hpp>
 #include <catch2/reporters/catch_reporter_registrars.hpp>
 #include <catch2/interfaces/catch_interfaces_reporter.hpp>
 
@@ -19,7 +18,7 @@ class Integer_Sum : public Nested_Summation<long, Last_Nested_Summation<long> > 
 
 protected:
 
-    virtual long scaling_factor() { return static_cast<sum_state *> (state)->j; }
+    virtual long expression() { return static_cast<sum_state *> (state)->j; }
 
     virtual void rename_current_value() { static_cast<sum_state *> (state)->j = current_index_value ;}
 
@@ -29,8 +28,8 @@ public:
 
 };
 
-TEST_CASE( "simple sum", "[sums]" ) {
-
+TEST_CASE( "simple sum", "[sums]" )
+{
     sum_state s;
     Integer_Sum ins(0,5,&s);
 
@@ -53,7 +52,7 @@ TEST_CASE( "two simple sums", "[sums]" ) {
 
     protected:
 
-        virtual long scaling_factor() { return static_cast<sum_state *> (state)->i; }
+        virtual long expression() { return static_cast<sum_state *> (state)->i; }
 
         virtual void rename_current_value() { static_cast<sum_state *> (state)->i = current_index_value ;}
 
