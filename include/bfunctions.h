@@ -7,6 +7,7 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/bessel.hpp>
 #include <boost/geometry.hpp>
+#include <boost/math/special_functions/legendre.hpp>
 namespace slater {
 
 

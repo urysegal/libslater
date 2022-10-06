@@ -82,9 +82,20 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
 }//B_functions_representation_of_STO
 
 std::complex<double> B_function_Engine::eval_spherical_harmonics(const Quantum_Numbers quantumNumbers,const double theta,const double phi) const{
-    // Gautam - Need to fill in spherical harmonics evaluation
+    // Evaluates Spherical Harmonics Y_l^m(theta,phi)
+    auto pi = bm::constants::pi<double>();
+    std::complex<double>  i(0,1);
+    auto m = quantumNumbers.m;
+    auto l = quantumNumbers.l;
+    auto Plm = bm::legendre_p(l,abs(m),std::cos(theta)); //Associated Legendre Polynomial
 
-    return 1;
+
+    auto Y = pow(i,m+abs(m));
+    Y *= pow( ( (2*l + 1) * bm::factorial<double>(l-abs(m)) ) / (4*pi*(bm::factorial<double>(l+abs(m)))) , 1/2);
+    Y *= Plm;
+    Y *= std::exp(i* std::complex<double>(m*phi,1));
+
+    return Y;
 }//eval_spherical_harmonics
 
 std::vector<double> B_function_Engine::cartesian_to_spherical(const center_t &r) const{
