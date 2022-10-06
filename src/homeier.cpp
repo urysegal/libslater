@@ -210,7 +210,7 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
     else{
         l_min  =  std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m)) + 1;
     }
-    return l_min; // Wrong , Gautam please write
+    return l_min;
 }
 
 

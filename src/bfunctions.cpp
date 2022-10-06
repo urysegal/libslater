@@ -132,7 +132,7 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
     //need to extract theta and phi from r_spherical
     auto Y = eval_spherical_harmonics(quantum_numbers,theta,phi);
 
-    return prefactor1*prefactor2*prefactor3 * K * Y; // Gautam please implement
+    return prefactor1*prefactor2*prefactor3 * K * Y;
 }//B_function_Engine::calculate
 
 
