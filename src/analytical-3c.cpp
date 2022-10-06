@@ -24,13 +24,13 @@ namespace slater {
 struct Sum_State : public Summation_State {
 
     /// Nested iteration variables
-    unsigned int l1_tag;
-    int m1_tag;
-    unsigned int l2_tag;
-    int m2_tag;
-    unsigned int l;
-    unsigned int gamma;
-    int j;
+    indexing_t l1_tag;
+    indexing_t m1_tag;
+    indexing_t l2_tag;
+    indexing_t m2_tag;
+    indexing_t l;
+    indexing_t gamma;
+    indexing_t j;
 
     /// These are parameters that change every iteration, see [1] eqn. 29
     int n_gamma ;
@@ -60,15 +60,29 @@ struct Sum_State : public Summation_State {
 
 };
 
+// Second line in [1] eqn. 28 , second summation
+class Sum_3 : public Nested_Summation<complex , Last_Nested_Summation<complex> > {
+
+protected:
+    virtual complex expression() override; // CONTINUE HERE
+
+    virtual indexing_t & get_index_variable() override { return STATE->m1_tag ; }
+    virtual indexing_t  get_next_sum_from() override { return 0; }
+    virtual indexing_t  get_next_sum_to() override { return STATE->l2; }
+
+public:
+    Sum_3( int from_, int to_, Summation_State *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+};
 
 
 // Second line in [1] eqn. 28 , first summation
-class Sum_2 : public Nested_Summation<complex , Last_Nested_Summation<complex> > {
+class Sum_2 : public Nested_Summation<complex , Sum_3 > {
 
 protected:
 
-    virtual void rename_current_value() override { STATE->l1_tag = current_index_value; }
-    virtual indexing_t  get_next_sum_from() override { return - STATE->l1_tag; }
+    virtual indexing_t & get_index_variable() override { return STATE->l1_tag ; }
+
+    virtual indexing_t  get_next_sum_from() override { return -1 * STATE->l1_tag; }
     virtual indexing_t  get_next_sum_to() override { return STATE->l1_tag; }
 
 public:
@@ -96,7 +110,6 @@ protected:
         return enumerator / denominator ;
     }
 
-    virtual void rename_current_value() override { }
     virtual indexing_t  get_next_sum_from() override { return 0 ;}
     virtual indexing_t  get_next_sum_to() override { return STATE->l1; }
 

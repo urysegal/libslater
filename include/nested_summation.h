@@ -6,8 +6,9 @@ typedef int indexing_t;
 
 
 /// Stub class for summation step implementation to keep track of the various summation indices.
-class Summation_State
+struct Summation_State
 {
+    indexing_t _dummy; // to be used if we don't care about the value of the current index.
 };
 
 /// One step in a nested summation. Each step is assumed to have some expression, returned by expression(),
@@ -22,12 +23,10 @@ class Nested_Summation
 {
 protected:
 
-    indexing_t from = 0; /// Where this sum starts at
-    indexing_t to = -1 ; /// Where this sum stops at. Default from=-1, to=0 means no work will take place
+    indexing_t from = 1; /// Where this sum starts at
+    indexing_t to = 1 ; /// Where this sum stops at. Default from=1, to=1 means to evaluate the expression once.
     indexing_t step = 1; /// How much the index is incremented by
     Summation_State *state = nullptr; /// Point to the state of the whole nested summation so far
-
-    indexing_t current_index_value = 0; /// In this summation, current index value
 
     /// Calculate the expression for the current itaration (you can fine it in current_index_value). The index values
     /// of the outer summations is accessible in the "state" member (as long as you implement  rename_current_value() and save them
@@ -45,13 +44,13 @@ protected:
     /// \return In the next inner sum, where should the iteration start?
     virtual indexing_t  get_next_sum_from()
     {
-        return 0 ;
+        return 1 ;
     }
 
     /// Implement this to control the last of the next iteration.
     /// \return In the next inner sum, what is the last value?
     virtual indexing_t  get_next_sum_to() {
-        return -1;
+        return 1;
     }
 
     /// Implement this to control the iteration step size of the next iteration. if you don't, default 1 is used.
@@ -61,10 +60,7 @@ protected:
         return 1;
     }
 
-    virtual void rename_current_value()
-    {
-
-    }
+    virtual indexing_t & get_index_variable() { return state->_dummy; }
 
 public:
 
@@ -78,10 +74,8 @@ public:
     {
         T total_sum = 0;
 
-
+        indexing_t & current_index_value = get_index_variable();
         for ( current_index_value = from ; current_index_value <= to ;current_index_value += step) {
-
-            rename_current_value();
 
             auto scaling = expression();
             Next_Summation inner_summation(get_next_sum_from(), get_next_sum_to(), state, get_next_sum_step());

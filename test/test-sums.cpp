@@ -9,8 +9,8 @@
 using namespace slater;
 
 struct sum_state : public Summation_State {
-    int i ;
-    int j;
+    int i=0;
+    int j=0;
 };
 
 
@@ -20,7 +20,7 @@ protected:
 
     virtual long expression() { return static_cast<sum_state *> (state)->j; }
 
-    virtual void rename_current_value() { static_cast<sum_state *> (state)->j = current_index_value ;}
+    virtual indexing_t & get_index_variable() { return static_cast<sum_state *> (state)->j; }
 
 public:
     Integer_Sum(int from_, int to_, Summation_State *s, int step_ = 1) : Nested_Summation(from_, to_, s, step_)
@@ -54,7 +54,7 @@ TEST_CASE( "two simple sums", "[sums]" ) {
 
         virtual long expression() { return static_cast<sum_state *> (state)->i; }
 
-        virtual void rename_current_value() { static_cast<sum_state *> (state)->i = current_index_value ;}
+        virtual indexing_t & get_index_variable() { return static_cast<sum_state *> (state)->i; }
 
         virtual indexing_t  get_next_sum_from() { return 0 ;}
         virtual indexing_t  get_next_sum_to() { return static_cast<sum_state *> (state)->i; }
