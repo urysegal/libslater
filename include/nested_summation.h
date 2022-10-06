@@ -2,10 +2,10 @@
 
 namespace slater {
 
-typedef int indexing_t;
 
 
 /// Stub class for summation step implementation to keep track of the various summation indices.
+template<typename indexing_t>
 struct Summation_State
 {
     indexing_t _dummy; // to be used if we don't care about the value of the current index.
@@ -18,7 +18,7 @@ struct Summation_State
 /// If inner sum needs to know the value of the indices of the outer sums, subclass Summation_State and implement rename_current_value()
 /// so it saved the current value in there according the the nomenclature of your expression.
 
-template<class T, class Next_Summation >
+template<typename indexing_t, class T, class Next_Summation >
 class Nested_Summation
 {
 protected:
@@ -26,7 +26,7 @@ protected:
     indexing_t from = 1; /// Where this sum starts at
     indexing_t to = 1 ; /// Where this sum stops at. Default from=1, to=1 means to evaluate the expression once.
     indexing_t step = 1; /// How much the index is incremented by
-    Summation_State *state = nullptr; /// Point to the state of the whole nested summation so far
+    Summation_State<indexing_t> *state = nullptr; /// Point to the state of the whole nested summation so far
 
 
     virtual indexing_t & get_index_variable() { return state->_dummy; }
@@ -66,7 +66,7 @@ protected:
 
 public:
 
-    Nested_Summation(indexing_t from_, indexing_t to_, Summation_State *state_, int step_ = 1) :
+    Nested_Summation(indexing_t from_, indexing_t to_, Summation_State<indexing_t> *state_, int step_ = 1) :
         from(from_), to(to_), step(step_), state(state_)
     {}
     virtual ~Nested_Summation() = default;
@@ -89,10 +89,10 @@ public:
 
 };
 
-template<class T>
+template<typename indexing_t, class T>
 class Last_Nested_Summation {
 public:
-    Last_Nested_Summation(indexing_t from_, indexing_t to_, Summation_State *state_, indexing_t step_)
+    Last_Nested_Summation(indexing_t from_, indexing_t to_, Summation_State<indexing_t> *state_, indexing_t step_)
     { }
 
     T get_value() { return 1;}

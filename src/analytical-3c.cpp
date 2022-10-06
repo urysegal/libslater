@@ -18,11 +18,16 @@ namespace bm = boost::math;
 
 #define STATE (static_cast<Sum_State *> (state))
 
+
 namespace slater {
 
 
+typedef int indexer_t; /// For this algorithm, the indices are integers (negative and positive )
+
+
 /// This is the state of the summation in [1] eqn. 28
-struct Sum_State : public Summation_State {
+
+struct Sum_State : public Summation_State<indexer_t> {
 
     /// Problem parameters
     unsigned int n1,n2;
@@ -32,13 +37,13 @@ struct Sum_State : public Summation_State {
     sto_exponent_t zeta2;
 
     /// Nested iteration variables
-    indexing_t l1_tag;
-    indexing_t m1_tag;
-    indexing_t l2_tag;
-    indexing_t m2_tag;
-    indexing_t l;
-    indexing_t gamma;
-    indexing_t j;
+    indexer_t l1_tag;
+    indexer_t m1_tag;
+    indexer_t l2_tag;
+    indexer_t m2_tag;
+    indexer_t l;
+    indexer_t gamma;
+    indexer_t j;
 
     /// These are parameters that change every iteration, see [1] eqn. 29
     int n_gamma ;
@@ -89,7 +94,7 @@ private:
 
 
 // Second line in [1] eqn. 28 , second summation
-class Sum_5 : public Nested_Summation<complex , Last_Nested_Summation<complex> > {
+class Sum_5 : public Nested_Summation<indexer_t, complex , Last_Nested_Summation<indexer_t,complex> > {
 
 protected:
     virtual complex expression() override
@@ -99,22 +104,22 @@ protected:
     }
 
 
-    virtual indexing_t & get_index_variable() override { return STATE->m2_tag ; }
+    virtual indexer_t & get_index_variable() override { return STATE->m2_tag ; }
 
-    virtual indexing_t  get_next_sum_from() override { return 0; }
-    virtual indexing_t  get_next_sum_to() override { return  get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag);}
-    virtual indexing_t  get_next_sum_step() override { return 2; }
+    virtual indexer_t  get_next_sum_from() override { return 0; }
+    virtual indexer_t  get_next_sum_to() override { return  get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag);}
+    virtual indexer_t  get_next_sum_step() override { return 2; }
 
-    indexing_t get_l_min(indexing_t l1, indexing_t l2, indexing_t m1, indexing_t m2)
+    indexer_t get_l_min(indexer_t l1, indexer_t l2, indexer_t m1, indexer_t m2)
     {
         /// Reference [1] eqn. 24
-        indexing_t m = std::max( std::abs(l1-l2),  std::abs(m2-m1));
+        indexer_t m = std::max( std::abs(l1-l2),  std::abs(m2-m1));
         int selector = l1 + l2 + m;
         return m + selector % 2 ;
     }
 
 public:
-    Sum_5( int from_, int to_, Summation_State *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    Sum_5( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
     static complex calculate_expression( Sum_State *s )
     {
@@ -122,7 +127,7 @@ public:
         return calculate_guant_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) ;
     }
 
-    static complex calculate_guant_fraction(indexing_t l, indexing_t l_tag, indexing_t m, indexing_t  m_tag)
+    static complex calculate_guant_fraction(indexer_t l, indexer_t l_tag, indexer_t m, indexer_t  m_tag)
     {
         /// Ref [1] eqn. 28 second line
         complex factor = pow(complex(0,1), l+l_tag) ;
@@ -140,22 +145,22 @@ public:
 
 
 // Third line in [1] eqn. 28 , first summation
-class Sum_4 : public Nested_Summation<complex , Sum_5 > {
+class Sum_4 : public Nested_Summation<indexer_t, complex , Sum_5 > {
 
 protected:
 
-    virtual indexing_t & get_index_variable() override { return STATE->l2_tag ; }
+    virtual indexer_t & get_index_variable() override { return STATE->l2_tag ; }
 
-    virtual indexing_t  get_next_sum_from() override { return -1 * STATE->l2_tag; }
-    virtual indexing_t  get_next_sum_to() override { return STATE->l2_tag; }
+    virtual indexer_t  get_next_sum_from() override { return -1 * STATE->l2_tag; }
+    virtual indexer_t  get_next_sum_to() override { return STATE->l2_tag; }
 
 public:
-    Sum_4( int from_, int to_, Summation_State *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    Sum_4( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 };
 
 
 // Second line in [1] eqn. 28 , second summation
-class Sum_3 : public Nested_Summation<complex , Sum_4 > {
+class Sum_3 : public Nested_Summation<indexer_t, complex , Sum_4 > {
 
 protected:
     virtual complex expression() override
@@ -165,12 +170,12 @@ protected:
     }
 
 
-    virtual indexing_t & get_index_variable() override { return STATE->m1_tag ; }
-    virtual indexing_t  get_next_sum_from() override { return 0; }
-    virtual indexing_t  get_next_sum_to() override { return STATE->l2; }
+    virtual indexer_t & get_index_variable() override { return STATE->m1_tag ; }
+    virtual indexer_t  get_next_sum_from() override { return 0; }
+    virtual indexer_t  get_next_sum_to() override { return STATE->l2; }
 
 public:
-    Sum_3( int from_, int to_, Summation_State *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    Sum_3( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
     static complex calculate_expression( Sum_State *s )
     {
@@ -184,28 +189,28 @@ public:
 
 
 // Second line in [1] eqn. 28 , first summation
-class Sum_2 : public Nested_Summation<complex , Sum_3 > {
+class Sum_2 : public Nested_Summation<indexer_t, complex , Sum_3 > {
 
 protected:
 
-    virtual indexing_t & get_index_variable() override { return STATE->l1_tag ; }
+    virtual indexer_t & get_index_variable() override { return STATE->l1_tag ; }
 
-    virtual indexing_t  get_next_sum_from() override { return -1 * STATE->l1_tag; }
-    virtual indexing_t  get_next_sum_to() override { return STATE->l1_tag; }
+    virtual indexer_t  get_next_sum_from() override { return -1 * STATE->l1_tag; }
+    virtual indexer_t  get_next_sum_to() override { return STATE->l1_tag; }
 
 public:
-    Sum_2( int from_, int to_, Summation_State *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    Sum_2( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 };
 
 
 // First line in [1] eqn. 28
-class Sum_1 : public Nested_Summation<complex , Sum_2 > {
+class Sum_1 : public Nested_Summation<indexer_t, complex , Sum_2 > {
 
 protected:
 
 
-    virtual indexing_t  get_next_sum_from() override { return 0 ;}
-    virtual indexing_t  get_next_sum_to() override { return STATE->l1; }
+    virtual indexer_t  get_next_sum_from() override { return 0 ;}
+    virtual indexer_t  get_next_sum_to() override { return STATE->l1; }
 
     virtual complex expression() override
     {
@@ -213,7 +218,7 @@ protected:
         return calculate_expression(s);
     }
 public:
-    Sum_1( Summation_State *s) : Nested_Summation(1, 1, s)
+    Sum_1( Summation_State<indexer_t> *s) : Nested_Summation(1, 1, s)
     {}
 
     /// We calculate the expression as public and  static so we can call it directly

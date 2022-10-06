@@ -8,22 +8,22 @@
 
 using namespace slater;
 
-struct sum_state : public Summation_State {
+struct sum_state : public Summation_State<int> {
     int i=0;
     int j=0;
 };
 
 
-class Integer_Sum : public Nested_Summation<long, Last_Nested_Summation<long> > {
+class Integer_Sum : public Nested_Summation<int, long, Last_Nested_Summation<int, long> > {
 
 protected:
 
     virtual long expression() { return static_cast<sum_state *> (state)->j; }
 
-    virtual indexing_t & get_index_variable() { return static_cast<sum_state *> (state)->j; }
+    virtual int & get_index_variable() { return static_cast<sum_state *> (state)->j; }
 
 public:
-    Integer_Sum(int from_, int to_, Summation_State *s, int step_ = 1) : Nested_Summation(from_, to_, s, step_)
+    Integer_Sum(int from_, int to_, Summation_State<int> *s, int step_ = 1) : Nested_Summation(from_, to_, s, step_)
     {}
 
 };
@@ -48,19 +48,19 @@ TEST_CASE( "simple sum with step", "[sums]" ) {
 
 TEST_CASE( "two simple sums", "[sums]" ) {
 
-    class Integer_Sum_Sum : public Nested_Summation<long, Integer_Sum> {
+    class Integer_Sum_Sum : public Nested_Summation<int, long, Integer_Sum> {
 
     protected:
 
         virtual long expression() { return static_cast<sum_state *> (state)->i; }
 
-        virtual indexing_t & get_index_variable() { return static_cast<sum_state *> (state)->i; }
+        virtual int & get_index_variable() { return static_cast<sum_state *> (state)->i; }
 
-        virtual indexing_t  get_next_sum_from() { return 0 ;}
-        virtual indexing_t  get_next_sum_to() { return static_cast<sum_state *> (state)->i; }
+        virtual int  get_next_sum_from() { return 0 ;}
+        virtual int  get_next_sum_to() { return static_cast<sum_state *> (state)->i; }
 
     public:
-        Integer_Sum_Sum(int from_, int to_, Summation_State *s) : Nested_Summation(from_, to_, s)
+        Integer_Sum_Sum(int from_, int to_, Summation_State<int> *s) : Nested_Summation(from_, to_, s)
         {}
 
     };
