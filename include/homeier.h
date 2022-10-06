@@ -6,6 +6,7 @@
 
 namespace slater {
 
+void shift_first_center_to_origin(const center_t &c1, const center_t c2, center_t *new_centers);
 
 /// This class implements the calculation of the Overlap integral between two STOs using B functions, using
 /// this work:
