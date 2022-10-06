@@ -15,7 +15,7 @@ include(CTest)
 SET(CMAKE_CXX_FLAGS  "${CMAKE_C_FLAGS} ${GCC_WERR_COMPILE_FLAGS} -fsanitize=address")
 SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -pthread")
 
-add_executable(test-all test-api.cpp test-sums.cpp)
+add_executable(test-all test-api.cpp test-sums.cpp test-math.cpp)
 
 target_include_directories(test-all PUBLIC ${CMAKE_SOURCE_DIR})
 add_dependencies(test-all libslater)

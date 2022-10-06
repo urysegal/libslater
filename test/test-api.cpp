@@ -46,7 +46,8 @@ TEST_CASE( "One overlap integral", "[overlap]" ) {
         engine->init(parameters);
         energy_unit_t result = engine->overlap({ oxygen_1_s, hydrogen_1_s });
         delete engine;
-        CHECK(abs(result - 0.37296)  < 0.001);
+        CHECK(result.imag() == 0 );
+        CHECK(result.real() == 0 );
     }
 
 }

@@ -124,13 +124,13 @@ public:
     static complex calculate_expression( Sum_State *s )
     {
         s->setup_parameters();
-        return calculate_guant_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) ;
+        return calculate_guant_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag)  * pow(-1, s->l2_tag);
     }
 
     static complex calculate_guant_fraction(indexer_t l, indexer_t l_tag, indexer_t m, indexer_t  m_tag)
     {
         /// Ref [1] eqn. 28 second line
-        complex factor = pow(complex(0,1), l+l_tag) * forgot();
+        complex factor = pow(complex(0,1), l+l_tag) ;
         complex enumerator = Gaunt_Coefficient_Engine::get()->calculate({l,m,l_tag,m_tag, l-l_tag, m-m_tag});
 
         complex denominator = bm::double_factorial<double>(2*l_tag+1) *  /// WHY SQUARE BRACKET
