@@ -72,6 +72,11 @@ public:
     virtual ~Nested_Summation() = default;
 
 
+    /// Calculate the value of the sum, which is the total of expression*inner_sum.
+    /// The iteration variable is retured
+    /// The expression is retuened by expression() which should be implemented by a subclass, unless
+    /// there is just an inner-sum in which case the default returning 1 can be used.
+    /// \return total value result of the summation
     T get_value( )
     {
         T total_sum = 0;
