@@ -64,8 +64,6 @@ public:
     /// Evaluate Spherical Harmonics Y_l^m (theta,phi)
     std::complex<double> eval_spherical_harmonics(const Quantum_Numbers quantumNumbers,const double theta,const double phi) const;
 
-    /// Converts cartesian representation of rr = (X,Y,Z) to spherical rr = (r,theta,phi)
-    std::vector<double> cartesian_to_spherical(const center_t &r) const;
 private:
 };
 
