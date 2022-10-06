@@ -80,7 +80,7 @@ public:
 
     complex evaluate();
 
-    void setup_convenience_values();
+    void setup_state();
 
 private:
     const Quantum_Numbers q1;
@@ -124,10 +124,10 @@ public:
     static complex calculate_expression( Sum_State *s )
     {
         s->setup_parameters();
-        return calculate_guant_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag)  * pow(-1, s->l2_tag);
+        return calculate_gaunt_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) * pow(-1, s->l2_tag);
     }
 
-    static complex calculate_guant_fraction(indexer_t l, indexer_t l_tag, indexer_t m, indexer_t  m_tag)
+    static complex calculate_gaunt_fraction(indexer_t l, indexer_t l_tag, indexer_t m, indexer_t  m_tag)
     {
         /// Ref [1] eqn. 28 second line
         complex factor = pow(complex(0,1), l+l_tag) ;
@@ -180,7 +180,7 @@ public:
     static complex calculate_expression( Sum_State *s )
     {
         s->setup_parameters();
-        return Sum_5::calculate_guant_fraction(s->l1, s->l1_tag, s->m1, s->m1_tag) ;
+        return Sum_5::calculate_gaunt_fraction(s->l1, s->l1_tag, s->m1, s->m1_tag) ;
     }
 
 
@@ -248,7 +248,7 @@ Analytical_3C_evaluator::Analytical_3C_evaluator(const Quantum_Numbers q1_, cons
                                                  const center_t &A_, const center_t &B_, const center_t &C_):
     q1(q1_), q2(q2_), zeta1(zeta1_), zeta2(zeta2_), A(A_), B(B_), C(C_)
 {
-    setup_convenience_values();
+    setup_state();
 }
 
 complex Analytical_3C_evaluator::evaluate()
@@ -257,7 +257,7 @@ complex Analytical_3C_evaluator::evaluate()
     return top_sum.get_value();
 }
 
-void Analytical_3C_evaluator::setup_convenience_values()
+void Analytical_3C_evaluator::setup_state()
 {
     state.n1=q1.n;
     state.n2=q2.n;
