@@ -112,28 +112,36 @@ std::vector<double> B_function_Engine::cartesian_to_spherical(const center_t &r)
 
 std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &r) const
 {
+    // B_{n,l}^m(alpha,rr) = prefactor * K * Y
+    // rr = (r,theta,phi)
+    // prefactor = (2/pi)^{1/2} * (2^{n+l} * (n+l)! )^{-1} (alpha*r)^{l+n+1/2}
+    // K = K_{n-1/2}(alpha*r)
+    // Y = Y_{l,m}(theta,phi)
+
     //COMPLEX ARITHMETIC NEEDS TO BE Checked
     auto pi = bm::constants::pi<double>();
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
 
     // Cartesian Representation of r to Spherical representation
-
     std::vector<double> spherical_coords = cartesian_to_spherical(r);
     double radius = spherical_coords[0];
     double phi = spherical_coords[1];
     double theta = spherical_coords[2];
 
-    auto prefactor1 = pow(2.0/pi,1.0/2.0);
-    auto prefactor2 = 1 / (pow(2.0,n+l) * bm::factorial<double>(n+l) );
-    auto prefactor3 = pow(alpha*radius,(l+n-1.0/2.0)); //alpha*r needs to be corrected
+
+    auto prefactor = pow(2.0/pi,1.0/2.0);
+    prefactor *= 1 / (pow(2.0,n+l) * bm::factorial<double>(n+l) );
+    prefactor *= pow(alpha*radius,(l+n-1.0/2.0)); //alpha*r needs to be corrected
+
+    //modified Bessel Function of Second Kind
     auto K = bm::cyl_bessel_k(n-1.0/2.0,alpha*radius); // May need to replace with recursion formula
 
     //need to extract theta and phi from r_spherical
     auto Y = eval_spherical_harmonics(quantum_numbers,theta,phi);
 
-    return prefactor1*prefactor2*prefactor3 * K * Y;
-}//B_function_Engine::calculate
+    return prefactor * K * Y;
+}//calculate
 
 
 }//namespace slater
