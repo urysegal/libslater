@@ -112,7 +112,7 @@ std::vector<double> B_function_Engine::cartesian_to_spherical(const center_t &r)
 
 std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &r) const
 {
-    //COMPLEX ARITHMETIC NEEDS TO BE FIXED
+    //COMPLEX ARITHMETIC NEEDS TO BE Checked
     auto pi = bm::constants::pi<double>();
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
