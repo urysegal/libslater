@@ -3,6 +3,8 @@
 #include "libslater.h"
 #include "bfunctions.h"
 #include "gaunt.h"
+#include <boost/math/special_functions/factorials.hpp>
+
 
 namespace slater {
 

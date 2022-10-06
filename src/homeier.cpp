@@ -7,6 +7,7 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/binomial.hpp>
 
+namespace bm = boost::math;
 namespace slater {
 
 Homeier_Integrator::Homeier_Integrator() : STO_Integrator()
@@ -59,17 +60,23 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
     std::vector<energy_unit_t> partial_results;
     for ( auto const &p : equivalence_series )
     {
+        // int(B_1*B_2)
         energy_unit_t partial_result = integrate_overlap_using_b_functions(p.first.second, p.second.second);
+
+        // Bcoeff1*Bcoeff2 * int(B_1*B_2)
         partial_result *= p.first.first*p.second.first;
         partial_results.emplace_back(partial_result);
     }
 
+    // sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
     energy_unit_t final_result = 0 ;
     for ( auto &pr : partial_results )
         final_result += pr;
 
+    // alpha_1^{-n1+1} * alpha_2^{-n2+1} sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
     final_result *= functions[0].get_coefficient() * functions[1].get_coefficient() ;
 
+    // N1*N2 * alpha_1^{-n+1} * alpha_2^{-n+1} sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
     final_result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient() ;
 
     return final_result;
@@ -78,8 +85,18 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
 std::complex<double> Homeier_Integrator::integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const
 {
     auto f = [&](const double& s) { return this->calculate_overlap_gaussian_point(f1, f2, s) ;};
+    // int(W_hat*S)
     std::complex<double> Q = boost::math::quadrature::gauss<double, 30>::integrate(f, 0, 1);
-    //need to add multiply with another prefactor here - Equation 20
+
+    // prefactor*int(W_hat*S)
+    auto q1 = f1.get_quantum_numbers();
+    auto q2 = f2.get_quantum_numbers();
+    auto alpha = f1.get_alpha();
+    auto beta  = f2.get_alpha();
+    double prefactor = pow(alpha,2*q1.n+q1.l-1)*pow(beta,2*q2.n+q2.l-1);
+    prefactor *= bm::factorial<double>(q1.n + q1.l + q2.n + q2.l + 1 );
+    prefactor /=  bm::factorial<double>(q1.n + q1.l) * bm::factorial<double>(q2.n + q2.l);
+    Q *= std::complex<double>(prefactor,0);
     return Q;
 }
 
@@ -202,6 +219,7 @@ std::complex<double> Homeier_Integrator::calculate_B_function_value(const Quantu
 int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2) const
 {
     /// l_min depends on whether max( |l1 - l2|, |m1-m2|) + l_max is even or odd
+
     int l_min = 0;
     auto switch_condition = std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m))+q1.l+q2.l;
     if (switch_condition%2==0){
