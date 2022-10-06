@@ -220,15 +220,9 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
 {
     /// l_min depends on whether max( |l1 - l2|, |m1-m2|) + l_max is even or odd
 
-    int l_min = 0;
-    auto switch_condition = std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m))+q1.l+q2.l;
-    if (switch_condition%2==0){
-       l_min  =  std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m));
-    }
-    else{
-        l_min  =  std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m)) + 1;
-    }
-    return l_min;
+    auto m = std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m));
+    auto switch_condition = m +q1.l+q2.l;
+    return m + (switch_condition%2) ;
 }
 
 
