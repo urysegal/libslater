@@ -18,6 +18,8 @@ public:
 
 private:
     Gaunt_Coefficient_Engine();
+
+    static Gaunt_Coefficient_Engine *instance ;
 };
 
 
