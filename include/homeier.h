@@ -39,7 +39,6 @@ private:
     bool use_normalized_b_functions = 0; /// Should we calculate with normalized B functions?
     int number_of_quadrature_points = 1024; /// How many quadrature points we should calculate
 
-    Gaunt_Coefficient_Engine gaunt_engine; /// Gaunt Coefficient Evaluator
     B_function_Engine B_function_engine; /// B-functions evaluator
 
     /// When integrating of each pair of functions in this vector and then summing up the values, you get the

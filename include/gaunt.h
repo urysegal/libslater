@@ -3,6 +3,8 @@
 
 namespace slater {
 
+/// A singleton engine to calculate/cache Gaunt coefficients
+
 class Gaunt_Coefficient_Engine {
 
 public:
@@ -12,8 +14,12 @@ public:
     /// \return Gaunt coefficient
     double calculate(const std::array<const int, 6> &args) const;
 
-private:
+    static Gaunt_Coefficient_Engine *get();
 
+private:
+    Gaunt_Coefficient_Engine();
+
+    static Gaunt_Coefficient_Engine *instance ;
 };
 
 

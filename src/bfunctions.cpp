@@ -26,7 +26,7 @@ const Quantum_Numbers &B_function_details::get_quantum_numbers() const
     return quantum_numbers;
 }
 
-double B_functions_representation_of_STO::calculate_coefficient(const Quantum_Numbers quantum_numbers,const unsigned int p) const
+double B_functions_representation_of_STO::calculate_coefficient(const Quantum_Numbers &quantum_numbers,const unsigned int p) const
 {
     //TESTING NEEDED
 

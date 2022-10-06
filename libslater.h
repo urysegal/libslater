@@ -90,7 +90,7 @@ public:
     /// Construct an STO style basis function detail object.
     /// \param coefficient_  Coefficient of the radial part.
     /// \param exponent_ alpha of the radial part.
-    /// \param quantum_numbers_ Set of quantum numbers for this function
+    /// \param quantum_numbers Set of quantum numbers for this function
     STO_Basis_Function_Info(sto_coefficient_t coefficient_, sto_exponent_t exponent_, const Quantum_Numbers &quantum_numbers);
 
 };

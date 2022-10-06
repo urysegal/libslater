@@ -39,7 +39,7 @@ class B_functions_representation_of_STO {
     double b_functions_sum_rescaling = 0;
     std::vector<std::pair<double,B_function_details>> components;
 
-    double calculate_coefficient(const Quantum_Numbers quantum_numbers,const unsigned int p) const;
+    double calculate_coefficient(const Quantum_Numbers &quantum_numbers,const unsigned int p) const;
 public:
     B_functions_representation_of_STO(const STO_Basis_Function &sto, const center_t& new_center);
     auto size() { return components.size(); }
