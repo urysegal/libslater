@@ -43,6 +43,10 @@ protected:
 
     static std::map<std::string, STO_Integrator *> all_integrators;
 
+    /// Create an STO integrator of some kind
+    /// \param number_of_centers_ how many different basis functions we have
+    /// \param number_of_electrons_ how many electrons positions we integrate over
+    /// \param number_of_external_centers_ how many external centers are involved.
     STO_Integrator( int number_of_centers_, int number_of_electrons_ = 1, int number_of_external_centers_ = 0 ) :
 
             number_of_centers(number_of_centers_), number_of_electrons(number_of_electrons_),

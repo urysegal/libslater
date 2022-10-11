@@ -89,7 +89,7 @@ energy_unit_t STO_Integrations::overlap(const std::array<STO_Basis_Function, 2> 
     if ( it != this->integrators.end() ) {
         return it->second->integrate({functions[0], functions[1]}, {});
     } else {
-        throw std::runtime_error("Cannot find overlap integral implementation");
+        throw std::runtime_error("Cannot find overlap integral implementation"); // LCOV_EXCL_LINE
     }
 }
 
@@ -100,7 +100,7 @@ energy_unit_t STO_Integrations::nuclear_attraction(const std::array<STO_Basis_Fu
     if ( it != this->integrators.end() ) {
         return it->second->integrate({functions[0], functions[1]}, {nuclei});
     } else {
-        throw std::runtime_error("Cannot find overlap integral implementation");
+        throw std::runtime_error("Cannot find overlap integral implementation"); // LCOV_EXCL_LINE
     }
 }
 

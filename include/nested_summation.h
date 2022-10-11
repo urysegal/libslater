@@ -47,16 +47,11 @@ protected:
 
     /// Implement this to control the starting point of the next iteration
     /// \return In the next inner sum, where should the iteration start?
-    virtual indexing_t  get_next_sum_from()
-    {
-        return 1 ;
-    }
+    virtual indexing_t  get_next_sum_from() = 0;
 
     /// Implement this to control the last of the next iteration.
     /// \return In the next inner sum, what is the last value?
-    virtual indexing_t  get_next_sum_to() {
-        return 1;
-    }
+    virtual indexing_t  get_next_sum_to()  = 0;
 
     /// Implement this to control the iteration step size of the next iteration. if you don't, default 1 is used.
     /// \return In the next inner sum, what is the step between iteration?
