@@ -44,7 +44,7 @@ TEST_CASE( "One overlap integral", "[overlap]" ) {
         parameters.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(parameters);
-        energy_unit_t result = engine->overlap({ oxygen_1_s, hydrogen_1_s });
+        energy_unit_t result = engine->overlap_2c_1e({oxygen_1_s, hydrogen_1_s});
         delete engine;
         CHECK(result.imag() == 0 );
         CHECK(result.real() == 0 );
