@@ -18,14 +18,23 @@ public:
     /// \param options A set of option that may modify the behaviour of the algorithms in this class
     virtual void init(const STO_Integration_Options &options) = 0 ;
 
+    /// Perform an integration calculation
+    /// \param functions the functions to integrate over
+    /// \param centers external points (e.g. nuclei position), if any
+    /// \return the integral value
     virtual energy_unit_t integrate(
             const std::vector<STO_Basis_Function> &functions,
             const std::vector<center_t> &centers
     ) = 0;
 
+    /// Return a new class from the factory
+    /// \return Pointer to the STO integrator requested
     virtual STO_Integrator *clone() const = 0;
 
-    static STO_Integrator *create(const std::string &);
+    /// Given an integrator name, return a new instance of it
+    /// \param name name of the integrator to create
+    /// \return pointer to the integrator
+    static STO_Integrator *create(const std::string &name);
 
 protected:
     const int number_of_centers = 0;

@@ -34,6 +34,9 @@ main()
         auto result = engine->overlap({basis_set[2], basis_set[0]});
         std::cout << result << std::endl;
 
+        result = engine->nuclear_attraction({basis_set[2], basis_set[0]}, {1,0,0.5});
+        std::cout << result << std::endl;
+
         delete engine;
 
     }

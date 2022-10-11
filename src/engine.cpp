@@ -1,10 +1,18 @@
 #include "libslater.h"
 #include "homeier.h"
+#include "analytical-3c.h"
 #include "logger.h"
 
 namespace slater {
 
 std::map<std::string, STO_Integrator *> STO_Integrator::all_integrators;
+
+const std::map<integration_types, std::string >  default_engines =
+        {
+                {integration_types::OVERLAP, overlap_homeier_imp_name},
+                { integration_types::NUCLEAR_ATTRACTION, analytical_3c_name }
+        };
+
 
 STO_Integrator *STO_Integrator::create(const std::string &name)
 {
@@ -18,10 +26,6 @@ STO_Integrator *STO_Integrator::create(const std::string &name)
 }
 
 
-const std::map<integration_types, std::string >  default_engines =
-    {
-            {integration_types::OVERLAP, overlap_homeier_imp_name},
-    };
 
 
 void STO_Integrations::add_engine(slater::integration_types type, slater::STO_Integrator *integrator)
@@ -88,6 +92,18 @@ energy_unit_t STO_Integrations::overlap(const std::array<STO_Basis_Function, 2> 
         throw std::runtime_error("Cannot find overlap integral implementation");
     }
 }
+
+energy_unit_t STO_Integrations::nuclear_attraction(const std::array<STO_Basis_Function, 2> &functions,
+                                                   const center_t &nuclei)
+{
+    auto it = this->integrators.find(integration_types::NUCLEAR_ATTRACTION);
+    if ( it != this->integrators.end() ) {
+        return it->second->integrate({functions[0], functions[1]}, {nuclei});
+    } else {
+        throw std::runtime_error("Cannot find overlap integral implementation");
+    }
+}
+
 
 void STO_Integrations::init(const slater::STO_Integration_Options &options) {
     for (auto it: this->integrators) {

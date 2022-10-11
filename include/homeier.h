@@ -36,7 +36,7 @@ public:
     /// Release any memory used by the integrator
     virtual ~Homeier_Integrator();
 
-    virtual STO_Integrator *clone() const;
+    virtual STO_Integrator *clone() const override;
 
 
     /// Initialize the Homeier integrator with a set of options
@@ -51,7 +51,7 @@ public:
 private:
 
     bool use_normalized_b_functions = 0; /// Should we calculate with normalized B functions?
-    int number_of_quadrature_points = 1024; /// How many quadrature points we should calculate
+    int number_of_quadrature_points = 30; /// How many quadrature points we should calculate
 
     B_function_Engine B_function_engine; /// B-functions evaluator
 

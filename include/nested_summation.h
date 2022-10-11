@@ -1,3 +1,5 @@
+#pragma once
+
 #include "libslater.h"
 
 namespace slater {
