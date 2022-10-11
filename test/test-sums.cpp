@@ -22,6 +22,10 @@ protected:
 
     virtual int & get_index_variable() { return static_cast<sum_state *> (state)->j; }
 
+    virtual int  get_next_sum_from() { return 1; }
+
+    virtual int  get_next_sum_to() { return 1; }
+
 public:
     Integer_Sum(int from_, int to_, Summation_State<int> *s, int step_ = 1) : Nested_Summation(from_, to_, s, step_)
     {}

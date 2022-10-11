@@ -23,7 +23,8 @@ main()
 
     std::vector<STO_Basis_Function> basis_set = {oxygen_1_s, oxygen_2_p, hydrogen_1_s, hydrogen_2_s};
 
-    auto engine = STO_Integration_Engine().create("default");
+    std::map<slater::integration_types, std::string> engines;
+    auto engine = STO_Integration_Engine().create(engines);
     if (engine) {
 
         STO_Integration_Options options;
@@ -31,6 +32,9 @@ main()
 
         engine->init(options);
         auto result = engine->overlap({basis_set[2], basis_set[0]});
+        std::cout << result << std::endl;
+
+        result = engine->nuclear_attraction({basis_set[2], basis_set[0]}, {1,0,0.5});
         std::cout << result << std::endl;
 
         delete engine;

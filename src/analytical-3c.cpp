@@ -5,6 +5,7 @@
 #include "libslater.h"
 #include "nested_summation.h"
 #include "gaunt.h"
+#include "analytical-3c.h"
 
 // Comments in this file reference the following works.
 // Reference [1]:
@@ -21,77 +22,7 @@ namespace bm = boost::math;
 
 namespace slater {
 
-
-typedef int indexer_t; /// For this algorithm, the indices are integers (negative and positive )
-
-
-/// This is the state of the summation in [1] eqn. 28
-
-struct Sum_State : public Summation_State<indexer_t> {
-
-    /// Problem parameters
-    unsigned int n1,n2;
-    unsigned int l1,l2;
-    int m1,m2;
-    sto_exponent_t zeta1;
-    sto_exponent_t zeta2;
-
-    /// Nested iteration variables
-    indexer_t l1_tag;
-    indexer_t m1_tag;
-    indexer_t l2_tag;
-    indexer_t m2_tag;
-    indexer_t l;
-    indexer_t gamma;
-    indexer_t j;
-
-    /// These are parameters that change every iteration, see [1] eqn. 29
-    int n_gamma ;
-    double v  ;
-    int u   ;
-    int nx   ;
-    int delta_l;
-
-
-    /// This function is called every time the iteration goes forward (at any level of the nesting) to
-    /// update some usefull expressions. Can probably be split so we only update the parameters that have changed,
-    /// if profiler points to this as a problem.
-    void setup_parameters()
-    {
-        // Follow [1] eqn. 29
-        n_gamma = 2*(n1+l1+n2+l2) - (l1_tag + l2_tag) - l + 1;
-        v = n1 + n2 + l1 +l2 - l - j + 0.5 ;
-        u = (m2 - m2_tag) - ( m1 - m1_tag ) ;
-        nx = l1 - l1_tag + l2 - l2_tag ;
-        delta_l = (l1_tag + l2_tag - l ) / 2 ;
-    }
-
-};
-
-class Analytical_3C_evaluator {
-
-    Sum_State state;
-
-public:
-    Analytical_3C_evaluator(const Quantum_Numbers q1_, const Quantum_Numbers q2_, sto_exponent_t zeta1_, sto_exponent_t zeta2_,
-                            const center_t &A_, const center_t &B_, const center_t &C_);
-
-    ~Analytical_3C_evaluator() = default;
-
-    complex evaluate();
-
-    void setup_state();
-
-private:
-    const Quantum_Numbers q1;
-    const Quantum_Numbers q2;
-    sto_exponent_t zeta1;
-    sto_exponent_t zeta2;
-    const center_t A;
-    const center_t B;
-    const center_t C;
-};
-
+static Analytical_3C_evaluator dummy_3c(analytical_3c_name);
 
 // Second line in [1] eqn. 28 , second summation
 class Sum_5 : public Nested_Summation<indexer_t, complex , Last_Nested_Summation<indexer_t,complex> > {
@@ -183,8 +114,6 @@ public:
         return Sum_5::calculate_gaunt_fraction(s->l1, s->l1_tag, s->m1, s->m1_tag) ;
     }
 
-
-
 };
 
 
@@ -244,12 +173,23 @@ public:
 
 
 
-Analytical_3C_evaluator::Analytical_3C_evaluator(const Quantum_Numbers q1_, const Quantum_Numbers q2_, sto_exponent_t zeta1_, sto_exponent_t zeta2_,
-                                                 const center_t &A_, const center_t &B_, const center_t &C_):
-    q1(q1_), q2(q2_), zeta1(zeta1_), zeta2(zeta2_), A(A_), B(B_), C(C_)
+
+
+complex Analytical_3C_evaluator::integrate(const std::vector<STO_Basis_Function> &functions,
+                                           const std::vector<center_t> &centers)
 {
+    q1 = functions[0].get_quantum_numbers();
+    q2 = functions[1].get_quantum_numbers();
+    zeta1 = functions[0].get_exponent();
+    zeta2 = functions[1].get_exponent();
+    A = functions[0].get_center();
+    B = functions[0].get_center();
+    C = centers[0];
     setup_state();
+
+    return evaluate();
 }
+
 
 complex Analytical_3C_evaluator::evaluate()
 {
@@ -269,5 +209,18 @@ void Analytical_3C_evaluator::setup_state()
     state.zeta2 = zeta2;
 }
 
+
+Analytical_3C_evaluator::Analytical_3C_evaluator() : STO_Integrator(3,1,1)
+{}
+
+void Analytical_3C_evaluator::init(const slater::STO_Integration_Options &params)
+{
+    params.get(Number_of_quadrature_points_Parameter_Name, number_of_quadrature_points);
+}
+
+STO_Integrator *Analytical_3C_evaluator::clone() const
+{
+    return new Analytical_3C_evaluator();
+}
 
 }

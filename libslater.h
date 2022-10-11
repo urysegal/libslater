@@ -3,6 +3,7 @@
 #include <array>
 #include <string>
 #include <complex>
+#include <map>
 
 
 
@@ -40,6 +41,12 @@ typedef double spatial_coordinate_t;
 typedef std::array<spatial_coordinate_t, 3> center_t;
 
 enum class spin_quantum_number_t  { UNDEFINED, UP, DOWN } ;
+
+enum class integration_types : int {
+    OVERLAP,
+    KINETIC,
+    NUCLEAR_ATTRACTION
+};
 
 
 struct Quantum_Numbers {
@@ -155,38 +162,62 @@ public:
     template <class T> bool get(const std::string &name, T &value) const;
 };
 
+class STO_Integrator;
 
-/// Implementation of all the integrals needed for HF or DFT calculation in STO basis set.
-
-class STO_Integrator {
+/// Provide implementations of all integral calculation needed for Grid-Free DFT and HF.
+class STO_Integrations {
 
 public:
-    STO_Integrator() = default;
-    virtual ~STO_Integrator() = default ;
+    STO_Integrations() = default;
+    ~STO_Integrations() ;
 
     /// Initialize the integration engine with a set of (possibly empty) options
     /// \param options A set of option that may modify the behaviour of the algorithms in this class
-    virtual void init(const STO_Integration_Options &options) = 0 ;
+    void init(const STO_Integration_Options &options) ;
+
+    void add_engine(integration_types type, STO_Integrator *integrator);
+
 
     /// Calculate the Overlap Integral <f|g> over the given two STO basis functions
     /// \param functions The two function whose overlap is to be calculated
     /// \return The value of the overlap integral
-    virtual energy_unit_t overlap(const std::array<STO_Basis_Function, 2> &functions) = 0;
+    energy_unit_t overlap(const std::array<STO_Basis_Function, 2> &functions) ;
+
+    /// Calculate the Kinetic Energy Integral <f|del^2|g> over the given two STO basis functions
+    /// \param functions The two function whose overlap is to be calculated
+    /// \return The value of the kinetic energy integral
+    energy_unit_t kinetic(const std::array<STO_Basis_Function, 2> &functions) ;
+
+    /// Calculate the nuclear attraction integral <f|1/R|g> over the given two STO basis functions and the one nuclei
+    /// \param functions The two function whose overlap is to be calculated
+    /// \param nuclei the position of the nuclei
+    /// \return The value of the nuclear attraction integral
+    energy_unit_t nuclear_attraction(const std::array<STO_Basis_Function, 2> &functions, const center_t &nuclei) ;
+
+private:
+
+    std::map<integration_types, STO_Integrator * > integrators;
+
 };
+
+
 
 
 /// Integrator creation factory that creates the desired type of STO integrator. Don't forget to free the pointer returned by create()
 class STO_Integration_Engine {
 
 public:
+
+
     /// Construct an integration engines factory
     STO_Integration_Engine() ;
 
-    /// Create an STO integration engine. Use "default" as engine type to get the default implementation
-    /// or your preferred implementation if you have another.
-    /// \param engine_type name of engine to create. Use "default" for the library default one (currently Homeier B-functions)
-    /// \return a pointer to the engine, which must be released by called to free resources. nullptr if there was no implementation matching the string given
-    STO_Integrator *create(const std::string &engine_type);
+    /// Create an STO integration engine. Use an empty map if you want to use the default engines, or pick specific
+    /// implementation for specific integrals you'd like to override.
+    /// \param engines a map from an engine type to the desired implementaion. empty map will use the default engines.
+    /// \return a pointer to the engine, which must be released by called to free resources. nullptr if there was no
+    /// implementation matching one or more of the strings given.
+    STO_Integrations *create(std::map<integration_types, std::string > &engines);
 };
 
 }

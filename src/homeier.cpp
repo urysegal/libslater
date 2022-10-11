@@ -10,14 +10,24 @@
 namespace bm = boost::math;
 namespace slater {
 
-Homeier_Integrator::Homeier_Integrator() : STO_Integrator()
-{
+Homeier_Integrator dummy_integrator(overlap_homeier_imp_name);
 
+STO_Integrator *Homeier_Integrator::clone() const
+{
+    return new Homeier_Integrator();
 }
+
 
 Homeier_Integrator::~Homeier_Integrator()
 {
 }
+
+energy_unit_t Homeier_Integrator::integrate( const std::vector<STO_Basis_Function> &functions, const std::vector<center_t> &centers)
+{
+    return overlap({functions[0], functions[1]});
+}
+
+
 
 void Homeier_Integrator::init(const STO_Integration_Options &params)
 {

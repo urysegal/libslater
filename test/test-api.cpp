@@ -37,24 +37,59 @@ TEST_CASE( "One overlap integral", "[overlap]" ) {
 
 
     STO_Integration_Engine engine_factory;
-    auto engine = engine_factory.create("default");
+    std::map<slater::integration_types, std::string> engines;
+    auto engine = engine_factory.create(engines);
     if (engine) {
 
         STO_Integration_Options parameters;
         parameters.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(parameters);
-        energy_unit_t result = engine->overlap({ oxygen_1_s, hydrogen_1_s });
-        delete engine;
+
+        energy_unit_t result = engine->overlap({oxygen_1_s, hydrogen_1_s});
         CHECK(result.imag() == 0 );
         CHECK(result.real() == 0 );
+
+        delete engine;
+
     }
 
 }
 
+TEST_CASE( "One nuclear attraction integral", "[nuclear]" ) {
+
+    Quantum_Numbers quantum_numbers = {2,1,0};
+
+    STO_Basis_Function_Info oxygen_s(43.5, 0.252, quantum_numbers);
+    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, quantum_numbers);
+
+    STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, -0.14142136});
+    STO_Basis_Function hydrogen_1_s(hydrogen_s, {0.70710678, 0, 0.56568542});
+
+
+    STO_Integration_Engine engine_factory;
+    std::map<slater::integration_types, std::string> engines;
+    auto engine = engine_factory.create(engines);
+    if (engine) {
+
+        STO_Integration_Options parameters;
+        parameters.set(Number_of_quadrature_points_Parameter_Name,30);
+        engine->init(parameters);
+
+        auto result = engine->nuclear_attraction({oxygen_1_s, hydrogen_1_s}, {0,0.5,-1});
+        CHECK(result.imag() == 0 );
+        CHECK(abs(result.real() + 5858.5171740282) < 0.000001 );
+
+        delete engine;
+    }
+}
+
+
 TEST_CASE( "nonexistent engine", "[api]" )
 {
-    auto engine = STO_Integration_Engine().create("blah blah");
+    std::map<slater::integration_types, std::string> engines;
+    engines.emplace(slater::integration_types::OVERLAP, "blah blah");
+    auto engine = STO_Integration_Engine().create(engines);
     CHECK(engine == nullptr);
 }
 

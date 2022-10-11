@@ -4,11 +4,16 @@
 #include "bfunctions.h"
 #include "gaunt.h"
 #include <boost/math/special_functions/factorials.hpp>
+#include "integrators.h"
 
 
 namespace slater {
 
+const std::string overlap_homeier_imp_name = "B-functions-homeier";
+
+
 void shift_first_center_to_origin(const center_t &c1, const center_t c2, center_t *new_centers);
+
 
 /// This class implements the calculation of the Overlap integral between two STOs using B functions, using
 /// this work:
@@ -20,24 +25,33 @@ class Homeier_Integrator : public STO_Integrator {
 public:
 
     /// Build an Homeier-style integrator
-    Homeier_Integrator();
+    Homeier_Integrator() :
+            STO_Integrator(2,1)
+    {}
+
+    /// This constructor is only used for building the factory
+    Homeier_Integrator(const std::string &name) : STO_Integrator(name)
+    {}
 
     /// Release any memory used by the integrator
     virtual ~Homeier_Integrator();
+
+    virtual STO_Integrator *clone() const override;
+
 
     /// Initialize the Homeier integrator with a set of options
     /// \param params set of options for the integrator
     virtual void init(const STO_Integration_Options &params) override;
 
-    /// Calculate the Overlap integral between the two given STO basis functions
-    /// \return the resulting energy quantity
-    virtual energy_unit_t overlap(const std::array<STO_Basis_Function, 2> &) override;
-
+    virtual energy_unit_t integrate(
+            const std::vector<STO_Basis_Function> &functions,
+            const std::vector<center_t> &centers
+    ) override;
 
 private:
 
     bool use_normalized_b_functions = 0; /// Should we calculate with normalized B functions?
-    int number_of_quadrature_points = 1024; /// How many quadrature points we should calculate
+    int number_of_quadrature_points = 30; /// How many quadrature points we should calculate
 
     B_function_Engine B_function_engine; /// B-functions evaluator
 
@@ -46,6 +60,11 @@ private:
     std::vector<std::pair<
     std::pair<double,B_function_details>,
     std::pair<double, B_function_details> > > equivalence_series;
+
+    /// Calculate the Overlap integral between the two given STO basis functions
+    /// \return the resulting energy quantity
+    virtual energy_unit_t overlap(const std::array<STO_Basis_Function, 2> &) ;
+
 
     /// Create all the pair of B functions and their normalization coefficients from the two given sequences of B functions,
     /// each representing an STO. The result is kept in the "equivalence_series" member

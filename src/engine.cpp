@@ -1,35 +1,114 @@
 #include "libslater.h"
 #include "homeier.h"
+#include "analytical-3c.h"
 #include "logger.h"
 
 namespace slater {
 
-const std::string default_engine = "B-functions-homeier";
+std::map<std::string, STO_Integrator *> STO_Integrator::all_integrators;
 
+const std::map<integration_types, std::string >  default_engines =
+        {
+                {integration_types::OVERLAP, overlap_homeier_imp_name},
+                { integration_types::NUCLEAR_ATTRACTION, analytical_3c_name }
+        };
+
+
+STO_Integrator *STO_Integrator::create(const std::string &name)
+{
+    STO_Integrator *res = nullptr;
+
+    auto it = all_integrators.find(name);
+    if ( it != all_integrators.end() ) {
+        res = it->second->clone();
+    }
+    return res;
+}
+
+
+
+
+void STO_Integrations::add_engine(slater::integration_types type, slater::STO_Integrator *integrator)
+{
+    this->integrators.emplace(type, integrator);
+}
 
 STO_Integration_Engine::STO_Integration_Engine()
 {
     logger()->debug("Engine factory created");
 }
 
-STO_Integrator *STO_Integration_Engine::create(const std::string &engine_type)
-{
-    STO_Integrator *res = nullptr;
-    std::string type_to_use = engine_type;
-    if ( engine_type == "default" ) {
-        type_to_use = default_engine;
-    }
-    if ( type_to_use == "B-functions-homeier" ) {
-        res = new Homeier_Integrator();
-    }
 
-    if ( res ) {
-        logger()->info("{}-type engine was created", type_to_use);
-    } else {
-        logger()->info("Could not find {}-type engine", type_to_use);
+STO_Integrator::STO_Integrator(const std::string name_)
+{
+    this->all_integrators.emplace(name_, this);
+}
+
+STO_Integrations *STO_Integration_Engine::create(std::map<integration_types, std::string > &engines)
+{
+    STO_Integrations *res = new STO_Integrations;
+
+    for ( auto &it : default_engines )
+    {
+        auto engine_type =it.first;
+        auto engine_imp_name = it.second;
+
+        auto alternative = engines.find(engine_type);
+        if ( alternative != engines.end() ) {
+            engine_imp_name = alternative->second;
+        }
+
+        auto engine_imp = STO_Integrator::create(engine_imp_name);
+        if ( engine_imp )
+        {
+            logger()->info("{}-type integrator was created", engine_imp_name);
+            res->add_engine(engine_type, engine_imp );
+        } else {
+            logger()->info("Could not find {}-type engine", engine_imp_name);
+            delete res;
+            res = nullptr;
+            break;
+        }
+
     }
 
     return res;
+}
+
+
+STO_Integrations::~STO_Integrations()
+{
+    for ( auto it: this->integrators ) {
+        delete it.second;
+    }
+}
+
+energy_unit_t STO_Integrations::overlap(const std::array<STO_Basis_Function, 2> &functions)
+{
+    auto it = this->integrators.find(integration_types::OVERLAP);
+    if ( it != this->integrators.end() ) {
+        return it->second->integrate({functions[0], functions[1]}, {});
+    } else {
+        throw std::runtime_error("Cannot find overlap integral implementation"); // LCOV_EXCL_LINE
+    }
+}
+
+energy_unit_t STO_Integrations::nuclear_attraction(const std::array<STO_Basis_Function, 2> &functions,
+                                                   const center_t &nuclei)
+{
+    auto it = this->integrators.find(integration_types::NUCLEAR_ATTRACTION);
+    if ( it != this->integrators.end() ) {
+        return it->second->integrate({functions[0], functions[1]}, {nuclei});
+    } else {
+        throw std::runtime_error("Cannot find overlap integral implementation"); // LCOV_EXCL_LINE
+    }
+}
+
+
+void STO_Integrations::init(const slater::STO_Integration_Options &options) {
+    for (auto it: this->integrators) {
+        it.second->init(options);
+    }
 }
 
 }
