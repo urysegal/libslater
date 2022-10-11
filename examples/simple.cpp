@@ -23,14 +23,15 @@ main()
 
     std::vector<STO_Basis_Function> basis_set = {oxygen_1_s, oxygen_2_p, hydrogen_1_s, hydrogen_2_s};
 
-    auto engine = STO_Integration_Engine().create("default");
+    std::map<slater::integration_types, std::string> engines;
+    auto engine = STO_Integration_Engine().create(engines);
     if (engine) {
 
         STO_Integration_Options options;
         options.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(options);
-        auto result = engine->overlap_2c_1e({basis_set[2], basis_set[0]});
+        auto result = engine->overlap({basis_set[2], basis_set[0]});
         std::cout << result << std::endl;
 
         delete engine;

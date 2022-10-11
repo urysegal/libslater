@@ -37,14 +37,15 @@ TEST_CASE( "One overlap integral", "[overlap]" ) {
 
 
     STO_Integration_Engine engine_factory;
-    auto engine = engine_factory.create("default");
+    std::map<slater::integration_types, std::string> engines;
+    auto engine = engine_factory.create(engines);
     if (engine) {
 
         STO_Integration_Options parameters;
         parameters.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(parameters);
-        energy_unit_t result = engine->overlap_2c_1e({oxygen_1_s, hydrogen_1_s});
+        energy_unit_t result = engine->overlap({oxygen_1_s, hydrogen_1_s});
         delete engine;
         CHECK(result.imag() == 0 );
         CHECK(result.real() == 0 );
@@ -54,7 +55,9 @@ TEST_CASE( "One overlap integral", "[overlap]" ) {
 
 TEST_CASE( "nonexistent engine", "[api]" )
 {
-    auto engine = STO_Integration_Engine().create("blah blah");
+    std::map<slater::integration_types, std::string> engines;
+    engines.emplace(slater::integration_types::OVERLAP, "blah blah");
+    auto engine = STO_Integration_Engine().create(engines);
     CHECK(engine == nullptr);
 }
 

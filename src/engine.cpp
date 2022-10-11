@@ -43,7 +43,7 @@ STO_Integrations *STO_Integration_Engine::create(std::map<integration_types, std
             logger()->info("{}-type integrator was created", engine_imp_name);
             res->add_engine(engine_type, engine_imp );
         } else {
-            logger()->info("Could not find {}-type engine", type_to_use);
+            logger()->info("Could not find {}-type engine", engine_imp_name);
             delete res;
             res = nullptr;
             break;
@@ -52,6 +52,30 @@ STO_Integrations *STO_Integration_Engine::create(std::map<integration_types, std
     }
 
     return res;
+}
+
+
+STO_Integrations::~STO_Integrations()
+{
+    for ( auto it: this->integrators ) {
+        delete it.second;
+    }
+}
+
+energy_unit_t STO_Integrations::overlap(const std::array<STO_Basis_Function, 2> &functions)
+{
+    auto it = this->integrators.find(integration_types::OVERLAP);
+    if ( it != this->integrators.end() ) {
+        return it->second->integrate({functions[0], functions[1]}, {});
+    } else {
+        throw std::runtime_error("Cannot find overlap integral implementation");
+    }
+}
+
+void STO_Integrations::init(const slater::STO_Integration_Options &options) {
+    for (auto it: this->integrators) {
+        it.second->init(options);
+    }
 }
 
 }

@@ -175,9 +175,8 @@ public:
     /// \param options A set of option that may modify the behaviour of the algorithms in this class
     void init(const STO_Integration_Options &options) ;
 
-private:
+    void add_engine(integration_types type, STO_Integrator *integrator);
 
-    std::map<integration_types, STO_Integrator * > integrators;
 
     /// Calculate the Overlap Integral <f|g> over the given two STO basis functions
     /// \param functions The two function whose overlap is to be calculated
@@ -194,6 +193,11 @@ private:
     /// \param nuclei the position of the nuclei
     /// \return The value of the nuclear attraction integral
     energy_unit_t nuclear_attraction(const std::array<STO_Basis_Function, 2> &functions, const center_t &nuclei) ;
+
+private:
+
+    std::map<integration_types, STO_Integrator * > integrators;
+
 };
 
 
