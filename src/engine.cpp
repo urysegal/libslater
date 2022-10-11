@@ -4,13 +4,30 @@
 
 namespace slater {
 
+std::map<std::string, STO_Integrator *> STO_Integrator::all_integrators;
+
+STO_Integrator *STO_Integrator::create(const std::string &name)
+{
+    STO_Integrator *res = nullptr;
+
+    auto it = all_integrators.find(name);
+    if ( it != all_integrators.end() ) {
+        res = it->second->clone();
+    }
+    return res;
+}
 
 
 const std::map<integration_types, std::string >  default_engines =
-        {
-                {integration_types::OVERLAP, overlap_homeier_imp_name},
-        };
+    {
+            {integration_types::OVERLAP, overlap_homeier_imp_name},
+    };
 
+
+void STO_Integrations::add_engine(slater::integration_types type, slater::STO_Integrator *integrator)
+{
+    this->integrators.emplace(type, integrator);
+}
 
 STO_Integration_Engine::STO_Integration_Engine()
 {
