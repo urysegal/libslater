@@ -1,7 +1,7 @@
 import sys
 from sage.all import *
 
-L_MAX = 3
+L_MAX = 6
 M_COUNT = ((L_MAX*2) + 1)
 
 with open("gaunt-table.h.in") as f:
@@ -33,7 +33,7 @@ with open("gaunt-table.cpp.in") as f:
                                 x = float(gaunt(l1,m1,l2,m2,l3,m3))
                                 r.write(f"{x}, ")
                                 done = done + 1
-                                if done % 1000 == 0 :
+                                if done % 10000 == 0 :
                                     print(f"{done} done\n")
                             r.write("\t\t\t\t\t },\n")
                         r.write("\t\t\t\t},\n")
