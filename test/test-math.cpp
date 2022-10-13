@@ -3,7 +3,6 @@
 #include <math.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/reporters/catch_reporter_event_listener.hpp>
-#include <catch2/reporters/catch_reporter_registrars.hpp>
 #include "coordinates.h"
 
 namespace bm = boost::math;
@@ -51,6 +50,20 @@ TEST_CASE( "shift_first_center_to_origin ", "[homeier]" ) {
     CHECK(abs(r2_shifted[0]-1) == 0);
     CHECK(abs(r2_shifted[1]-1) == 0);
     CHECK(abs(r2_shifted[2]+4) == 0);
+
+}
+
+TEST_CASE( "Evaluate Spherical Harmonics ", "[b_func_engine]" ) {
+    auto pi = bm::constants::pi<double>();
+    Quantum_Numbers q1 = {4,2,1};
+    Quantum_Numbers q2 = {4,2,-1};
+    double theta = pi/4;
+    double phi = 0;
+    B_function_Engine b_func_engine;
+    auto Y1 = b_func_engine.eval_spherical_harmonics(q1,theta,phi);
+    auto Y2 = b_func_engine.eval_spherical_harmonics(q2,theta,phi);
+    CHECK(abs(Y1 - std::complex<double>(-0.3862742020231,0)) < 0.001) ;
+    CHECK(abs(Y2 - std::complex<double>(0.3862742020231,0)) < 0.001) ;
 
 }
 
