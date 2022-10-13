@@ -50,3 +50,13 @@ TEST_CASE( "Evaluate Spherical Harmonics ", "[b_func_engine]" ) {
 
 }
 
+TEST_CASE( "Evaluate B Functions ", "[b_func_engine]" ) {
+    ///TEST MAY NEED FIXING
+    Quantum_Numbers q1 = {4,2,1};
+    double alpha = 1;
+    center_t r{1,2,1} ;
+    B_function_Engine b_func_engine;
+    auto B = b_func_engine.calculate(q1,alpha,r);
+    CHECK(abs(B - std::complex<double>(0.000324863191,0.0001452832357)) < 0.001) ;
+
+}
