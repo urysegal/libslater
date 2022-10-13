@@ -24,8 +24,50 @@ namespace slater {
 
 static Analytical_3C_evaluator dummy_3c(analytical_3c_name);
 
+// Third line in [1] eqn. 28
+
+class Sum_6 : public Nested_Summation<indexer_t, complex , Last_Nested_Summation<indexer_t,complex> >
+{
+
+protected:
+    virtual complex expression() override
+    {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+
+    virtual indexer_t & get_index_variable() override { return STATE->l ; }
+
+    virtual indexer_t  get_next_sum_from() override { return get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag); } // NO!
+    virtual indexer_t  get_next_sum_to() override { return STATE->l2 - STATE->l2_tag + STATE->l1 - STATE->l1_tag ;}
+    virtual indexer_t  get_next_sum_step() override { return 2; }
+
+
+public:
+    Sum_6( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+    static indexer_t get_l_min(indexer_t l1, indexer_t l2, indexer_t m1, indexer_t m2)
+    {
+        /// Reference [1] eqn. 24
+        indexer_t m = std::max( std::abs(l1-l2),  std::abs(m2-m1));
+        int selector = l1 + l2 + m;
+        return m + selector % 2 ;
+    }
+
+    static complex calculate_expression( Sum_State *s )
+    {
+        s->setup_parameters();
+        return 0;
+    }
+
+
+};
+
+
 // Second line in [1] eqn. 28 , second summation
-class Sum_5 : public Nested_Summation<indexer_t, complex , Last_Nested_Summation<indexer_t,complex> > {
+class Sum_5 : public Nested_Summation<indexer_t, complex , Sum_6 >
+{
 
 protected:
     virtual complex expression() override
@@ -37,17 +79,10 @@ protected:
 
     virtual indexer_t & get_index_variable() override { return STATE->m2_tag ; }
 
-    virtual indexer_t  get_next_sum_from() override { return 0; }
-    virtual indexer_t  get_next_sum_to() override { return  get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag);}
+    virtual indexer_t  get_next_sum_from() override { return Sum_6::get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag); }
+    virtual indexer_t  get_next_sum_to() override { return STATE->l2_tag + STATE->l1_tag ;}
     virtual indexer_t  get_next_sum_step() override { return 2; }
 
-    indexer_t get_l_min(indexer_t l1, indexer_t l2, indexer_t m1, indexer_t m2)
-    {
-        /// Reference [1] eqn. 24
-        indexer_t m = std::max( std::abs(l1-l2),  std::abs(m2-m1));
-        int selector = l1 + l2 + m;
-        return m + selector % 2 ;
-    }
 
 public:
     Sum_5( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
