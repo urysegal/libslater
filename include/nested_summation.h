@@ -11,6 +11,7 @@ template<typename indexing_t>
 struct Summation_State
 {
     indexing_t _dummy; // to be used if we don't care about the value of the current index.
+    unsigned int skipped = 0; /// How many elements were skipped as the coefficient was smaller than the threshold.
 };
 
 /// One step in a nested summation. Each step is assumed to have some expression, returned by expression(),
@@ -30,6 +31,7 @@ protected:
     indexing_t step = 1; /// How much the index is incremented by
     Summation_State<indexing_t> *state = nullptr; /// Point to the state of the whole nested summation so far
 
+    double accuracy_threshold = 1E-9; /// If the coefficient is smaller than that, do not calculate inner sum. override in subclass if desired. Set to 0 to avoid that check.
 
     virtual indexing_t & get_index_variable() { return state->_dummy; }
 
@@ -82,9 +84,13 @@ public:
         for ( current_index_value = from ; current_index_value <= to ;current_index_value += step) {
 
             auto scaling = expression();
-            Next_Summation inner_summation(get_next_sum_from(), get_next_sum_to(), state, get_next_sum_step());
+            if ( accuracy_threshold and abs(scaling) > accuracy_threshold ) {
+                Next_Summation inner_summation(get_next_sum_from(), get_next_sum_to(), state, get_next_sum_step());
 
-            total_sum +=  scaling * inner_summation.get_value() ;
+                total_sum +=  scaling * inner_summation.get_value() ;
+            } else {
+                this->state->skipped++;
+            }
         }
         return total_sum;
     }
