@@ -1,5 +1,5 @@
 #pragma once
-#define L_MAX 10
+#define L_MAX 3
 
 
 
