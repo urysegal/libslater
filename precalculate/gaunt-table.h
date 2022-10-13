@@ -14,6 +14,6 @@
 
 namespace slater {
 
-extern double gaunt_table[L_MAX][M_COUNT][L_MAX][M_COUNT][L_MAX][M_COUNT];
+extern double gaunt_table[L_MAX+1][L_MAX+1][L_MAX+1][M_COUNT][M_COUNT][M_COUNT];
 
 }

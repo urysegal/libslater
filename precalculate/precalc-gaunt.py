@@ -19,21 +19,21 @@ with open("gaunt-table.cpp.in") as f:
             r.write(line)
         done=0
 
-        for l1 in range(1,L_MAX+1):
+        for l1 in range(0,L_MAX+1):
             r.write("\t{\n")
-            for m1 in range(-L_MAX,L_MAX+1):
+            for l2 in range(0,L_MAX+1):
                 r.write("\t\t{\n")
-                for l2 in range(1,L_MAX+1):
+                for l3 in range(0,L_MAX+1):
                     r.write("\t\t\t{\n")
-                    for m2 in range(-L_MAX,L_MAX+1):
+                    for m1 in range(-L_MAX,L_MAX+1):
                         r.write("\t\t\t\t{\n")
-                        for l3 in range(1,L_MAX+1):
-                            r.write("\t\t\t\t\t{ ")
+                        for m2 in range(-L_MAX,L_MAX+1):
+                            r.write(f"\t\t\t\t\t{{ /* l1={l1} l2={l2} l3={l3} m1={m1} m2={m2} */ ")
                             for m3 in range(-L_MAX,L_MAX+1):
-                                x = float(gaunt(l1,m1,l2,m2,l3,m3))
+                                x = float(gaunt(l1,l2,l3,m1,m2,m3))
                                 r.write(f"{x}, ")
                                 done = done + 1
-                                if done % 10000 == 0 :
+                                if done % 100000 == 0 :
                                     print(f"{done} done\n")
                             r.write("\t\t\t\t\t },\n")
                         r.write("\t\t\t\t},\n")
