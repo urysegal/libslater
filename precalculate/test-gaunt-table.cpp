@@ -13,7 +13,7 @@ main(int argc, const char *argv[])
     int m2 = atoi(argv[5]) + L_MAX;
     int m3 = atoi(argv[6]) + L_MAX;
 
-    fprintf(stdout,"<%d %d | %d %d | %d %d > = %f", l1, m1, l2, m2, l3, m3, slater::gaunt_table[l1][l2][l3][m1][m2][m3]);
+    fprintf(stdout,"<%d %d | %d %d | %d %d > = %f", l1, m1-L_MAX, l2, m2-L_MAX, l3, m3-L_MAX, slater::gaunt_table[l1][l2][l3][m1][m2][m3]);
 
     return 0;
 

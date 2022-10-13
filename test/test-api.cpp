@@ -1,6 +1,6 @@
 #include <libslater.h>
 #include <math.h>
-
+#include <gaunt.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/reporters/catch_reporter_event_listener.hpp>
 #include <catch2/reporters/catch_reporter_registrars.hpp>
@@ -78,7 +78,7 @@ TEST_CASE( "One nuclear attraction integral", "[nuclear]" ) {
 
         auto result = engine->nuclear_attraction({oxygen_1_s, hydrogen_1_s}, {0,0.5,-1});
         CHECK(result.imag() == 0 );
-        CHECK(abs(result.real() + 5858.5171740282) < 0.000001 );
+        CHECK(abs(result.real() + 93.2411967435 ) < 0.000001 );
 
         delete engine;
     }
@@ -141,5 +141,16 @@ TEST_CASE("Getters and Setters", "[api]")
     CHECK(qn.l == 2);
     CHECK(qn.m == 1);
     CHECK(qn.ms == spin_quantum_number_t::UP);
+
+}
+
+TEST_CASE("Gaunt Coefficients", "[api]")
+{
+    auto g = slater::Gaunt_Coefficient_Engine::get()->calculate({1,1,0,0,1,-1});
+    CHECK(g-0.282095 < 0.00001);
+    g = slater::Gaunt_Coefficient_Engine::get()->calculate({6,0,6,6,6,-6});
+    CHECK(g- -0.0629787762403749 < 0.00000001);
+    g = slater::Gaunt_Coefficient_Engine::get()->calculate({5,4,3,-1,2,-3});
+    CHECK(g < 0.00000001);
 
 }
