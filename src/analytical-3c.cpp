@@ -79,7 +79,7 @@ protected:
 
     virtual indexer_t & get_index_variable() override { return STATE->m2_tag ; }
 
-    virtual indexer_t  get_next_sum_from() override { return Sum_6::get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag); }
+    virtual indexer_t  get_next_sum_from() override { return Sum_6::get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag); } // ALSO NO
     virtual indexer_t  get_next_sum_to() override { return STATE->l2_tag + STATE->l1_tag ;}
     virtual indexer_t  get_next_sum_step() override { return 2; }
 
@@ -99,7 +99,7 @@ public:
         complex factor = pow(complex(0,1), l+l_tag) ;
         complex enumerator = Gaunt_Coefficient_Engine::get()->calculate({l,m,l_tag,m_tag, l-l_tag, m-m_tag});
 
-        complex denominator = bm::double_factorial<double>(2*l_tag+1) *  /// WHY SQUARE BRACKET
+        complex denominator = bm::double_factorial<double>(2*l_tag+1) *
                               bm::double_factorial<double>(2*(l - l_tag)+1);
 
         return factor * ( enumerator / denominator ) ;
