@@ -20,6 +20,13 @@ struct Sum_State : public Summation_State<indexer_t> {
     int m1,m2;
     sto_exponent_t zeta1;
     sto_exponent_t zeta2;
+    center_t A = {};
+    center_t B = {};
+    center_t C = {};
+
+    // Some precalculated values
+    double R2 = 0 ; /// distance between A,B
+
 
     /// Nested iteration variables
     indexer_t l1_tag;

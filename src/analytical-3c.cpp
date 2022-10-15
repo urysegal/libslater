@@ -1,11 +1,11 @@
 #include <complex>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/factorials.hpp>
-
 #include "libslater.h"
 #include "nested_summation.h"
 #include "gaunt.h"
 #include "analytical-3c.h"
+#include "slater-utils.h"
 
 // Comments in this file reference the following works.
 // Reference [1]:
@@ -39,7 +39,12 @@ protected:
 
     virtual indexer_t & get_index_variable() override { return STATE->l ; }
 
-    virtual indexer_t  get_next_sum_from() override { return get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag); } // NO!
+    virtual indexer_t  get_next_sum_from() override {
+        return get_l_min(STATE->l1-STATE->l1_tag,
+                         STATE->l2-STATE->l2_tag,
+                         STATE->m1-STATE->m1_tag,
+                         STATE->m2- STATE->m2_tag);
+        }
     virtual indexer_t  get_next_sum_to() override { return STATE->l2 - STATE->l2_tag + STATE->l1 - STATE->l1_tag ;}
     virtual indexer_t  get_next_sum_step() override { return 2; }
 
@@ -57,8 +62,19 @@ public:
 
     static complex calculate_expression( Sum_State *s )
     {
+        complex result = 0;
+
         s->setup_parameters();
-        return 0;
+        auto gaunt_part = Gaunt_Coefficient_Engine::get()->calculate({s->l2_tag, s->m2_tag , s->l1_tag, s->m1_tag,
+                                                                     s->l, s->m2_tag-s->m1_tag});
+
+
+        if ( gaunt_part ) {
+            auto radius_part = pow(s->R2, s->l);
+            auto ylm_part =;
+            result = gaunt_part * radius_part * ylm_part;
+        }
+        return result;
     }
 
 
@@ -79,7 +95,7 @@ protected:
 
     virtual indexer_t & get_index_variable() override { return STATE->m2_tag ; }
 
-    virtual indexer_t  get_next_sum_from() override { return Sum_6::get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag); } // ALSO NO
+    virtual indexer_t  get_next_sum_from() override { return Sum_6::get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag); }
     virtual indexer_t  get_next_sum_to() override { return STATE->l2_tag + STATE->l1_tag ;}
     virtual indexer_t  get_next_sum_step() override { return 2; }
 
@@ -232,6 +248,7 @@ complex Analytical_3C_evaluator::evaluate()
     return top_sum.get_value();
 }
 
+
 void Analytical_3C_evaluator::setup_state()
 {
     state.n1=q1.n;
@@ -242,6 +259,11 @@ void Analytical_3C_evaluator::setup_state()
     state.m2=q2.m;
     state.zeta1 = zeta1;
     state.zeta2 = zeta2;
+    state.A = A;
+    state.B = B;
+    state.C = C;
+
+    state.R2 = distance(A, B);
 }
 
 
