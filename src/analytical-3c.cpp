@@ -62,11 +62,11 @@ public:
 
     static complex calculate_Ylm(Sum_State *s)
     {
-        auto l = s->l;
-        auto m = s->m2_tag - s->m1_tag;
+        assert(s->l > 0);
+        Quantum_Numbers quantumNumbers({(unsigned  int)s->l, (unsigned  int)s->l, s->m2_tag - s->m1_tag });
         auto theta = s->R2_spherical.theta;
         auto phi = s->R2_spherical.phi;
-        return l+m+theta+phi;
+        return eval_spherical_harmonics(quantumNumbers, theta, phi);
     }
 
     static complex calculate_expression( Sum_State *s )

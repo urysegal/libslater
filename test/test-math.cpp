@@ -4,6 +4,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/reporters/catch_reporter_event_listener.hpp>
 #include "coordinates.h"
+#include "slater-utils.h"
 
 namespace bm = boost::math;
 using namespace slater;
@@ -80,9 +81,9 @@ TEST_CASE( "Evaluate Spherical Harmonics ", "[b_func_engine]" ) {
     Quantum_Numbers q2 = {4,2,-1};
     double theta = pi/4;
     double phi = 0;
-    B_function_Engine b_func_engine;
-    auto Y1 = b_func_engine.eval_spherical_harmonics(q1,theta,phi);
-    auto Y2 = b_func_engine.eval_spherical_harmonics(q2,theta,phi);
+
+    auto Y1 = eval_spherical_harmonics(q1,theta,phi);
+    auto Y2 = eval_spherical_harmonics(q2,theta,phi);
     CHECK(abs(Y1 - std::complex<double>(-0.3862742020231,0)) < 0.001) ;
     CHECK(abs(Y2 - std::complex<double>(0.3862742020231,0)) < 0.001) ;
 
