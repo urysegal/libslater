@@ -62,8 +62,7 @@ public:
 
     static complex calculate_Ylm(Sum_State *s)
     {
-        assert(s->l > 0);
-        Quantum_Numbers quantumNumbers({(unsigned  int)s->l, (unsigned  int)s->l, s->m2_tag - s->m1_tag });
+        Quantum_Numbers quantumNumbers({0, (unsigned  int)s->l, s->m2_tag - s->m1_tag });
         auto theta = s->R2_spherical.theta;
         auto phi = s->R2_spherical.phi;
         return eval_spherical_harmonics(quantumNumbers, theta, phi);

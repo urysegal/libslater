@@ -25,7 +25,7 @@ center_t vector_between(
 
 
 std::complex<double> eval_spherical_harmonics(
-    const Quantum_Numbers quantumNumbers,
+    const Quantum_Numbers &quantumNumbers,
     const double theta,
     const double phi
 );

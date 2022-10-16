@@ -1,5 +1,6 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
+#include <boost/math/special_functions.hpp>
 
 #include "slater-utils.h"
 #include "libslater.h"
@@ -26,7 +27,7 @@ center_t vector_between(const center_t &A, const center_t &B)
     return center_t({B_point.get<0>(), B_point.get<1>(), B_point.get<2>() });
 }
 
-std::complex<double> eval_spherical_harmonics(const Quantum_Numbers quantumNumbers,const double theta,const double phi)
+std::complex<double> eval_spherical_harmonics(const Quantum_Numbers &quantumNumbers,const double theta,const double phi)
 {
     // Evaluates Spherical Harmonics Y_l^m(theta,phi)
     auto pi = bm::constants::pi<double>();
