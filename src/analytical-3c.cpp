@@ -60,6 +60,15 @@ public:
         return m + selector % 2 ;
     }
 
+    static complex calculate_Ylm(Sum_State *s)
+    {
+        auto l = s->l;
+        auto m = s->m2_tag - s->m1_tag;
+        auto theta = s->R2_spherical.theta;
+        auto phi = s->R2_spherical.phi;
+        return l+m+theta+phi;
+    }
+
     static complex calculate_expression( Sum_State *s )
     {
         complex result = 0;
@@ -71,7 +80,7 @@ public:
 
         if ( gaunt_part ) {
             auto radius_part = pow(s->R2, s->l);
-            auto ylm_part =;
+            auto ylm_part = calculate_Ylm(s);
             result = gaunt_part * radius_part * ylm_part;
         }
         return result;
@@ -264,6 +273,8 @@ void Analytical_3C_evaluator::setup_state()
     state.C = C;
 
     state.R2 = distance(A, B);
+    state.R2_point = vector_between(A, B);
+    state.R2_spherical = Spherical_Coordinates(state.R2_point);
 }
 
 

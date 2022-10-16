@@ -3,6 +3,7 @@
 #include "libslater.h"
 #include "integrators.h"
 #include "nested_summation.h"
+#include "coordinates.h"
 
 namespace slater {
 
@@ -26,7 +27,8 @@ struct Sum_State : public Summation_State<indexer_t> {
 
     // Some precalculated values
     double R2 = 0 ; /// distance between A,B
-
+    center_t R2_point = {}; /// Vector from A to B
+    Spherical_Coordinates R2_spherical; /// Spherical coordinate of R2_point above
 
     /// Nested iteration variables
     indexer_t l1_tag;
