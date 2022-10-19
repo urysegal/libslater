@@ -58,7 +58,7 @@ public:
 
         // Need help here - valvulate v_vec_spherical.
 
-        Spherical_Coordinates v_vec_spherical;
+        Spherical_Coordinates v_vec_spherical{s->R2_point}; // needs to pout righ point here
         auto theta = v_vec_spherical.theta;
         auto phi = v_vec_spherical.phi;
 
