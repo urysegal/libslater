@@ -80,7 +80,10 @@ public:
     }
 
     // eqn. 31 in [1]
-    static complex calculate_semi_infinite_integral(const double &s, Sum_State *state);
+    static complex calculate_semi_infinite_integral(const double &s, Sum_State *state)
+    {
+        return s; // Gautam - here is the majority of the work.... eqn 31
+    }
 
     static complex calculate_integral(Sum_State *state)
     {
