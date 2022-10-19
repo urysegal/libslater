@@ -31,12 +31,13 @@ TEST_CASE("Angle between points","[utils]")
 
     center_t connector = vector_between(p0, p1);
     CHECK(p1 == connector);
+
     center_t connector2 = vector_between(p1, p2);
     CHECK(center_t{ -1,0,-1}  == connector2);
 
     Spherical_Coordinates sc(connector);
-    CHECK(abs(sc.phi - 0.9553166181) < 10E-9 );
-    CHECK(sc.theta == pi/4);
+    CHECK(abs(sc.theta - 0.9553166181) < 10E-9 );
+    CHECK(sc.phi == pi/4);
 }
 
 TEST_CASE( "Cartesian Coords  to Spherical", "[utils]" ) {
