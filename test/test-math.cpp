@@ -4,18 +4,87 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/reporters/catch_reporter_event_listener.hpp>
 #include "coordinates.h"
+#include "slater-utils.h"
 
 namespace bm = boost::math;
 using namespace slater;
 
-TEST_CASE( "Cartesian Coords {3,0,0} to Spherical {3,0,pi/4} ", "[b_func_engine]" ) {
-    auto pi = bm::constants::pi<double>();
-    center_t r_cart{3,0,0};
+TEST_CASE("3D points distance","[utils]")
+{
+    center_t p0{0, 0, 0};
+    center_t p1{1, 1, 1};
+    center_t p2{0, 1, 0};
 
+    CHECK(distance(p2,p0) == 1);
+    CHECK(abs(distance(p2,p1) - 1.4142135624) < 10E-9);
+    CHECK(abs(distance(p0,p1) - 1.73205080756) < 10E-9);
+}
+
+
+TEST_CASE("Angle between points","[utils]")
+{
+    auto pi = bm::constants::pi<double>();
+
+    center_t p0{0, 0, 0};
+    center_t p1{1, 1, 1};
+    center_t p2{0, 1, 0};
+
+    center_t connector = vector_between(p0, p1);
+    CHECK(p1 == connector);
+    center_t connector2 = vector_between(p1, p2);
+    CHECK(center_t{ -1,0,-1}  == connector2);
+
+    Spherical_Coordinates sc(connector);
+    CHECK(abs(sc.phi - 0.9553166181) < 10E-9 );
+    CHECK(sc.theta == pi/4);
+}
+
+TEST_CASE( "Cartesian Coords  to Spherical", "[utils]" ) {
+    auto pi = bm::constants::pi<double>();
+
+    {
+    center_t r_cart{3, 0, 0};
     Spherical_Coordinates r_spher(r_cart);
-    CHECK(abs(r_spher.radius-3) == 0);
-    CHECK(abs(r_spher.phi-pi/2) ==0);
-    CHECK(abs(r_spher.theta-0) == 0);
+    CHECK(abs(r_spher.radius - 3) == 0);
+    CHECK(abs(r_spher.phi - pi / 2) == 0);
+    CHECK(abs(r_spher.theta - 0) == 0);
+    }
+    {
+        center_t r_cart2{0, 0, 1};
+        Spherical_Coordinates r_spher(r_cart2);
+        CHECK(r_spher.radius == 1);
+        CHECK(r_spher.phi == 0);
+        CHECK(r_spher.theta == 0);
+    }
+    {
+        center_t r_cart2{1, 0, 0};
+        Spherical_Coordinates r_spher(r_cart2);
+        CHECK(r_spher.radius == 1);
+        CHECK(r_spher.phi == pi/2);
+        CHECK(r_spher.theta == 0);
+    }
+    {
+        center_t r_cart2{-1, 0, 0};
+        Spherical_Coordinates r_spher(r_cart2);
+        CHECK(r_spher.radius == 1);
+        CHECK(r_spher.phi == pi/2);
+        CHECK(r_spher.theta == pi);
+    }
+    {
+        center_t r_cart2{0, -1, 0};
+        Spherical_Coordinates r_spher(r_cart2);
+        CHECK(r_spher.radius == 1);
+        CHECK(r_spher.phi == pi/2);
+        CHECK(r_spher.theta == -pi/2);
+    }
+    {
+        center_t r_cart2{0, 0, -1};
+        Spherical_Coordinates r_spher(r_cart2);
+        CHECK(r_spher.radius == 1);
+        CHECK(r_spher.phi == pi);
+        CHECK(r_spher.theta == 0);
+    }
+
 }
 
 TEST_CASE( "shift_first_center_to_origin ", "[homeier]" ) {
@@ -42,9 +111,9 @@ TEST_CASE( "Evaluate Spherical Harmonics ", "[b_func_engine]" ) {
     Quantum_Numbers q2 = {4,2,-1};
     double theta = pi/4;
     double phi = 0;
-    B_function_Engine b_func_engine;
-    auto Y1 = b_func_engine.eval_spherical_harmonics(q1,theta,phi);
-    auto Y2 = b_func_engine.eval_spherical_harmonics(q2,theta,phi);
+
+    auto Y1 = eval_spherical_harmonics(q1,theta,phi);
+    auto Y2 = eval_spherical_harmonics(q2,theta,phi);
     CHECK(abs(Y1 - std::complex<double>(-0.3862742020231,0)) < 0.001) ;
     CHECK(abs(Y2 - std::complex<double>(0.3862742020231,0)) < 0.001) ;
 

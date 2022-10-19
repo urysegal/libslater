@@ -84,7 +84,7 @@ public:
         for ( current_index_value = from ; current_index_value <= to ;current_index_value += step) {
 
             auto scaling = expression();
-            if ( accuracy_threshold and abs(scaling) > accuracy_threshold ) {
+            if ( scaling != 0.0 and abs(scaling) > accuracy_threshold  ) {
                 Next_Summation inner_summation(get_next_sum_from(), get_next_sum_to(), state, get_next_sum_step());
 
                 total_sum +=  scaling * inner_summation.get_value() ;

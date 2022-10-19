@@ -1,6 +1,7 @@
 #include "bfunctions.h"
 #include "logger.h"
 #include "coordinates.h"
+#include "slater-utils.h"
 
 namespace bm = boost::math;
 namespace bg = boost::geometry;
@@ -81,25 +82,6 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
 
 }//B_functions_representation_of_STO
 
-std::complex<double> B_function_Engine::eval_spherical_harmonics(const Quantum_Numbers quantumNumbers,const double theta,const double phi) const{
-    // Evaluates Spherical Harmonics Y_l^m(theta,phi)
-    auto pi = bm::constants::pi<double>();
-    std::complex<double>  i(0,1);
-
-    auto m = quantumNumbers.m;
-    auto l = quantumNumbers.l;
-    auto Plm = bm::legendre_p(l,m,std::cos(theta)); //Associated Legendre Polynomial
-
-    //Using Wikipedia's accoustics definition to stay consistent with legendre_p function in boost
-    // which includes the Condon-Shortley phase term
-    std::complex<double> Y;
-    Y = 1;
-    Y *= pow( ( (2*l + 1) * bm::factorial<double>(l-m) ) / (4 * pi * bm::factorial<double>(l + m)) , 1.0 / 2);
-    Y *= Plm;
-    Y *= std::exp(std::complex<double>(0,m*phi));
-
-    return Y;
-}//eval_spherical_harmonics
 
 
 
@@ -136,6 +118,7 @@ Spherical_Coordinates::Spherical_Coordinates(const center_t &cartesian)
 {
     bg::model::point<double, 3, bg::cs::cartesian> r_cart(cartesian[0],cartesian[1],cartesian[2]);
     bg::model::point<double, 3, bg::cs::spherical<bg::radian>> r_spherical;
+    r_spherical.set<1>(0);
     bg::transform(r_cart, r_spherical);
 
     theta = r_spherical.get<0>();
