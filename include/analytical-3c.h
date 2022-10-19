@@ -17,7 +17,7 @@ struct Sum_State : public Summation_State<indexer_t> {
 
     /// Problem parameters
     unsigned int n1,n2;
-    unsigned int l1,l2;
+    int l1,l2;
     int m1,m2;
     sto_exponent_t zeta1;
     sto_exponent_t zeta2;
@@ -44,21 +44,7 @@ struct Sum_State : public Summation_State<indexer_t> {
     double v  ;
     int u   ;
     int nx   ;
-    int delta_l;
 
-
-    /// This function is called every time the iteration goes forward (at any level of the nesting) to
-    /// update some usefull expressions. Can probably be split so we only update the parameters that have changed,
-    /// if profiler points to this as a problem.
-    void setup_parameters()
-    {
-        // Follow [1] eqn. 29
-        n_gamma = 2*(n1+l1+n2+l2) - (l1_tag + l2_tag) - l + 1;
-        v = n1 + n2 + l1 +l2 - l - j + 0.5 ;
-        u = (m2 - m2_tag) - ( m1 - m1_tag ) ;
-        nx = l1 - l1_tag + l2 - l2_tag ;
-        delta_l = (l1_tag + l2_tag - l ) / 2 ;
-    }
 
 };
 

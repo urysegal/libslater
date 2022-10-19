@@ -1,6 +1,7 @@
 #include <complex>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/factorials.hpp>
+#include <boost/math/quadrature/gauss.hpp>
 #include "libslater.h"
 #include "nested_summation.h"
 #include "gaunt.h"
@@ -24,9 +25,133 @@ namespace slater {
 
 static Analytical_3C_evaluator dummy_3c(analytical_3c_name);
 
-// Third line in [1] eqn. 28
+// Sixth line in [1] eqn. 28
 
-class Sum_6 : public Nested_Summation<indexer_t, complex , Last_Nested_Summation<indexer_t,complex> >
+class Sum_8 : public Nested_Summation<indexer_t, complex , Last_Nested_Summation<indexer_t,complex> >
+{
+
+protected:
+    virtual complex expression() override
+    {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+
+    virtual indexer_t & get_index_variable() override { return STATE->j ; }
+
+    virtual indexer_t  get_next_sum_from() override { return 1; }
+
+    virtual indexer_t  get_next_sum_to() override { return 1 ;}
+    virtual indexer_t  get_next_sum_step() override { return 1; }
+
+
+public:
+    Sum_8( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+    static auto delta_l(Sum_State *s) { return  (s->l1_tag + s->l2_tag -s->l)/2 ; }
+    static auto get_miu(Sum_State *s) { return (s->m2-s->m2_tag) - (s->m1 - s->m1_tag); }
+
+    static complex calculate_Ylm(Sum_State *s)
+    {
+        Quantum_Numbers quantumNumbers({0, (unsigned  int)s->gamma, get_miu(s) });
+
+        // Need help here - valvulate v_vec_spherical.
+
+        Spherical_Coordinates v_vec_spherical;
+        auto theta = v_vec_spherical.theta;
+        auto phi = v_vec_spherical.phi;
+
+        return eval_spherical_harmonics(quantumNumbers, theta, phi);
+    }
+
+
+    // Seventh line in [1] eqn. 28
+    static complex calculate_gaussian_point(const double &s, Sum_State *state)
+    {
+        complex result;
+        complex power1 = pow(s, state->n2 +state->l2 + state->l1  - state->l1_tag);
+        complex power2 = pow(s-1, state->n1 +state->l1 + state->l2  - state->l2_tag);
+        complex ylm = calculate_Ylm(state);
+        complex prefactor = power1 * power2 * ylm;
+        complex semi_inf = calculate_semi_infinite_integral(s, state);
+        result = prefactor * semi_inf;
+        return result;
+    }
+
+    // eqn. 31 in [1]
+    static complex calculate_semi_infinite_integral(const double &s, Sum_State *state);
+
+    static complex calculate_integral(Sum_State *state)
+    {
+        auto f = [&](const double& s) { return calculate_gaussian_point(s, state) ;};
+        complex Q = boost::math::quadrature::gauss<double, 30>::integrate(f, 0, 1);
+        return Q;
+    }
+
+    static complex calculate_expression( Sum_State *s )
+    {
+        complex result = 0;
+        auto choose = bm::binomial_coefficient<double>(delta_l(s) ,s->j);
+        auto enumerator = pow(-1, s->j) ;
+        auto x = s->n1+s->n2+s->l1+s->l2 - s->j +1;
+        auto denominator_pow_2 = pow(2, x);
+        auto denominator_factorial = bm::factorial<double>(x);
+        auto factor = choose * ( enumerator / ( denominator_pow_2*denominator_factorial) );
+
+        complex integral_value = calculate_integral(s);
+
+        result = factor * integral_value ;
+        return result;
+    }
+};
+
+
+// Fifth line in [1] eqn. 28
+
+class Sum_7 : public Nested_Summation<indexer_t, complex , Sum_8 >
+{
+
+protected:
+    virtual complex expression() override
+    {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+
+    virtual indexer_t & get_index_variable() override { return STATE->gamma ; }
+
+    virtual indexer_t  get_next_sum_from() override { return 0; }
+
+    virtual indexer_t  get_next_sum_to() override { return Sum_8::delta_l(STATE) ;}
+    virtual indexer_t  get_next_sum_step() override { return 1; }
+
+public:
+    Sum_7( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+
+    static complex calculate_expression( Sum_State *s )
+    {
+        complex result = 0;
+
+        auto miu = Sum_8::get_miu(s);
+        auto gaunt_part = Gaunt_Coefficient_Engine::get()->calculate({s->l2 - s->l2_tag, s->m2-s->m2_tag,
+                                                                      s->l1 - s->l1_tag, s->m1 - s->m1_tag,
+                                                                      s->gamma, miu});
+
+        if ( gaunt_part ) {
+            auto complex_part  = pow(-complex{0,1}, s->gamma);
+            result = gaunt_part * complex_part;
+        }
+        return result;
+    }
+};
+
+
+// Fourth line in [1] eqn. 28
+
+class Sum_6 : public Nested_Summation<indexer_t, complex , Sum_7 >
 {
 
 protected:
@@ -72,7 +197,6 @@ public:
     {
         complex result = 0;
 
-        s->setup_parameters();
         auto gaunt_part = Gaunt_Coefficient_Engine::get()->calculate({s->l2_tag, s->m2_tag , s->l1_tag, s->m1_tag,
                                                                      s->l, s->m2_tag-s->m1_tag});
 
@@ -84,12 +208,10 @@ public:
         }
         return result;
     }
-
-
 };
 
 
-// Second line in [1] eqn. 28 , second summation
+// Third line in [1] eqn. 28 , second summation
 class Sum_5 : public Nested_Summation<indexer_t, complex , Sum_6 >
 {
 
@@ -113,7 +235,6 @@ public:
 
     static complex calculate_expression( Sum_State *s )
     {
-        s->setup_parameters();
         return calculate_gaunt_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) * pow(-1, s->l2_tag);
     }
 
@@ -169,7 +290,6 @@ public:
 
     static complex calculate_expression( Sum_State *s )
     {
-        s->setup_parameters();
         return Sum_5::calculate_gaunt_fraction(s->l1, s->l1_tag, s->m1, s->m1_tag) ;
     }
 
@@ -213,7 +333,6 @@ public:
     /// from the test suites.
     static complex calculate_expression( Sum_State *s )
     {
-        s->setup_parameters();
 
         double enumerator =
             8 * pow ( 4 * pi , 2 ) * pow (-1, s->l1 + s->l2)
