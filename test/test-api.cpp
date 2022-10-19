@@ -29,8 +29,8 @@ TEST_CASE( "One overlap integral", "[overlap]" ) {
 
     Quantum_Numbers quantum_numbers = {2,1,0};
 
-    STO_Basis_Function_Info oxygen_s(43.5, 0.252, quantum_numbers);
-    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, quantum_numbers);
+    STO_Basis_Function_Info oxygen_s( 0.252, quantum_numbers);
+    STO_Basis_Function_Info hydrogen_s( 0.952, quantum_numbers);
 
     STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, -0.14142136});
     STO_Basis_Function hydrogen_1_s(hydrogen_s, {0.70710678, 0, 0.56568542});
@@ -60,8 +60,8 @@ TEST_CASE( "One nuclear attraction integral", "[nuclear]" ) {
 
     Quantum_Numbers quantum_numbers = {2,1,0};
 
-    STO_Basis_Function_Info oxygen_s(43.5, 0.252, quantum_numbers);
-    STO_Basis_Function_Info hydrogen_s(3.15, 0.952, quantum_numbers);
+    STO_Basis_Function_Info oxygen_s( 0.252, quantum_numbers);
+    STO_Basis_Function_Info hydrogen_s( 0.952, quantum_numbers);
 
     STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, -0.14142136});
     STO_Basis_Function hydrogen_1_s(hydrogen_s, {0.70710678, 0, 0.56568542});
@@ -126,7 +126,7 @@ TEST_CASE("Options behavior", "[api]")
 TEST_CASE("Getters and Setters", "[api]")
 {
     Quantum_Numbers quantum_numbers = {2,1,0};
-    STO_Basis_Function_Info oxygen_s(43.5, 0.252, quantum_numbers);
+    STO_Basis_Function_Info oxygen_s(0.252, quantum_numbers);
     oxygen_s.set_coefficient(1.0);
     oxygen_s.set_exponent(2.0);
 

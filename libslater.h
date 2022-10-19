@@ -95,10 +95,9 @@ public:
 
 public:
     /// Construct an STO style basis function detail object.
-    /// \param coefficient_  Coefficient of the radial part.
     /// \param exponent_ alpha of the radial part.
     /// \param quantum_numbers Set of quantum numbers for this function
-    STO_Basis_Function_Info(sto_coefficient_t coefficient_, sto_exponent_t exponent_, const Quantum_Numbers &quantum_numbers);
+    STO_Basis_Function_Info( sto_exponent_t exponent_, const Quantum_Numbers &quantum_numbers);
 
 };
 
@@ -131,6 +130,16 @@ public:
     /// Get the spatial center of this basis function
     /// \return the spatial center of this basis function
     center_t get_center() const ;
+
+    /// Return the value of the function at the given point
+    /// \param point point to evaliate at
+    /// \return complex value of function at the given point
+    std::complex<double> evaluate(const center_t &point) const;
+
+    /// Return the value of the conjugate function at the given point
+    /// \param point point to evaliate at
+    /// \return complex value of function at the given point
+    std::complex<double> evaluate_conjugate(const center_t &point) const;
 
 
 };
