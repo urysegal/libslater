@@ -46,9 +46,10 @@ TEST_CASE( "Cartesian Coords  to Spherical", "[utils]" ) {
     center_t r_cart{3, 0, 0};
     Spherical_Coordinates r_spher(r_cart);
     CHECK(abs(r_spher.radius - 3) == 0);
-    CHECK(abs(r_spher.phi - pi / 2) == 0);
-    CHECK(abs(r_spher.theta - 0) == 0);
+    CHECK(abs(r_spher.theta - pi / 2) == 0);
+    CHECK(abs(r_spher.phi - 0) == 0);
     }
+
     {
         center_t r_cart2{0, 0, 1};
         Spherical_Coordinates r_spher(r_cart2);
@@ -60,29 +61,29 @@ TEST_CASE( "Cartesian Coords  to Spherical", "[utils]" ) {
         center_t r_cart2{1, 0, 0};
         Spherical_Coordinates r_spher(r_cart2);
         CHECK(r_spher.radius == 1);
-        CHECK(r_spher.phi == pi/2);
-        CHECK(r_spher.theta == 0);
+        CHECK(r_spher.phi == 0);
+        CHECK(r_spher.theta == pi/2);
     }
     {
         center_t r_cart2{-1, 0, 0};
         Spherical_Coordinates r_spher(r_cart2);
         CHECK(r_spher.radius == 1);
-        CHECK(r_spher.phi == pi/2);
-        CHECK(r_spher.theta == pi);
+        CHECK(r_spher.phi == pi);
+        CHECK(r_spher.theta == pi/2);
     }
     {
         center_t r_cart2{0, -1, 0};
         Spherical_Coordinates r_spher(r_cart2);
         CHECK(r_spher.radius == 1);
-        CHECK(r_spher.phi == pi/2);
-        CHECK(r_spher.theta == -pi/2);
+        CHECK(r_spher.phi == -pi/2);
+        CHECK(r_spher.theta == pi/2);
     }
     {
         center_t r_cart2{0, 0, -1};
         Spherical_Coordinates r_spher(r_cart2);
         CHECK(r_spher.radius == 1);
-        CHECK(r_spher.phi == pi);
-        CHECK(r_spher.theta == 0);
+        CHECK(r_spher.phi == 0);
+        CHECK(r_spher.theta == pi);
     }
 
 }

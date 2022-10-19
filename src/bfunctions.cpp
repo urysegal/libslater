@@ -116,14 +116,36 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
 
 Spherical_Coordinates::Spherical_Coordinates(const center_t &cartesian)
 {
-    bg::model::point<double, 3, bg::cs::cartesian> r_cart(cartesian[0],cartesian[1],cartesian[2]);
-    bg::model::point<double, 3, bg::cs::spherical<bg::radian>> r_spherical;
-    r_spherical.set<1>(0);
-    bg::transform(r_cart, r_spherical);
+    auto x = cartesian[0];
+    auto y = cartesian[1];
+    auto z = cartesian[2];
+    auto pi = bm::constants::pi<double>();
 
-    theta = r_spherical.get<0>();
-    phi = r_spherical.get<1>();
-    radius = r_spherical.get<2>();
+    radius = sqrt(x*x + y*y + z*z);
+    theta = acos(z/radius);
+    if (x>0){
+        phi = atan(y/x);
+    }
+    else if (x<0) {
+        if (y >= 0) {
+            phi = atan(y / x) + pi;
+        } else {
+            phi = atan(y / x) - pi;
+        }
+    }
+    // x==0
+    else {
+        if(y > 0){
+            phi = pi/2;
+        }
+        else if(y < 0){
+            phi = -pi/2;
+        }
+        //x==0, y==0, phi = undefined
+        else {
+            phi = 0;
+        }
+    }
 }
 
 
