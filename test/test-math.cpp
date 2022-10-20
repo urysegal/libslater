@@ -111,7 +111,6 @@ TEST_CASE( "Evaluate Spherical Harmonics ", "[b_func_engine]" ) {
     auto pi = bm::constants::pi<double>();
     Quantum_Numbers q1 = {4,2,1};
     Quantum_Numbers q2 = {4,2,-1};
-    center_t r = {1,2,1};
     double theta = pi/4;
     double phi = 0;
 
@@ -121,6 +120,7 @@ TEST_CASE( "Evaluate Spherical Harmonics ", "[b_func_engine]" ) {
     CHECK(abs(Y1 - std::complex<double>(-0.38627420,0)) < 10E-9) ;
     CHECK(abs(Y2 - std::complex<double>(0.38627420,0)) < 10E-9) ;
     {
+        center_t r = {1,2,1};
         Spherical_Coordinates sc(r);
         auto Y3 = eval_spherical_harmonics(q1,sc.theta,sc.phi);
         CHECK(abs(Y3 - std::complex<double>(-0.128758, -0.257516)) < 10E-6);
