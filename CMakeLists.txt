@@ -71,6 +71,15 @@ add_custom_target(cleancov
         COMMAND find ${CMAKE_BINARY_DIR} -name '*.gc??' -delete
         )
 
+set_target_properties(libslater PROPERTIES PUBLIC_HEADER libslater.h)
+include(GNUInstallDirs)
+install(TARGETS libslater
+        PUBLIC_HEADER
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libslater
+        )
+
+
+
 option(BUILD_DOC "Build documentation" )
 
 if (BUILD_DOC)
