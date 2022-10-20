@@ -9,6 +9,8 @@
 namespace bm = boost::math;
 using namespace slater;
 
+auto pi = bm::constants::pi<double>();
+
 TEST_CASE("3D points distance","[utils]")
 {
     center_t p0{0, 0, 0};
@@ -23,7 +25,6 @@ TEST_CASE("3D points distance","[utils]")
 
 TEST_CASE("Angle between points","[utils]")
 {
-    auto pi = bm::constants::pi<double>();
 
     center_t p0{0, 0, 0};
     center_t p1{1, 1, 1};
@@ -41,7 +42,6 @@ TEST_CASE("Angle between points","[utils]")
 }
 
 TEST_CASE( "Cartesian Coords  to Spherical", "[utils]" ) {
-    auto pi = bm::constants::pi<double>();
 
     {
     center_t r_cart{3, 0, 0};
@@ -108,7 +108,6 @@ TEST_CASE( "shift_first_center_to_origin ", "[homeier]" ) {
 }
 
 TEST_CASE( "Evaluate Spherical Harmonics ", "[b_func_engine]" ) {
-    auto pi = bm::constants::pi<double>();
     Quantum_Numbers q1 = {4,2,1};
     Quantum_Numbers q2 = {4,2,-1};
     double theta = pi/4;
@@ -157,12 +156,12 @@ TEST_CASE( "Evaluate B Functions ", "[b_func_engine]" ) {
         CHECK(abs(B - std::complex<double>(0,0)) < 10E-16) ;
     }
     {   //case where r is 0 , n=1
-        Quantum_Numbers q2 = {1,2,1};
+        Quantum_Numbers q2 = {1,0,0};
         double alpha = 1;
         center_t r{0,0,0};
         B_function_Engine b_func_engine;
         auto B = b_func_engine.calculate(q2,alpha,r);
-        CHECK(abs(B - std::complex<double>(0,0)) < 10E-16) ;
+        CHECK(abs(B - std::complex<double>(1/(4*sqrt(pi)),0)) < 10E-16) ;
     }
 
 }
