@@ -9,7 +9,7 @@
 namespace bm = boost::math;
 using namespace slater;
 
-auto pi = bm::constants::pi<double>();
+static auto pi = bm::constants::pi<double>();
 
 TEST_CASE("3D points distance","[utils]")
 {

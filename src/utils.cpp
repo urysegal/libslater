@@ -28,6 +28,12 @@ center_t vector_between(const center_t &A, const center_t &B)
     return center_t({B_point.get<0>(), B_point.get<1>(), B_point.get<2>() });
 }
 
+center_t scale_vector( const center_t &P, double factor)
+{
+    return center_t {factor*P[0], factor*P[1], factor*P[2] } ;
+}
+
+
 std::complex<double> eval_spherical_harmonics(const Quantum_Numbers &quantumNumbers,const double theta,const double phi)
 {
     // Evaluates Spherical Harmonics Y_l^m(theta,phi)

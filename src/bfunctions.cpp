@@ -105,7 +105,6 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
 
     // k =(2/pi)^{1/2} *(alpha*r)^{n+1/2}* K_{n-1/2}(alpha*r)
     auto k = pow(2.0/pi,1.0/2.0);
-    k *= pow(alpha*spherical.radius,( n - (1.0/2.0)));
     //cases for bessel_k
     if (spherical.radius ==0 ){
         if (quantum_numbers.n==1) {
@@ -116,6 +115,7 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
         }
     }
     else {
+        k *= pow(alpha*spherical.radius,( n - (1.0/2.0)));
         k *= bm::cyl_bessel_k(n-1.0/2.0,alpha*spherical.radius);
     }
      // May need to replace with recursion formula

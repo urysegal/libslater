@@ -152,7 +152,11 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
 
 double Homeier_Integrator::calculate_delta(const B_function_details &f1, const B_function_details &f2, double s) const
 {
-    return f1.get_alpha() * f2.get_quantum_numbers().l * s;
+    //delta(alpha,beta,t)
+    auto alpha = f1.get_alpha();
+    auto beta = f2.get_alpha();
+    auto delta = sqrt((1-s)*alpha*alpha + s*beta*beta);
+    return delta;
 }
 
 std::complex<double> Homeier_Integrator::get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l) const
@@ -166,12 +170,13 @@ std::complex<double> Homeier_Integrator::get_B_function_sum(const B_function_det
     assert( delta_l % 2 == 0);
     delta_l/=2;
 
-    for (auto j = 0 ; j < delta_l ; j++) {
+    for (auto j = 0 ; j <= delta_l ; j++) {
         Quantum_Numbers B_function_parameters = {q1.n+q2.n+2*delta_l+1-j, (unsigned int)l, q2.m - q1.m };
         total_sum += std::complex<double>(pow(-1, j) * boost::math::binomial_coefficient<double>(delta_l, j),0) *
                 calculate_B_function_value(B_function_parameters, alpha, f2.get_center());
     }
-    return total_sum; }
+    return total_sum;
+}
 
 std::complex<double> Homeier_Integrator::get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha) const
 {
@@ -184,7 +189,7 @@ std::complex<double> Homeier_Integrator::get_gaunt_sum(const B_function_details 
     int l_max = f1.get_quantum_numbers().l + f2.get_quantum_numbers().l;
 
     std::complex<double> total_sum = 0;
-    for ( auto l = l_min ; l < l_max ; l+=2 )
+    for ( auto l = l_min ; l <= l_max ; l+=2 )
     {
         auto gaunt_coeff = get_gaunt_coeff({(int)q2.l, q2.m, (int)q1.l,q1.m, l, q2.m - q1.m});
         std::complex<double> B_function_sum = get_B_function_sum(f1, f2, alpha, l);
