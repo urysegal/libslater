@@ -147,22 +147,22 @@ TEST_CASE( "Evaluate B Functions ", "[b_func_engine]" ) {
         center_t r{1,1,0} ;
         B_function_Engine b_func_engine;
         auto B = b_func_engine.calculate(q1,alpha,r);
-        CHECK(abs(B - std::complex<double>(0,0)) < 10E-9) ;
+        CHECK(abs(B - std::complex<double>(0,0)) < 10E-16) ;
     }
     {   //case where r is 0
         double alpha = 1;
         center_t r{0,0,0} ;
         B_function_Engine b_func_engine;
         auto B = b_func_engine.calculate(q1,alpha,r);
-        CHECK(abs(B - std::complex<double>(0,0)) < 10E-9) ;
-    }/*
+        CHECK(abs(B - std::complex<double>(0,0)) < 10E-16) ;
+    }
     {   //case where r is 0 , n=1
         Quantum_Numbers q2 = {1,2,1};
         double alpha = 1;
         center_t r{0,0,0};
         B_function_Engine b_func_engine;
         auto B = b_func_engine.calculate(q2,alpha,r);
-        CHECK(abs(B - std::complex<double>(1,0)) < 10E-9) ;
-    }*/
+        CHECK(abs(B - std::complex<double>(0,0)) < 10E-16) ;
+    }
 
 }
