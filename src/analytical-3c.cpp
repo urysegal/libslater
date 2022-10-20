@@ -56,7 +56,7 @@ public:
     {
         Quantum_Numbers quantumNumbers({0, (unsigned  int)s->gamma, get_miu(s) });
 
-        // Need help here - valvulate v_vec_spherical.
+        // Need help here - validate v_vec_spherical.
 
         Spherical_Coordinates v_vec_spherical{s->R2_point}; // needs to pout righ point here
         auto theta = v_vec_spherical.theta;
