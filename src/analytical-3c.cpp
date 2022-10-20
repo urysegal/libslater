@@ -2,11 +2,15 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/factorials.hpp>
 #include <boost/math/quadrature/gauss.hpp>
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/geometries.hpp>
+#include <boost/math/special_functions.hpp>
 #include "libslater.h"
 #include "nested_summation.h"
 #include "gaunt.h"
 #include "analytical-3c.h"
 #include "slater-utils.h"
+
 
 // Comments in this file reference the following works.
 // Reference [1]:
@@ -14,6 +18,7 @@
 // This file implements the method in [1]
 
 auto pi = boost::math::constants::pi<double>();
+namespace bg = boost::geometry;
 
 using complex = std::complex<double>;
 namespace bm = boost::math;
@@ -52,13 +57,18 @@ public:
     static auto delta_l(Sum_State *s) { return  (s->l1_tag + s->l2_tag -s->l)/2 ; }
     static auto get_miu(Sum_State *s) { return (s->m2-s->m2_tag) - (s->m1 - s->m1_tag); }
 
-    static complex calculate_Ylm(Sum_State *s)
+    static complex calculate_Ylm(double s, Sum_State *state)
     {
-        Quantum_Numbers quantumNumbers({0, (unsigned  int)s->gamma, get_miu(s) });
+        Quantum_Numbers quantumNumbers({0, (unsigned  int)state->gamma, get_miu(state) });
 
-        // Need help here - validate v_vec_spherical.
 
-        Spherical_Coordinates v_vec_spherical{s->R2_point}; // needs to pout righ point here
+        auto R1 = state->C;
+
+        center_t scaled_R2 =  scale_vector( state->R2_point, 1-s);
+        auto v = vector_between (R1,scaled_R2 );
+
+
+        Spherical_Coordinates v_vec_spherical{v};
         auto theta = v_vec_spherical.theta;
         auto phi = v_vec_spherical.phi;
 
@@ -72,7 +82,7 @@ public:
         complex result;
         complex power1 = pow(s, state->n2 +state->l2 + state->l1  - state->l1_tag);
         complex power2 = pow(s-1, state->n1 +state->l1 + state->l2  - state->l2_tag);
-        complex ylm = calculate_Ylm(state);
+        complex ylm = calculate_Ylm(s, state);
         complex prefactor = power1 * power2 * ylm;
         complex semi_inf = calculate_semi_infinite_integral(s, state);
         result = prefactor * semi_inf;
@@ -82,7 +92,7 @@ public:
     // eqn. 31 in [1]
     static complex calculate_semi_infinite_integral(const double &s, Sum_State *state)
     {
-        return s; // Gautam - here is the majority of the work.... eqn 31
+        return s; // Gautam - here is the majority of the work.... eqn 56
     }
 
     static complex calculate_integral(Sum_State *state)

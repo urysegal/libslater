@@ -24,6 +24,11 @@ center_t vector_between(
 );
 
 
+center_t scale_vector(
+        const center_t &P,
+        double factor
+);
+
 std::complex<double> eval_spherical_harmonics(
     const Quantum_Numbers &quantumNumbers,
     const double theta,
