@@ -55,8 +55,7 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
     auto quantum_numbers = sto.get_quantum_numbers();
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
-    b_functions_sum_rescaling = std::pow(sto.get_exponent(), (-quantum_numbers.n)+1);
-
+    b_functions_sum_rescaling = std::pow(sto.get_exponent(), -int(quantum_numbers.n)+1);
     unsigned int min_p;
 
     if ( (n-l)%2 ==0 ){
@@ -89,9 +88,9 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
 {
     // B_{n,l}^m(alpha,rr) = prefactor * K * Y
     // rr = (r,theta,phi)
-    // prefactor = (2/pi)^{1/2} * (2^{n+l} * (n+l)! )^{-1} (alpha*r)^{l+n+1/2}
-    // K = K_{n-1/2}(alpha*r)
-    // Y = Y_{l,m}(theta,phi)
+    // prefactor =  1 / ( 2^{n+l} * (n+l)! )
+    // k =(2/pi)^{1/2} *(alpha*r)^{n+1/2}* K_{n-1/2}(alpha*r)
+    // Y = (alpha*r)^{l} * Y_{l,m}(theta,phi)
 
     //COMPLEX ARITHMETIC NEEDS TO BE Checked
     auto pi = bm::constants::pi<double>();
@@ -101,29 +100,69 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
     // Cartesian Representation of r to Spherical representation
     Spherical_Coordinates spherical(r);
 
-    auto prefactor = pow(2.0/pi,1.0/2.0);
-    prefactor *= 1 / (pow(2.0,n+l) * bm::factorial<double>(n+l) );
-    prefactor *= pow(alpha*spherical.radius,(l+n-1.0/2.0)); //alpha*r needs to be corrected
+    // prefactor =  1 / ( 2^{n+l} * (n+l)! )
+    auto prefactor = 1.0 / (pow(2.0,n+l) * bm::factorial<double>(n+l) );
 
-    //modified Bessel Function of Second Kind
-    auto K = bm::cyl_bessel_k(n-1.0/2.0,alpha*spherical.radius); // May need to replace with recursion formula
+    // k =(2/pi)^{1/2} *(alpha*r)^{n+1/2}* K_{n-1/2}(alpha*r)
+    auto k = pow(2.0/pi,1.0/2.0);
+    k *= pow(alpha*spherical.radius,( n - (1.0/2.0)));
+    //cases for bessel_k
+    if (spherical.radius ==0 ){
+        if (quantum_numbers.n==1) {
+            k = 1;
+        }
+        else if (quantum_numbers.n>1){
+            k = 0;
+        }
+    }
+    else {
+        k *= bm::cyl_bessel_k(n-1.0/2.0,alpha*spherical.radius);
+    }
+     // May need to replace with recursion formula
 
-    //need to extract theta and phi from r_spherical
+    // Y = (alpha*r)^{l} * Y_{l,m}(theta,phi)
     auto Y = eval_spherical_harmonics(quantum_numbers,spherical.theta,spherical.phi);
+    Y *= pow(alpha*spherical.radius,(l));
 
-    return prefactor * K * Y;
+    return prefactor * k * Y;
 }//calculate
 
 Spherical_Coordinates::Spherical_Coordinates(const center_t &cartesian)
 {
-    bg::model::point<double, 3, bg::cs::cartesian> r_cart(cartesian[0],cartesian[1],cartesian[2]);
-    bg::model::point<double, 3, bg::cs::spherical<bg::radian>> r_spherical;
-    r_spherical.set<1>(0);
-    bg::transform(r_cart, r_spherical);
+    auto x = cartesian[0];
+    auto y = cartesian[1];
+    auto z = cartesian[2];
+    auto pi = bm::constants::pi<double>();
 
-    theta = r_spherical.get<0>();
-    phi = r_spherical.get<1>();
-    radius = r_spherical.get<2>();
+    radius = sqrt(x*x + y*y + z*z);
+    if (radius == 0){
+        theta=0;
+        phi =0;
+    }
+    else {
+        theta = acos(z / radius);
+        if (x > 0) {
+            phi = atan(y / x);
+        } else if (x < 0) {
+            if (y >= 0) {
+                phi = atan(y / x) + pi;
+            } else {
+                phi = atan(y / x) - pi;
+            }
+        }
+            // x==0
+        else {
+            if (y > 0) {
+                phi = pi / 2;
+            } else if (y < 0) {
+                phi = -pi / 2;
+            }
+                //x==0, y==0, phi = undefined
+            else {
+                phi = 0;
+            }
+        }
+    }
 }
 
 
