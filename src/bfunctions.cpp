@@ -93,7 +93,6 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
     // Y = (alpha*r)^{l} * Y_{l,m}(theta,phi)
 
     //COMPLEX ARITHMETIC NEEDS TO BE Checked
-    auto pi = bm::constants::pi<double>();
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
 
@@ -103,28 +102,14 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
     // prefactor =  1 / ( 2^{n+l} * (n+l)! )
     auto prefactor = 1.0 / (pow(2.0,n+l) * bm::factorial<double>(n+l) );
 
-    // k =(2/pi)^{1/2} *(alpha*r)^{n+1/2}* K_{n-1/2}(alpha*r)
-    auto k = pow(2.0/pi,1.0/2.0);
-    //cases for bessel_k
-    if (spherical.radius ==0 ){
-        if (quantum_numbers.n==1) {
-            k = 1;
-        }
-        else if (quantum_numbers.n>1){
-            k = 0;
-        }
-    }
-    else {
-        k *= pow(alpha*spherical.radius,( n - (1.0/2.0)));
-        k *= bm::cyl_bessel_k(n-1.0/2.0,alpha*spherical.radius);
-    }
-     // May need to replace with recursion formula
 
+     // May need to replace with recursion formula
+    auto k_hat = compute_reduced_bessel_function_half(n-0.5,alpha*spherical.radius);
     // Y = (alpha*r)^{l} * Y_{l,m}(theta,phi)
     auto Y = eval_spherical_harmonics(quantum_numbers,spherical.theta,spherical.phi);
     Y *= pow(alpha*spherical.radius,(l));
 
-    return prefactor * k * Y;
+    return prefactor * k_hat * Y;
 }//calculate
 
 Spherical_Coordinates::Spherical_Coordinates(const center_t &cartesian)

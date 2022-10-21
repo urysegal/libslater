@@ -31,7 +31,7 @@ main()
         options.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(options);
-        auto result = engine->overlap({basis_set[0], basis_set[1]});
+        auto result = engine->overlap({basis_set[0], basis_set[0]});
         std::cout << result << std::endl;
 
         //result = engine->nuclear_attraction({basis_set[2], basis_set[0]}, {1,0,0.5});

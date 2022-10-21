@@ -53,6 +53,36 @@ std::complex<double> eval_spherical_harmonics(const Quantum_Numbers &quantumNumb
 
     return Y;
 }
+double compute_reduced_bessel_function_half(const double order,const double z){
+    auto pi = bm::constants::pi<double>();
+    double k_tilde=0;
+    auto n = int(order + 1.0/2.0);
 
+    double k_tilde_0 = 0.5 * std::exp(-z);
+    double k_tilde_1 = (1+z)/8 * std::exp(-z) ;
+
+    // k_hat =(2/pi)^{1/2} *(alpha*r)^{n-1/2}* K_{n-1/2}(alpha*r)
+    double k_hat=0;
+    if(z==0) {
+        if (n == 1) {
+            k_tilde = k_tilde_0;
+        } else if (n == 2) {
+            k_tilde = k_tilde_1;
+        } else {
+            for (int i = 3; i <= n; i++) {
+                k_tilde = ((2 * double(i) - 3) / (2 * i)) * k_tilde_1 + ((z * z)/ (4 * i * (i - 1)) * k_tilde_0);
+                k_tilde_1 = k_tilde;
+                k_tilde_0 = k_tilde_1;
+            }
+        }
+         k_hat = pow(2, n) * bm::factorial<double>(n) * k_tilde;
+    }
+    else {
+         k_hat = pow(2.0/pi,1.0/2.0);
+         k_hat *= pow(z,( n - (1.0/2.0)));
+         k_hat *= bm::cyl_bessel_k(n-1.0/2.0,z);
+    }
+    return k_hat;
+}
 
 }

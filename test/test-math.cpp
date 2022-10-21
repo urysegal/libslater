@@ -41,7 +41,7 @@ TEST_CASE("Angle between points","[utils]")
     CHECK(sc.phi == pi/4);
 }
 
-TEST_CASE( "Cartesian Coords  to Spherical", "[utils]" ) {
+TEST_CASE( "Cartesian Coords  to Spherical", "[coordinates]" ) {
 
     {
     center_t r_cart{3, 0, 0};
@@ -107,7 +107,7 @@ TEST_CASE( "shift_first_center_to_origin ", "[homeier]" ) {
 
 }
 
-TEST_CASE( "Evaluate Spherical Harmonics ", "[b_func_engine]" ) {
+TEST_CASE( "Evaluate Spherical Harmonics ", "[utils]" ) {
     Quantum_Numbers q1 = {4,2,1};
     Quantum_Numbers q2 = {4,2,-1};
     double theta = pi/4;
@@ -129,39 +129,60 @@ TEST_CASE( "Evaluate Spherical Harmonics ", "[b_func_engine]" ) {
 
 TEST_CASE( "Evaluate B Functions ", "[b_func_engine]" ) {
     ///TEST MAY NEED FIXING
-    Quantum_Numbers q1 = {4,2,1};
+    Quantum_Numbers q1 = {4, 2, 1};
     double alpha = 1.0;
-    center_t r{1,2,1} ;
-    {
-        //check internal boost bessel function
-        Spherical_Coordinates sc(r);
-        CHECK(bm::cyl_bessel_k(q1.n - 1.0 / 2.0, alpha * sc.radius) - 0.48190552 < 10E-9);
-    }
+    center_t r{1, 2, 1};
+
     B_function_Engine b_func_engine;
-    auto B = b_func_engine.calculate(q1,alpha,r);
-    CHECK(abs(B - std::complex<double>(-0.000148279, -0.000296558)) < 10E-9) ;
+    auto B = b_func_engine.calculate(q1, alpha, r);
+    CHECK(abs(B - std::complex<double>(-0.000148279, -0.000296558)) < 10E-9);
 
     {   //case where result is 0
-        double alpha = 1;
-        center_t r{1,1,0} ;
-        B_function_Engine b_func_engine;
-        auto B = b_func_engine.calculate(q1,alpha,r);
-        CHECK(abs(B - std::complex<double>(0,0)) < 10E-16) ;
+        alpha = 1;
+        r={1, 1, 0};
+        B = b_func_engine.calculate(q1, alpha, r);
+        CHECK(abs(B - std::complex<double>(0, 0)) < 10E-16);
     }
     {   //case where r is 0
-        double alpha = 1;
-        center_t r{0,0,0} ;
-        B_function_Engine b_func_engine;
-        auto B = b_func_engine.calculate(q1,alpha,r);
-        CHECK(abs(B - std::complex<double>(0,0)) < 10E-16) ;
+        alpha = 1;
+        r={0, 0, 0};
+        B = b_func_engine.calculate(q1, alpha, r);
+        CHECK(abs(B - std::complex<double>(0, 0)) < 10E-16);
     }
     {   //case where r is 0 , n=1
-        Quantum_Numbers q2 = {1,0,0};
-        double alpha = 1;
-        center_t r{0,0,0};
-        B_function_Engine b_func_engine;
-        auto B = b_func_engine.calculate(q2,alpha,r);
-        CHECK(abs(B - std::complex<double>(1/(4*sqrt(pi)),0)) < 10E-16) ;
+        Quantum_Numbers q2 = {1, 0, 0};
+        alpha = 1;
+        r={0, 0, 0};
+        B = b_func_engine.calculate(q2, alpha, r);
+        CHECK(abs(B - std::complex<double>(1 / (4 * sqrt(pi)), 0)) < 10E-16);
+    }
+}
+TEST_CASE( "Evaluate Reduced Bessel Functions at Origin ", "[utils]" ) {
+    double v =0.5;
+    double z =0;
+    double rbf;
+    rbf = compute_reduced_bessel_function_half(v,z);
+    CHECK(rbf==1.0);
+    {
+        v=3.0/2.0;
+        rbf = compute_reduced_bessel_function_half(v,z);
+        CHECK(rbf==1.0);
+    }
+    {
+        v=5.0/2.0;
+        rbf = compute_reduced_bessel_function_half(v,z);
+        CHECK(rbf==3.0);
+    }
+    {
+        v=7.0/2.0;
+        rbf = compute_reduced_bessel_function_half(v,z);
+        CHECK(rbf==15.0);
+    }
+    {
+        v = 7.0/2.0;
+        z = sqrt(6);
+        rbf = compute_reduced_bessel_function_half(v,z);
+        CHECK(abs(rbf-8.844365016)<10E-9);
     }
 
 }
