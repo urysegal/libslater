@@ -17,8 +17,8 @@ STO_Basis_Function_Info::STO_Basis_Function_Info( sto_exponent_t exponent_,
         quantum_numbers(quantum_numbers_)
 {
     auto alpha = exponent;
-    auto n = quantum_numbers.n;
-    normalization_coefficient = pow(pow(2.0*alpha,2*n+1),bm::factorial<double>(2*n));
+    auto n = int(quantum_numbers.n);
+    normalization_coefficient = pow(2.0*alpha,2*n+1)/bm::factorial<double>(2*n);
     normalization_coefficient = sqrt(normalization_coefficient);
 }
 

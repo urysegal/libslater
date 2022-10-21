@@ -70,7 +70,7 @@ double compute_reduced_bessel_function_half(const double order,const double z){
             k_tilde = k_tilde_1;
         } else {
             for (int i = 3; i <= n; i++) {
-                k_tilde = (2 * double(i) - 3) / (2 * i) * k_tilde_1 + z * z / (4 * i * (i - 1)) * k_tilde_0;
+                k_tilde = ((2 * double(i) - 3) / (2 * i)) * k_tilde_1 + ((z * z)/ (4 * i * (i - 1)) * k_tilde_0);
                 k_tilde_1 = k_tilde;
                 k_tilde_0 = k_tilde_1;
             }
