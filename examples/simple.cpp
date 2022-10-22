@@ -12,8 +12,8 @@ main()
     Quantum_Numbers quantum_numbers_1 = {1,0,0};
     Quantum_Numbers quantum_numbers_2 = {1,0,0};
 
-    STO_Basis_Function_Info oxygen_s(2, quantum_numbers_1);
-    STO_Basis_Function_Info oxygen_p(1, quantum_numbers_2);
+    STO_Basis_Function_Info oxygen_s(1, quantum_numbers_1);
+    STO_Basis_Function_Info oxygen_p(2, quantum_numbers_2);
 
     STO_Basis_Function_Info hydrogen_s( 1, quantum_numbers_2);
 
