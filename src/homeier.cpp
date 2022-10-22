@@ -143,8 +143,8 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
     double eta = beta/alpha;
 
     double numerator = pow(1-s,n1+l1) * pow(s,n2+l2);
-    double denominator1 = pow(s+(1-s)*eta,(l1+l2+3)/2);
-    double denominator2 = pow( (1-s)*eta*alpha*alpha + s*beta*beta,n1+n2+(l1+l2+1)/2);
+    double denominator1 = pow(s+(1-s)*eta,(l1+l2+3.0)/2);
+    double denominator2 = pow( (1-s)*eta*alpha*alpha + s*beta*beta,n1+n2+(l1+l2+1.0)/2);
     double prefactor  = pow(eta, n1+l1+1);
     
     return prefactor * numerator / (denominator1*denominator2);
