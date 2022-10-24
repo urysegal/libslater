@@ -9,13 +9,12 @@ int
 main()
 {
 
-    Quantum_Numbers quantum_numbers_1 = {1,0,0};
-    Quantum_Numbers quantum_numbers_2 = {1,0,0};
+    Quantum_Numbers quantum_numbers = {1,0,0};
 
-    STO_Basis_Function_Info oxygen_s(1, quantum_numbers_1);
-    STO_Basis_Function_Info oxygen_p(2, quantum_numbers_2);
+    STO_Basis_Function_Info oxygen_s(1, quantum_numbers);
+    STO_Basis_Function_Info oxygen_p(2, quantum_numbers);
 
-    STO_Basis_Function_Info hydrogen_s( 1, quantum_numbers_2);
+    STO_Basis_Function_Info hydrogen_s( 1, quantum_numbers);
 
     STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, 0});
     STO_Basis_Function oxygen_2_p(oxygen_p, {2, 2, 2});
