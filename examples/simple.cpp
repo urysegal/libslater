@@ -14,7 +14,7 @@ main()
     STO_Basis_Function_Info oxygen_s( 1, quantum_numbers);
     STO_Basis_Function_Info oxygen_p(1, quantum_numbers);
 
-    STO_Basis_Function_Info hydrogen_s( 0.952, quantum_numbers);
+    STO_Basis_Function_Info hydrogen_s( 1, quantum_numbers);
 
     STO_Basis_Function oxygen_1_s(oxygen_s, {1, 0, 0});
     STO_Basis_Function oxygen_2_p(oxygen_p, {0, 0, 1});
