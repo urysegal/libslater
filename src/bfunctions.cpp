@@ -40,7 +40,7 @@ double B_functions_representation_of_STO::calculate_coefficient(const Quantum_Nu
 
     //the factorial function call is too verbose - shorten it ?
     double numerator = pow(-1.0,(n-l-p)) * bm::factorial<double>(n-l) * pow(2.0,(l+p)) * bm::factorial<double>(l+p) ;
-    double denominator =  bm::factorial<double>(2.0*p-n+l) * bm::factorial<double>(bm::factorial<double>(2.0*n-2.0*l-2.0*p));
+    double denominator =  bm::factorial<double>(2.0*p-n+l) * bm::double_factorial<double>(2.0*n-2.0*l-2.0*p);
     
     return numerator/denominator;
 }//calculate_coefficient
