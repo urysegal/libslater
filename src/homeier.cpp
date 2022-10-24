@@ -12,6 +12,8 @@ namespace slater {
 
 Homeier_Integrator dummy_integrator(overlap_homeier_imp_name);
 
+B_function_Engine Homeier_Integrator::B_function_engine;
+
 STO_Integrator *Homeier_Integrator::clone() const
 {
     return new Homeier_Integrator();
@@ -120,7 +122,7 @@ std::complex<double> Homeier_Integrator::integrate_overlap_using_b_functions(con
 
 
 
-double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s) const
+double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s)
 {
     //TESTING NEEDED
     //Equation 30 in On the Evaluation of Overlap Integrals with Exponential-Type Basis Functions
@@ -150,7 +152,7 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
     return prefactor * numerator / (denominator1*denominator2);
 }
 
-double Homeier_Integrator::calculate_delta(const B_function_details &f1, const B_function_details &f2, double s) const
+double Homeier_Integrator::calculate_delta(const B_function_details &f1, const B_function_details &f2, double s)
 {
     //delta(alpha,beta,t)
     auto alpha = f1.get_alpha();
@@ -159,7 +161,7 @@ double Homeier_Integrator::calculate_delta(const B_function_details &f1, const B
     return delta;
 }
 
-std::complex<double> Homeier_Integrator::get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l) const
+std::complex<double> Homeier_Integrator::get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l)
 {
     std::complex<double> total_sum = 0;
     const Quantum_Numbers &q1 = f1.get_quantum_numbers();
@@ -178,7 +180,7 @@ std::complex<double> Homeier_Integrator::get_B_function_sum(const B_function_det
     return total_sum;
 }
 
-std::complex<double> Homeier_Integrator::get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha) const
+std::complex<double> Homeier_Integrator::get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha)
 {
 
     const Quantum_Numbers &q1 = f1.get_quantum_numbers();
@@ -199,7 +201,7 @@ std::complex<double> Homeier_Integrator::get_gaunt_sum(const B_function_details 
 }
 
 
-std::complex<double> Homeier_Integrator::calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const
+std::complex<double> Homeier_Integrator::calculate_S(const B_function_details &f1, const B_function_details &f2, double s)
 {
     // formula 13 second paper or 19 first paper
     // We compute S_{n1,l1,m1}^{n2,l2,m2}(d,d,R) using Equation 13
@@ -219,19 +221,19 @@ std::complex<double> Homeier_Integrator::calculate_S(const B_function_details &f
     return result;
 }
 
-double Homeier_Integrator::get_gaunt_coeff(const std::array<const int, 6> &args) const
+double Homeier_Integrator::get_gaunt_coeff(const std::array<const int, 6> &args)
 {
     return Gaunt_Coefficient_Engine::get()->calculate(args);
 }
 
 
-std::complex<double> Homeier_Integrator::calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point) const
+std::complex<double> Homeier_Integrator::calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point)
 {
     return B_function_engine.calculate(quantum_numbers, alpha, point);
 }
 
 
-int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2) const
+int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2)
 {
     /// l_min depends on whether max( |l1 - l2|, |m1-m2|) + l_max is even or odd
 
@@ -241,8 +243,27 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
 }
 
 
+/// These functions are only for debug purpose
 
 
+void calculate_gauss_point(const STO_Basis_Function &bf1, const STO_Basis_Function &bf2, double s)
+{
 
+    center_t new_centers[2];
+    shift_first_center_to_origin(bf1.get_center(), bf2.get_center(), new_centers);
+
+    B_functions_representation_of_STO f1(bf1, new_centers[0]);
+    B_functions_representation_of_STO f2(bf2, new_centers[1]);
+
+
+    for (auto i: f1) {
+        for (auto j: f2) {
+            std::complex<double> S = Homeier_Integrator::calculate_S(i.second, j.second, s);
+            auto w_hat = Homeier_Integrator::calculate_W_hat(i.second, j.second, s);
+            fprintf(stdout, "S= %15.15f + %15.15f i ,  W=%15.15f  \n", S.real(), S.imag(), w_hat );
+        }
+    }
+}
 
 }
+
