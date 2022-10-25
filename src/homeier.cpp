@@ -222,7 +222,7 @@ std::complex<double> Homeier_Integrator::calculate_S(const B_function_details &f
     auto gaunt_sum = get_gaunt_sum(f1, f2, delta);
 
 
-    std::complex<double> result = pow(-1, l2 ) * (4*pi/pow(delta,3)) * gaunt_sum ;
+    std::complex<double> result = pow(-1, l2 ) * (4*pi) * gaunt_sum ;
 
     return result;
 }

@@ -11,10 +11,10 @@ main()
 {
 
 
-    Quantum_Numbers quantum_numbers = {1,0,0};
+    Quantum_Numbers quantum_numbers = {2,1,0};
 
     STO_Basis_Function_Info oxygen_s( 1, quantum_numbers);
-    STO_Basis_Function_Info oxygen_p(10, quantum_numbers);
+    STO_Basis_Function_Info oxygen_p(2, quantum_numbers);
 
     STO_Basis_Function_Info hydrogen_s( 1, quantum_numbers);
 
@@ -41,19 +41,19 @@ main()
         std::cout << std::setprecision(16);
 
        std::cout << result << std::endl;
-        const double order = 5;
-        const double z[3] ={ 2.2532185649430092, 7.3753971484553746 , 22.190479333842703 };
+        //const double order = 5;
+       // const double z[3] ={ 2.2532185649430092, 7.3753971484553746 , 22.190479333842703 };
 
-        for ( int i = 0 ; i < 3 ; ++i ) {
-            do_compute_reduced_bessel_function_half(
-                    order,
-                    z[i]
-            );
+      //  for ( int i = 0 ; i < 3 ; ++i ) {
+        //    do_compute_reduced_bessel_function_half(
+          //          order,
+      //              z[i]
+        //    );
 
 
             //printf("Bessel %15.15f\n", r);
-        }
-        calculate_gauss_point(basis_set[0], basis_set[1], 1.5554323515926116E-004);
+        //}
+      //  calculate_gauss_point(basis_set[0], basis_set[1], 1.5554323515926116E-004);
 
         //result = engine->nuclear_attraction({basis_set[2], basis_set[0]}, {1,0,0.5});
         //std::cout << result << std::endl;
