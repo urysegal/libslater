@@ -10,6 +10,7 @@ int
 main()
 {
 
+
     Quantum_Numbers quantum_numbers = {1,0,0};
 
     STO_Basis_Function_Info oxygen_s( 1, quantum_numbers);
@@ -33,14 +34,25 @@ main()
         options.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(options);
-       // auto result = engine->overlap({basis_set[0], basis_set[1]});
+       auto result = engine->overlap({basis_set[0], basis_set[1]});
 
 
-       // std::cout << std::fixed;
-      //  std::cout << std::setprecision(16);
+        std::cout << std::fixed;
+        std::cout << std::setprecision(16);
 
-       // std::cout << result << std::endl;
+       std::cout << result << std::endl;
+        const double order = 5;
+        const double z[3] ={ 2.2532185649430092, 7.3753971484553746 , 22.190479333842703 };
 
+        for ( int i = 0 ; i < 3 ; ++i ) {
+            do_compute_reduced_bessel_function_half(
+                    order,
+                    z[i]
+            );
+
+
+            //printf("Bessel %15.15f\n", r);
+        }
         calculate_gauss_point(basis_set[0], basis_set[1], 1.5554323515926116E-004);
 
         //result = engine->nuclear_attraction({basis_set[2], basis_set[0]}, {1,0,0.5});

@@ -233,5 +233,11 @@ public:
 
 void calculate_gauss_point(const STO_Basis_Function &f1, const STO_Basis_Function &f2, double s);
 
+double do_compute_reduced_bessel_function_half(
+        const double order,
+        const double z
+);
+
+
 
 }
