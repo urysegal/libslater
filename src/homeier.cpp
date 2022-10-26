@@ -66,6 +66,9 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
     assert(functions[0].get_quantum_numbers().l + functions[1].get_quantum_numbers().l
         <= Gaunt_Coefficient_Engine::get_maximal_gaunt_l());
 
+    functions[0].get_quantum_numbers().validate();
+    functions[1].get_quantum_numbers().validate();
+
     center_t new_centers[2];
     shift_first_center_to_origin(functions[0].get_center(), functions[1].get_center(), new_centers);
 
