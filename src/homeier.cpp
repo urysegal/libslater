@@ -40,6 +40,7 @@ void Homeier_Integrator::init(const STO_Integration_Options &params)
 
 void Homeier_Integrator::create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2)
 {
+    equivalence_series.clear();
     for ( auto i : f1) {
         for (auto j: f2) {
             equivalence_series.emplace_back(i, j);
