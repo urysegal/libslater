@@ -47,7 +47,7 @@ std::complex<double> eval_spherical_harmonics(const Quantum_Numbers &quantumNumb
     //Using Wikipedia's accoustics definition to stay consistent with legendre_p function in boost
     // which includes the Condon-Shortley phase term
     std::complex<double> Y;
-    double Y_pow = 0.5f;
+    double Y_pow = 0.5;
     Y = pow( ( (2.0l*l + 1) * bm::factorial<double>(l-m) ) / (4.0l * pi * bm::factorial<double>(l + m)) , Y_pow);
     Y *= Plm;
     Y *= std::exp(std::complex<double>(0,m*phi));
@@ -55,7 +55,7 @@ std::complex<double> eval_spherical_harmonics(const Quantum_Numbers &quantumNumb
     return Y;
 }
 double compute_reduced_bessel_function_half(const double order,const double z){
-    //auto pi = bm::constants::pi<double>();
+    auto pi = bm::constants::pi<double>();
     double k_tilde=0;
     auto n = int(order + 1.0/2.0);
 
@@ -64,7 +64,7 @@ double compute_reduced_bessel_function_half(const double order,const double z){
 
     //k_hat =(2/pi)^{1/2} *(alpha*r)^{n-1/2}* K_{n-1/2}(alpha*r)
     double k_hat=0;
-    //if(z==0) {
+    if(z==0) {
         if (n == 1) {
             k_tilde = k_tilde_0;
         } else if (n == 2) {
@@ -77,11 +77,11 @@ double compute_reduced_bessel_function_half(const double order,const double z){
             }
         }
          k_hat = pow(2, n) * bm::factorial<double>(n) * k_tilde;
-    //} else {
-      //   k_hat = pow(2.0/pi,1.0/2.0);
-        // k_hat *= pow(z,( n - (1.0/2.0)));
-         //k_hat *= bm::cyl_bessel_k(n-1.0/2.0,z);
-    //}
+    } else {
+         k_hat = pow(2.0/pi,1.0/2.0);
+         k_hat *= pow(z,( n - (1.0/2.0)));
+         k_hat *= bm::cyl_bessel_k(n-1.0/2.0,z);
+    }
     return k_hat;
 }
 
