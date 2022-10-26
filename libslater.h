@@ -54,6 +54,7 @@ struct Quantum_Numbers {
     angular_quantum_number_t l = 0; /// Angular moment number, also known as 'l'
     magnetic_quantum_number_t m = 0; /// Magnetic/Orientation quantum number, also known as 'm' or 'ml'
     spin_quantum_number_t ms = spin_quantum_number_t::UNDEFINED; /// Spin Quantum number, a.k.a. 'ms'
+    void validate() const;
 };
 
 /// One STO style basis function details. STO have radial part and angular part.
@@ -228,16 +229,5 @@ public:
     /// implementation matching one or more of the strings given.
     STO_Integrations *create(std::map<integration_types, std::string > &engines);
 };
-
-/// These functions are here temporarily for debugging
-
-void calculate_gauss_point(const STO_Basis_Function &f1, const STO_Basis_Function &f2, double s);
-
-double do_compute_reduced_bessel_function_half(
-        const double order,
-        const double z
-);
-
-
 
 }

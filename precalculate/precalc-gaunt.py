@@ -1,7 +1,7 @@
 import sys
 from sage.all import *
 
-L_MAX = 6
+L_MAX = 8
 M_COUNT = ((L_MAX*2) + 1)
 
 with open("gaunt-table.h.in") as f:

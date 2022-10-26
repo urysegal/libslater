@@ -86,13 +86,4 @@ double compute_reduced_bessel_function_half(const double order,const double z){
 }
 
 
-double do_compute_reduced_bessel_function_half(
-        const double order,
-        const double z
-)
-{
-    return compute_reduced_bessel_function_half(order, z);
-}
-
-
 }

@@ -40,6 +40,7 @@ void Homeier_Integrator::init(const STO_Integration_Options &params)
 
 void Homeier_Integrator::create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2)
 {
+    equivalence_series.clear();
     for ( auto i : f1) {
         for (auto j: f2) {
             equivalence_series.emplace_back(i, j);
@@ -61,6 +62,13 @@ void shift_first_center_to_origin(const center_t &c1, const center_t c2, center_
 
 energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2> &functions)
 {
+
+    assert(functions[0].get_quantum_numbers().l + functions[1].get_quantum_numbers().l
+        <= Gaunt_Coefficient_Engine::get_maximal_gaunt_l());
+
+    functions[0].get_quantum_numbers().validate();
+    functions[1].get_quantum_numbers().validate();
+
     center_t new_centers[2];
     shift_first_center_to_origin(functions[0].get_center(), functions[1].get_center(), new_centers);
 
@@ -248,29 +256,6 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
     auto m = std::max(abs(q1.l-q2.l),abs(q1.m-q2.m));
     auto switch_condition = m +q1.l+q2.l;
     return m + (switch_condition%2) ;
-}
-
-
-/// These functions are only for debug purpose
-
-
-void calculate_gauss_point(const STO_Basis_Function &bf1, const STO_Basis_Function &bf2, double s)
-{
-
-    center_t new_centers[2];
-    shift_first_center_to_origin(bf1.get_center(), bf2.get_center(), new_centers);
-
-    B_functions_representation_of_STO f1(bf1, new_centers[0]);
-    B_functions_representation_of_STO f2(bf2, new_centers[1]);
-
-
-    for (auto i: f1) {
-        for (auto j: f2) {
-            std::complex<double> S = Homeier_Integrator::calculate_S(i.second, j.second, s);
-            auto w_hat = Homeier_Integrator::calculate_W_hat(i.second, j.second, s);
-            fprintf(stdout, "S= %15.15f + %15.15f i ,  W=%15.15f  \n", S.real(), S.imag(), w_hat );
-        }
-    }
 }
 
 }

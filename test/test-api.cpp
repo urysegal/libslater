@@ -48,7 +48,7 @@ TEST_CASE( "One overlap integral", "[overlap]" ) {
 
         energy_unit_t result = engine->overlap({oxygen_1_s, hydrogen_1_s});
         CHECK(result.imag() == 0 );
-        CHECK(result.real() == 0 );
+        CHECK(abs(result.real() - 0.3400571077) < 10e-7 );
 
         delete engine;
 
@@ -152,5 +152,21 @@ TEST_CASE("Gaunt Coefficients", "[api]")
     CHECK(g- -0.0629787762403749 < 0.00000001);
     g = slater::Gaunt_Coefficient_Engine::get()->calculate({5,4,3,-1,2,-3});
     CHECK(g < 0.00000001);
+
+}
+
+TEST_CASE( "evaliate STO function", "[STO]" ) {
+
+    Quantum_Numbers quantum_numbers = {2, 1, 0};
+
+    STO_Basis_Function_Info oxygen_s(0.252, quantum_numbers);
+
+    STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, -0.14142136});
+
+    CHECK(abs(oxygen_1_s.evaluate({1,1,1}).real() - 0.0116243037) < 10e-9 );
+    CHECK(abs(oxygen_1_s.evaluate_conjugate({1,1,1}).real() - 0.0116243037) < 10e-9);
+    CHECK(oxygen_1_s.evaluate({1,1,1}).imag() == 0 );
+    CHECK(oxygen_1_s.evaluate_conjugate({1,1,1}).imag() == 0 );
+
 
 }
