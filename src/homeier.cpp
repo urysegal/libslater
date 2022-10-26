@@ -144,11 +144,11 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
     
     double eta = beta/alpha;
 
-    double numerator = pow(1-s,n1+l1) * pow(s,n2+l2);
-    double denom_1_power = (3.0f + l1 + l2 ) / 2.0 ;
-    double denominator1 = pow(s+(1-s)*eta, denom_1_power);
-    double denom_2_power = n1+n2+double(l1+l2+1.0)/2.0 ;
-    double denominator2 = pow( (1-s)*eta*alpha*alpha + s*beta*beta,denom_2_power);
+    double numerator = pow(1.0f-s,n1+l1) * pow(s,n2+l2);
+    double denom_1_power = (3.0f + l1 + l2 ) / 2.0l ;
+    double denominator1 = pow(s+(1.0f-s)*eta, denom_1_power);
+    double denom_2_power = n1+n2+double(l1+l2+1.0)/2.0f ;
+    double denominator2 = pow( (1.0f-s)*eta*alpha*alpha + s*beta*beta, denom_2_power);
     double prefactor  = pow(eta, n1+l1+1);
     
     return prefactor * numerator / (denominator1*denominator2);
@@ -161,9 +161,9 @@ double Homeier_Integrator::calculate_delta(const B_function_details &f1, const B
     auto beta = f2.get_alpha();
 
     auto eta = beta / alpha ;
-    double t = s/( s+ (1.0l-s) * eta );
+    double t = s/( s+ (1.0f-s) * eta );
 
-    auto delta = sqrt((1-t)*alpha*alpha + t*beta*beta);
+    auto delta = sqrt((1.0f-t)*alpha*alpha + t*beta*beta);
     return delta;
 }
 
@@ -222,7 +222,7 @@ std::complex<double> Homeier_Integrator::calculate_S(const B_function_details &f
     auto gaunt_sum = get_gaunt_sum(f1, f2, delta);
 
 
-    std::complex<double> result = pow(-1, l2 ) * (4*pi) * gaunt_sum ;
+    std::complex<double> result = pow(-1, l2 ) * (4.0f*pi) * gaunt_sum ;
 
     return result;
 }
