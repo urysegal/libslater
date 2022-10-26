@@ -97,7 +97,7 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
     assert(n>0);
-    assert(abs(l) < n);
+    //assert(abs(l) < n);
 
     // Cartesian Representation of r to Spherical representation
     Spherical_Coordinates spherical(r);
