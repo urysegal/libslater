@@ -14,8 +14,9 @@ namespace slater {
 
 void Quantum_Numbers::validate() const
 {
-    assert(this->l < this->n);
-    assert(abs(this->m) <= this->l );
+    assert(l < n);
+    assert(l >= 0);
+    assert(abs(m) <= l );
 }
 
 STO_Basis_Function_Info::STO_Basis_Function_Info( sto_exponent_t exponent_,
