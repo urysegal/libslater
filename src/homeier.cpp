@@ -139,8 +139,8 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
     auto n2 = quantum_numbers_2.n;
     auto l2 = quantum_numbers_2.l;
 
-    auto alpha = f1.get_alpha();
-    auto beta = f2.get_alpha();
+    double alpha = f1.get_alpha();
+    double beta = f2.get_alpha();
     
     double eta = beta/alpha;
 
@@ -199,7 +199,8 @@ std::complex<double> Homeier_Integrator::get_gaunt_sum(const B_function_details 
     std::complex<double> total_sum = 0;
     for ( auto l = l_min ; l <= l_max ; l+=2 )
     {
-        auto gaunt_coeff = get_gaunt_coeff({(int)q2.l, q2.m, (int)q1.l,q1.m, l, q2.m - q1.m});
+        auto gaunt_coeff = get_gaunt_coeff({q2.l, -q2.m, q1.l,q1.m, l, q2.m - q1.m});
+        gaunt_coeff *= pow(-1.0, double(q2.m));
         std::complex<double> B_function_sum = get_B_function_sum(f1, f2, alpha, l);
         total_sum += gaunt_coeff * B_function_sum;
     }
@@ -243,7 +244,7 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
 {
     /// l_min depends on whether max( |l1 - l2|, |m1-m2|) + l_max is even or odd
 
-    auto m = std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m));
+    auto m = std::max(abs(q1.l-q2.l),abs(q1.m-q2.m));
     auto switch_condition = m +q1.l+q2.l;
     return m + (switch_condition%2) ;
 }
