@@ -154,3 +154,19 @@ TEST_CASE("Gaunt Coefficients", "[api]")
     CHECK(g < 0.00000001);
 
 }
+
+TEST_CASE( "evaliate STO function", "[STO]" ) {
+
+    Quantum_Numbers quantum_numbers = {2, 1, 0};
+
+    STO_Basis_Function_Info oxygen_s(0.252, quantum_numbers);
+
+    STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, -0.14142136});
+
+    CHECK(abs(oxygen_1_s.evaluate({1,1,1}).real() - 0.0116243037) < 10e-9 );
+    CHECK(abs(oxygen_1_s.evaluate_conjugate({1,1,1}).real() - 0.0116243037) < 10e-9);
+    CHECK(oxygen_1_s.evaluate({1,1,1}).imag() == 0 );
+    CHECK(oxygen_1_s.evaluate_conjugate({1,1,1}).imag() == 0 );
+
+
+}
