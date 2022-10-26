@@ -12,6 +12,8 @@ namespace slater {
 
 Homeier_Integrator dummy_integrator(overlap_homeier_imp_name);
 
+B_function_Engine Homeier_Integrator::B_function_engine;
+
 STO_Integrator *Homeier_Integrator::clone() const
 {
     return new Homeier_Integrator();
@@ -120,7 +122,7 @@ std::complex<double> Homeier_Integrator::integrate_overlap_using_b_functions(con
 
 
 
-double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s) const
+double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s)
 {
     //TESTING NEEDED
     //Equation 30 in On the Evaluation of Overlap Integrals with Exponential-Type Basis Functions
@@ -137,29 +139,36 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
     auto n2 = quantum_numbers_2.n;
     auto l2 = quantum_numbers_2.l;
 
-    auto alpha = f1.get_alpha();
-    auto beta = f2.get_alpha();
+    double alpha = f1.get_alpha();
+    double beta = f2.get_alpha();
     
     double eta = beta/alpha;
 
-    double numerator = pow(1-s,n1+l1) * pow(s,n2+l2);
-    double denominator1 = pow(s+(1-s)*eta,(l1+l2+3.0)/2);
-    double denominator2 = pow( (1-s)*eta*alpha*alpha + s*beta*beta,n1+n2+(l1+l2+1.0)/2);
+    double numerator = pow(1.0-s,n1+l1) * pow(s,n2+l2);
+    double denom_1_power = (3.0 + l1 + l2 ) / 2.0 ;
+    double denominator1 = pow(s+(1.0-s)*eta, denom_1_power);
+    double denom_2_power = n1+n2+double(l1+l2+1.0)/2.0 ;
+    double denominator2 = pow( (1.0-s)*eta*alpha*alpha + s*beta*beta, denom_2_power);
+
     double prefactor  = pow(eta, n1+l1+1);
     
     return prefactor * numerator / (denominator1*denominator2);
 }
 
-double Homeier_Integrator::calculate_delta(const B_function_details &f1, const B_function_details &f2, double s) const
+double Homeier_Integrator::calculate_delta(const B_function_details &f1, const B_function_details &f2, double s)
 {
     //delta(alpha,beta,t)
     auto alpha = f1.get_alpha();
     auto beta = f2.get_alpha();
-    auto delta = sqrt((1-s)*alpha*alpha + s*beta*beta);
+
+    auto eta = beta / alpha ;
+    double t = s/( s+ (1.0-s) * eta );
+
+    auto delta = sqrt((1.0-t)*alpha*alpha + t*beta*beta);
     return delta;
 }
 
-std::complex<double> Homeier_Integrator::get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l) const
+std::complex<double> Homeier_Integrator::get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l)
 {
     std::complex<double> total_sum = 0;
     const Quantum_Numbers &q1 = f1.get_quantum_numbers();
@@ -171,14 +180,14 @@ std::complex<double> Homeier_Integrator::get_B_function_sum(const B_function_det
     delta_l/=2;
 
     for (auto j = 0 ; j <= delta_l ; j++) {
-        Quantum_Numbers B_function_parameters = {q1.n+q2.n+2*delta_l+1-j, (unsigned int)l, q2.m - q1.m };
+        Quantum_Numbers B_function_parameters = {q1.n+q2.n+2*delta_l+1-j, l, q2.m - q1.m };
         total_sum += std::complex<double>(pow(-1, j) * boost::math::binomial_coefficient<double>(delta_l, j),0) *
                 calculate_B_function_value(B_function_parameters, alpha, f2.get_center());
     }
     return total_sum;
 }
 
-std::complex<double> Homeier_Integrator::get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha) const
+std::complex<double> Homeier_Integrator::get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha)
 {
 
     const Quantum_Numbers &q1 = f1.get_quantum_numbers();
@@ -191,15 +200,16 @@ std::complex<double> Homeier_Integrator::get_gaunt_sum(const B_function_details 
     std::complex<double> total_sum = 0;
     for ( auto l = l_min ; l <= l_max ; l+=2 )
     {
-        auto gaunt_coeff = get_gaunt_coeff({(int)q2.l, q2.m, (int)q1.l,q1.m, l, q2.m - q1.m});
+        auto gaunt_coeff = get_gaunt_coeff({q2.l, -q2.m, q1.l,q1.m, l, q2.m - q1.m});
+        gaunt_coeff *= pow(-1.0, double(q2.m));
         std::complex<double> B_function_sum = get_B_function_sum(f1, f2, alpha, l);
-        total_sum += std::complex<double>(gaunt_coeff,0) * B_function_sum;
+        total_sum += gaunt_coeff * B_function_sum;
     }
     return total_sum;
 }
 
 
-std::complex<double> Homeier_Integrator::calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const
+std::complex<double> Homeier_Integrator::calculate_S(const B_function_details &f1, const B_function_details &f2, double s)
 {
     // formula 13 second paper or 19 first paper
     // We compute S_{n1,l1,m1}^{n2,l2,m2}(d,d,R) using Equation 13
@@ -214,35 +224,54 @@ std::complex<double> Homeier_Integrator::calculate_S(const B_function_details &f
     auto gaunt_sum = get_gaunt_sum(f1, f2, delta);
 
 
-    std::complex<double> result =std::complex<double>(pow(-1, l2 ) * (4*pi/pow(delta,3)),0) * gaunt_sum ;
+    std::complex<double> result = pow(-1, l2 ) * (4.0*pi) * gaunt_sum ;
 
     return result;
 }
 
-double Homeier_Integrator::get_gaunt_coeff(const std::array<const int, 6> &args) const
+double Homeier_Integrator::get_gaunt_coeff(const std::array<const int, 6> &args)
 {
     return Gaunt_Coefficient_Engine::get()->calculate(args);
 }
 
 
-std::complex<double> Homeier_Integrator::calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point) const
+std::complex<double> Homeier_Integrator::calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point)
 {
     return B_function_engine.calculate(quantum_numbers, alpha, point);
 }
 
 
-int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2) const
+int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2)
 {
     /// l_min depends on whether max( |l1 - l2|, |m1-m2|) + l_max is even or odd
 
-    auto m = std::max(abs(int(q1.l-q2.l)),abs(q1.m-q2.m));
+    auto m = std::max(abs(q1.l-q2.l),abs(q1.m-q2.m));
     auto switch_condition = m +q1.l+q2.l;
     return m + (switch_condition%2) ;
 }
 
 
+/// These functions are only for debug purpose
 
 
+void calculate_gauss_point(const STO_Basis_Function &bf1, const STO_Basis_Function &bf2, double s)
+{
 
+    center_t new_centers[2];
+    shift_first_center_to_origin(bf1.get_center(), bf2.get_center(), new_centers);
+
+    B_functions_representation_of_STO f1(bf1, new_centers[0]);
+    B_functions_representation_of_STO f2(bf2, new_centers[1]);
+
+
+    for (auto i: f1) {
+        for (auto j: f2) {
+            std::complex<double> S = Homeier_Integrator::calculate_S(i.second, j.second, s);
+            auto w_hat = Homeier_Integrator::calculate_W_hat(i.second, j.second, s);
+            fprintf(stdout, "S= %15.15f + %15.15f i ,  W=%15.15f  \n", S.real(), S.imag(), w_hat );
+        }
+    }
+}
 
 }
+

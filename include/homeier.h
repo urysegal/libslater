@@ -48,13 +48,15 @@ public:
             const std::vector<center_t> &centers
     ) override;
 
+    static double calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s)  ;
+    static std::complex<double> calculate_S(const B_function_details &f1, const B_function_details &f2, double s) ;
+
 private:
 
     bool use_normalized_b_functions = 0; /// Should we calculate with normalized B functions?
     int number_of_quadrature_points = 30; /// How many quadrature points we should calculate
 
-    B_function_Engine B_function_engine; /// B-functions evaluator
-
+    static B_function_Engine B_function_engine; /// B-functions evaluator
     /// When integrating of each pair of functions in this vector and then summing up the values, you get the
     /// Overlap integral value
     std::vector<std::pair<
@@ -88,14 +90,12 @@ private:
 
 
 
-    double calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s) const ;
-    std::complex<double> calculate_S(const B_function_details &f1, const B_function_details &f2, double s) const;
-    std::complex<double> get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha) const;
-    std::complex<double> get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l) const;
-    double calculate_delta(const B_function_details &f1, const B_function_details &f2, double s) const;
-    int get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2) const ;
-    double get_gaunt_coeff(const std::array<const int, 6> &) const;
-    std::complex<double> calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point) const;
+    static std::complex<double> get_gaunt_sum(const B_function_details &f1, const B_function_details &f2, double alpha) ;
+    static std::complex<double> get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l) ;
+    static double calculate_delta(const B_function_details &f1, const B_function_details &f2, double s) ;
+    static int get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2) ;
+    static double get_gaunt_coeff(const std::array<const int, 6> &) ;
+    static std::complex<double> calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point);
 
 };
 

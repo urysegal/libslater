@@ -39,7 +39,7 @@ double B_functions_representation_of_STO::calculate_coefficient(const Quantum_Nu
     auto l = quantum_numbers.l;
 
     //the factorial function call is too verbose - shorten it ?
-    double numerator = pow(-1.0,(n-l-p)) * bm::factorial<double>(n-l) * pow(2.0,(l+p)) * bm::factorial<double>(l+p) ;
+    double numerator = pow(-1.0,double(n-l-p)) * bm::factorial<double>(n-l) * pow(2.0,(l+p)) * bm::factorial<double>(l+p) ;
     double denominator =  bm::factorial<double>(2.0*p-n+l) * bm::double_factorial<double>(2.0*n-2.0*l-2.0*p);
     
     return numerator/denominator;
@@ -55,8 +55,8 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
     auto quantum_numbers = sto.get_quantum_numbers();
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
-    b_functions_sum_rescaling = std::pow(sto.get_exponent(), -int(quantum_numbers.n)+1);
-    unsigned int min_p;
+    b_functions_sum_rescaling = std::pow(sto.get_exponent(), -quantum_numbers.n+1.0);
+    int min_p;
 
     if ( (n-l)%2 ==0 ){
         min_p = (n-l)/2; 
@@ -67,7 +67,8 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
 
     //loop over p to create all Bcoeffs and Bfunctions
     auto quantum_numbers_p = sto.get_quantum_numbers();
-    for (unsigned int p = min_p; p <= (n - l); p++) {
+    for (int p = min_p; p <= (n - l); p++) {
+        assert(p>=0);
         //Create  B_{p,l}^m (alpha,r)
         quantum_numbers_p.n = p;
         B_function_details B_func_p = B_function_details(sto.get_exponent(), quantum_numbers_p, new_center);
@@ -95,6 +96,8 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
     //COMPLEX ARITHMETIC NEEDS TO BE Checked
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
+    assert(n>0);
+    //assert(abs(l) < n);
 
     // Cartesian Representation of r to Spherical representation
     Spherical_Coordinates spherical(r);
