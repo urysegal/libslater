@@ -12,6 +12,13 @@ namespace bm = boost::math;
 namespace slater {
 
 
+void Quantum_Numbers::validate() const
+{
+    assert(l < n);
+    assert(l >= 0);
+    assert(abs(m) <= l );
+}
+
 STO_Basis_Function_Info::STO_Basis_Function_Info( sto_exponent_t exponent_,
                                                  const Quantum_Numbers &quantum_numbers_) : exponent(exponent_),
         quantum_numbers(quantum_numbers_)

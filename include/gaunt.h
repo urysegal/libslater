@@ -16,6 +16,8 @@ public:
 
     static Gaunt_Coefficient_Engine *get();
 
+    static int get_maximal_gaunt_l() ;
+
 private:
     Gaunt_Coefficient_Engine();
 
