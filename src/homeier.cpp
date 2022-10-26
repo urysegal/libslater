@@ -257,28 +257,5 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
     return m + (switch_condition%2) ;
 }
 
-
-/// These functions are only for debug purpose
-
-
-void calculate_gauss_point(const STO_Basis_Function &bf1, const STO_Basis_Function &bf2, double s)
-{
-
-    center_t new_centers[2];
-    shift_first_center_to_origin(bf1.get_center(), bf2.get_center(), new_centers);
-
-    B_functions_representation_of_STO f1(bf1, new_centers[0]);
-    B_functions_representation_of_STO f2(bf2, new_centers[1]);
-
-
-    for (auto i: f1) {
-        for (auto j: f2) {
-            std::complex<double> S = Homeier_Integrator::calculate_S(i.second, j.second, s);
-            auto w_hat = Homeier_Integrator::calculate_W_hat(i.second, j.second, s);
-            fprintf(stdout, "S= %15.15f + %15.15f i ,  W=%15.15f  \n", S.real(), S.imag(), w_hat );
-        }
-    }
-}
-
 }
 

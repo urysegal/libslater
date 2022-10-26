@@ -230,15 +230,4 @@ public:
     STO_Integrations *create(std::map<integration_types, std::string > &engines);
 };
 
-/// These functions are here temporarily for debugging
-
-void calculate_gauss_point(const STO_Basis_Function &f1, const STO_Basis_Function &f2, double s);
-
-double do_compute_reduced_bessel_function_half(
-        const double order,
-        const double z
-);
-
-
-
 }
