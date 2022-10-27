@@ -31,18 +31,19 @@ extern struct test_info  tests[]  ;
 TEST_CASE( "overlap integrals", "[homier]" )
 {
 
-    for ( int i = 0 ; i< 10 ; ++i ) {
+    auto epsilon = 10e-8;
+    for ( int i = 0 ; tests[i].n1 != 0 ; ++i ) {
 
     struct test_info &ti = tests[i];
 
     Quantum_Numbers quantum_numbers1 = {ti.n1, ti.l1, ti.m1};
     Quantum_Numbers quantum_numbers2 = {ti.n2, ti.l2, ti.m2};
 
-    STO_Basis_Function_Info fi1( 0.252, quantum_numbers1);
-    STO_Basis_Function_Info fi2( 0.952, quantum_numbers2);
+    STO_Basis_Function_Info fi1( ti.alpha, quantum_numbers1);
+    STO_Basis_Function_Info fi2( ti.beta, quantum_numbers2);
 
-    STO_Basis_Function f1(fi1, {0, 0, -0.14142136});
-    STO_Basis_Function f2(fi2, {0.70710678, 0, 0.56568542});
+    STO_Basis_Function f1(fi1, {ti.x1, ti.y1, ti.z1});
+    STO_Basis_Function f2(fi2, {ti.x2, ti.y2, ti.z2});
 
 
     STO_Integration_Engine engine_factory;
@@ -56,8 +57,8 @@ TEST_CASE( "overlap integrals", "[homier]" )
         engine->init(parameters);
 
         energy_unit_t result = engine->overlap({f1, f2});
-        CHECK(result.imag() == 0 );
-        CHECK(result.real() == 0 );
+        CHECK(abs(result.imag() - ti.ovlp_img) < epsilon);
+        CHECK(abs(result.real() - ti.ovlp_real) < epsilon);
 
         delete engine;
 
@@ -10568,6 +10569,7 @@ struct test_info  tests[] = {
  {            4 ,            3 ,            3   ,    4.7434164902525691      ,   1.1000000000000001      ,    4.0000000000000000      ,   -3.0000000000000000      ,             3 ,            2 ,            2   ,    15.000000000000000      ,    2.0000000000000000      ,    1.5000000000000000      ,    2.2000000000000002      ,    4.71614154E-12 ,    1.31003932E-11 },
  {            4 ,            3 ,            3   ,    4.8476798574163293      ,   1.1000000000000001      ,    4.0000000000000000      ,   -3.0000000000000000      ,             3 ,            2 ,            2   ,    15.666666984558105      ,    2.0000000000000000      ,    1.5000000000000000      ,    2.2000000000000002      ,    2.41208854E-12 ,    6.70024626E-12 },
  {            4 ,            3 ,            3   ,    4.9497474683058327      ,   1.1000000000000001      ,    4.0000000000000000      ,   -3.0000000000000000      ,             3 ,            2 ,            2   ,    16.333333969116211      ,    2.0000000000000000      ,    1.5000000000000000      ,    2.2000000000000002      ,    1.24953162E-12 ,    3.47092103E-12 },
+ {            0 }
 };
 
 
