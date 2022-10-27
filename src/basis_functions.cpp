@@ -76,7 +76,7 @@ sto_exponent_t STO_Basis_Function::get_exponent() const {
     return function_info.get_exponent();
 }
 
-sto_coefficient_t STO_Basis_Function::get_coefficient() const
+sto_coefficient_t STO_Basis_Function::get_normalization_coefficient() const
 {
     return function_info.get_coefficient();
 }
@@ -103,7 +103,7 @@ std::complex<double> STO_Basis_Function::evaluate(const center_t &point) const
     //need to extract theta and phi from r_spherical
     auto Y = eval_spherical_harmonics(this->get_quantum_numbers(),spherical.theta,spherical.phi);
 
-    return this->get_coefficient() * pow(spherical.radius,n-1)*exp(-alpha*spherical.radius) * Y;
+    return this->get_normalization_coefficient() * pow(spherical.radius, n - 1) * exp(-alpha * spherical.radius) * Y;
 }
 
 std::complex<double> STO_Basis_Function::evaluate_conjugate(const center_t &point) const
