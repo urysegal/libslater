@@ -41,8 +41,8 @@ TEST_CASE( "overlap integrals", "[homier]" )
     STO_Basis_Function_Info fi1( 0.252, quantum_numbers1);
     STO_Basis_Function_Info fi2( 0.952, quantum_numbers2);
 
-    STO_Basis_Function f1(oxygen_s, {0, 0, -0.14142136});
-    STO_Basis_Function f2(hydrogen_s, {0.70710678, 0, 0.56568542});
+    STO_Basis_Function f1(fi1, {0, 0, -0.14142136});
+    STO_Basis_Function f2(fi2, {0.70710678, 0, 0.56568542});
 
 
     STO_Integration_Engine engine_factory;
@@ -55,7 +55,7 @@ TEST_CASE( "overlap integrals", "[homier]" )
 
         engine->init(parameters);
 
-        energy_unit_t result = engine->overlap({oxygen_1_s, hydrogen_1_s});
+        energy_unit_t result = engine->overlap({f1, f2});
         CHECK(result.imag() == 0 );
         CHECK(result.real() == 0 );
 

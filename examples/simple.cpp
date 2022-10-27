@@ -11,13 +11,14 @@ main()
 {
 
 
-    Quantum_Numbers quantum_numbers = {1,0,0};
+    Quantum_Numbers quantum_numbers1 = {5,4,-3};
+    Quantum_Numbers quantum_numbers2 = {4,3,2};
 
-    STO_Basis_Function_Info oxygen_s( 1, quantum_numbers);
-    STO_Basis_Function_Info oxygen_p(2, quantum_numbers);
 
-    STO_Basis_Function_Info hydrogen_s( 1, quantum_numbers);
+    STO_Basis_Function_Info oxygen_s( 1, quantum_numbers1);
+    STO_Basis_Function_Info oxygen_p(2, quantum_numbers2);
 
+    STO_Basis_Function_Info hydrogen_s( 1, quantum_numbers1);
 
     STO_Basis_Function oxygen_1_s(oxygen_s, {2, 0, 0});
     STO_Basis_Function oxygen_2_p(oxygen_p, {0, 0, 1});
@@ -39,7 +40,7 @@ main()
         std::cout << std::fixed;
         std::cout << std::setprecision(16);
 
-       std::cout << result << std::endl;
+        std::cout << result << std::endl;
 
         delete engine;
 

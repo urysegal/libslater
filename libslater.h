@@ -30,8 +30,8 @@ typedef double sto_exponent_t;
 /// A normalization_coefficient or Normalization normalization_coefficient
 typedef double sto_coefficient_t;
 
-typedef unsigned int angular_quantum_number_t;
-typedef unsigned int principal_quantum_number_t;
+typedef  int angular_quantum_number_t;
+typedef  int principal_quantum_number_t;
 typedef int magnetic_quantum_number_t;
 
 /// A coordinate in 1D space
@@ -54,6 +54,7 @@ struct Quantum_Numbers {
     angular_quantum_number_t l = 0; /// Angular moment number, also known as 'l'
     magnetic_quantum_number_t m = 0; /// Magnetic/Orientation quantum number, also known as 'm' or 'ml'
     spin_quantum_number_t ms = spin_quantum_number_t::UNDEFINED; /// Spin Quantum number, a.k.a. 'ms'
+    void validate() const;
 };
 
 /// One STO style basis function details. STO have radial part and angular part.
