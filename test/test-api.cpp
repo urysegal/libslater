@@ -131,7 +131,7 @@ TEST_CASE("Getters and Setters", "[api]")
     oxygen_s.set_exponent(2.0);
 
     STO_Basis_Function oxygen_1_s(oxygen_s, {0, 0, -0.14142136});
-    CHECK(oxygen_1_s.get_coefficient() == 1);
+    CHECK(oxygen_1_s.get_normalization_coefficient() == 1);
     CHECK(oxygen_1_s.get_exponent() == 2);
 
     Quantum_Numbers nqn = { 3,2,1, spin_quantum_number_t::UP};

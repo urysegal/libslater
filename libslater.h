@@ -126,7 +126,7 @@ public:
 
     /// Get the normalization_coefficient used by this basis function
     /// \return the normalization_coefficient used by this basis function
-    sto_coefficient_t get_coefficient() const ;
+    sto_coefficient_t get_normalization_coefficient() const ;
 
     /// Get the spatial center of this basis function
     /// \return the spatial center of this basis function

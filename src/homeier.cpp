@@ -93,10 +93,8 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
     for ( auto &pr : partial_results )
         final_result += pr;
 
-    // alpha_1^{-n1+1} * alpha_2^{-n2+1} sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
-    final_result *= functions[0].get_coefficient() * functions[1].get_coefficient() ;
+    final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
 
-    // N1*N2 * alpha_1^{-n+1} * alpha_2^{-n+1} sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
     final_result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient() ;
     equivalence_series.clear();
     return final_result;
