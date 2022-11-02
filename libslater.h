@@ -208,6 +208,13 @@ private:
 
     std::map<integration_types, STO_Integrator * > integrators;
 
+    /// Calculate a two-center Integral <f|SOMETHING|g> over the given two STO basis functions
+    /// \param functions The two function whose overlap is to be calculated
+    /// \param nuclei if relevant, coordinate of nuclei
+    /// \param which_type which of the two-center integrals we're interested in
+    /// \return The value of the kinetic energy integral
+    energy_unit_t two_functions_integral(const std::array<STO_Basis_Function, 2> &functions, const center_t &nuclei, integration_types which_type) ;
+
 };
 
 

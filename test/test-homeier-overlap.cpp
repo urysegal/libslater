@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/reporters/catch_reporter_registrars.hpp>
@@ -59,8 +59,8 @@ TEST_CASE( "overlap integrals", "[homier]" )
             engine->init(parameters);
 
             energy_unit_t result = engine->overlap({f1, f2});
-            CHECK(abs(result.imag() - ti.ovlp_img) < epsilon);
-            CHECK(abs(result.real() - ti.ovlp_real) < epsilon);
+            CHECK(fabs(result.imag() - ti.ovlp_img) < epsilon);
+            CHECK(fabs(result.real() - ti.ovlp_real) < epsilon);
 
 
     }
