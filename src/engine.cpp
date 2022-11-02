@@ -7,12 +7,12 @@ namespace slater {
 
 std::map<std::string, STO_Integrator *> STO_Integrator::all_integrators;
 
-const std::map<integration_types, std::string >  default_engines =
+const std::map<integration_types, std::string > default_engines =
         {
                 {integration_types::OVERLAP, overlap_homeier_imp_name},
-                { integration_types::NUCLEAR_ATTRACTION, analytical_3c_name }
+                {integration_types::KINETIC, kinetic_homeier_imp_name},
+                {integration_types::NUCLEAR_ATTRACTION, analytical_3c_name }
         };
-
 
 STO_Integrator *STO_Integrator::create(const std::string &name)
 {
@@ -24,8 +24,6 @@ STO_Integrator *STO_Integrator::create(const std::string &name)
     }
     return res;
 }
-
-
 
 
 void STO_Integrations::add_engine(slater::integration_types type, slater::STO_Integrator *integrator)
@@ -41,12 +39,12 @@ STO_Integration_Engine::STO_Integration_Engine()
 
 STO_Integrator::STO_Integrator(const std::string name_)
 {
-    this->all_integrators.emplace(name_, this);
+    all_integrators.emplace(name_, this);
 }
 
 STO_Integrations *STO_Integration_Engine::create(std::map<integration_types, std::string > &engines)
 {
-    STO_Integrations *res = new STO_Integrations;
+    auto res = new STO_Integrations;
 
     for ( auto &it : default_engines )
     {
@@ -83,25 +81,36 @@ STO_Integrations::~STO_Integrations()
     }
 }
 
-energy_unit_t STO_Integrations::overlap(const std::array<STO_Basis_Function, 2> &functions)
+
+energy_unit_t STO_Integrations::two_functions_integral(const std::array<STO_Basis_Function, 2> &functions,
+                                                       const center_t &nuclei,
+                                                       integration_types which_type)
 {
-    auto it = this->integrators.find(integration_types::OVERLAP);
+    auto it = this->integrators.find(which_type);
     if ( it != this->integrators.end() ) {
-        return it->second->integrate({functions[0], functions[1]}, {});
+        return it->second->integrate({functions[0], functions[1]}, {nuclei});
     } else {
-        throw std::runtime_error("Cannot find overlap integral implementation"); // LCOV_EXCL_LINE
+        throw std::runtime_error("Cannot find integral implementation"); // LCOV_EXCL_LINE
     }
 }
+
+
+energy_unit_t STO_Integrations::overlap(const std::array<STO_Basis_Function, 2> &functions)
+{
+    return two_functions_integral(functions, {},integration_types::OVERLAP);
+}
+
+
+energy_unit_t STO_Integrations::kinetic(const std::array<STO_Basis_Function, 2> &functions)
+{
+    return two_functions_integral(functions, {},integration_types::KINETIC);
+}
+
 
 energy_unit_t STO_Integrations::nuclear_attraction(const std::array<STO_Basis_Function, 2> &functions,
                                                    const center_t &nuclei)
 {
-    auto it = this->integrators.find(integration_types::NUCLEAR_ATTRACTION);
-    if ( it != this->integrators.end() ) {
-        return it->second->integrate({functions[0], functions[1]}, {nuclei});
-    } else {
-        throw std::runtime_error("Cannot find overlap integral implementation"); // LCOV_EXCL_LINE
-    }
+    return two_functions_integral(functions, nuclei,integration_types::NUCLEAR_ATTRACTION);
 }
 
 

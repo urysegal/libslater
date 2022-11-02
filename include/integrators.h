@@ -29,7 +29,7 @@ public:
 
     /// Return a new class from the factory
     /// \return Pointer to the STO integrator requested
-    virtual STO_Integrator *clone() const = 0;
+    [[nodiscard]] virtual STO_Integrator *clone() const = 0;
 
     /// Given an integrator name, return a new instance of it
     /// \param name name of the integrator to create

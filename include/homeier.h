@@ -9,10 +9,11 @@
 
 namespace slater {
 
-const std::string overlap_homeier_imp_name = "B-functions-homeier";
+const std::string overlap_homeier_imp_name = "overlap-B-functions-homeier";
+const std::string kinetic_homeier_imp_name = "kinetic-B-functions-homeier";
 
 
-void shift_first_center_to_origin(const center_t &c1, const center_t c2, center_t *new_centers);
+void shift_first_center_to_origin(const center_t &c1, center_t c2, center_t *new_centers);
 
 
 /// This class implements the calculation of the Overlap integral between two STOs using B functions, using
@@ -25,25 +26,27 @@ class Homeier_Integrator : public STO_Integrator {
 public:
 
     /// Build an Homeier-style integrator
-    Homeier_Integrator() :
-            STO_Integrator(2,1)
+    explicit Homeier_Integrator(integration_types t) :
+            STO_Integrator(2,1), which_type(t)
     {}
 
     /// This constructor is only used for building the factory
-    Homeier_Integrator(const std::string &name) : STO_Integrator(name)
-    {}
+    explicit Homeier_Integrator(const std::string &name) noexcept : STO_Integrator(name)
+    {
+        if ( name == kinetic_homeier_imp_name ) {
+            which_type = integration_types::KINETIC;
+        } else {
+            which_type = integration_types::OVERLAP;
+        }
+    }
 
-    /// Release any memory used by the integrator
-    virtual ~Homeier_Integrator();
-
-    virtual STO_Integrator *clone() const override;
-
+    [[nodiscard]] STO_Integrator *clone() const override;
 
     /// Initialize the Homeier integrator with a set of options
     /// \param params set of options for the integrator
-    virtual void init(const STO_Integration_Options &params) override;
+    void init(const STO_Integration_Options &params) override;
 
-    virtual energy_unit_t integrate(
+    energy_unit_t integrate(
             const std::vector<STO_Basis_Function> &functions,
             const std::vector<center_t> &centers
     ) override;
@@ -53,7 +56,9 @@ public:
 
 private:
 
-    bool use_normalized_b_functions = 0; /// Should we calculate with normalized B functions?
+    integration_types which_type = integration_types::OVERLAP;
+
+    bool use_normalized_b_functions = false; /// Should we calculate with normalized B functions?
     int number_of_quadrature_points = 30; /// How many quadrature points we should calculate
 
     static B_function_Engine B_function_engine; /// B-functions evaluator
@@ -67,6 +72,10 @@ private:
     /// \return the resulting energy quantity
     virtual energy_unit_t overlap(const std::array<STO_Basis_Function, 2> &) ;
 
+    /// Calculate the Overlap integral between the two given STO basis functions
+    /// \return the resulting energy quantity
+    virtual energy_unit_t kinetic(const std::array<STO_Basis_Function, 2> &) ;
+
 
     /// Create all the pair of B functions and their normalization coefficients from the two given sequences of B functions,
     /// each representing an STO. The result is kept in the "equivalence_series" member
@@ -74,11 +83,11 @@ private:
     /// \param f2 Second sequences of B functions
     void create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2) ;
 
-    /// Fiven two specific B functions, calculate the overlap integral
+    /// Given two specific B functions, calculate the overlap integral
     /// \param f1 First B function
     /// \param f2 Second B function
     /// \return Partial overlap integral value
-    std::complex<double> integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const;
+    [[nodiscard]] std::complex<double> integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const;
 
     /// This function is called back from the Gaussian Quadrature mechanism to get one value, at s, of the overlap
     /// integral.
@@ -86,7 +95,7 @@ private:
     /// \param f2 details of the second B functions
     /// \param s point at which to calculate the integral
     /// \return overlap integral value at s
-    std::complex<double> calculate_overlap_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s) const;
+    static std::complex<double> calculate_overlap_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s) ;
 
 
 

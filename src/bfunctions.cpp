@@ -40,10 +40,10 @@ double B_functions_representation_of_STO::calculate_coefficient(const Quantum_Nu
 
     //the factorial function call is too verbose - shorten it ?
     double numerator = pow(-1.0,double(n-l-p)) * bm::factorial<double>(n-l) * pow(2.0,(l+p)) * bm::factorial<double>(l+p) ;
-    double denominator =  bm::factorial<double>(2.0*p-n+l) * bm::double_factorial<double>(2.0*n-2.0*l-2.0*p);
+    double denominator =  bm::factorial<double>(2*p-n+l) * bm::double_factorial<double>(2*n-2*l-2*p);
     
     return numerator/denominator;
-}//calculate_coefficient
+}
 
 B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_Basis_Function &sto, const center_t &new_center)
 {
@@ -84,31 +84,19 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
 
 
 
-
+// Calculate the B function value with given alpha, r, and
 std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &r) const
 {
-    // B_{n,l}^m(alpha,rr) = prefactor * K * Y
-    // rr = (r,theta,phi)
-    // prefactor =  1 / ( 2^{n+l} * (n+l)! )
-    // k =(2/pi)^{1/2} *(alpha*r)^{n+1/2}* K_{n-1/2}(alpha*r)
-    // Y = (alpha*r)^{l} * Y_{l,m}(theta,phi)
-
-    //COMPLEX ARITHMETIC NEEDS TO BE Checked
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
     assert(n>0);
-    //assert(abs(l) < n);
 
-    // Cartesian Representation of r to Spherical representation
     Spherical_Coordinates spherical(r);
 
-    // prefactor =  1 / ( 2^{n+l} * (n+l)! )
     auto prefactor = 1.0 / (pow(2.0,n+l) * bm::factorial<double>(n+l) );
 
-
-     // May need to replace with recursion formula
     auto k_hat = compute_reduced_bessel_function_half(n-0.5,alpha*spherical.radius);
-    // Y = (alpha*r)^{l} * Y_{l,m}(theta,phi)
+
     auto Y = eval_spherical_harmonics(quantum_numbers,spherical.theta,spherical.phi);
     Y *= pow(alpha*spherical.radius,(l));
 

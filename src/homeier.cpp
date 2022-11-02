@@ -1,34 +1,40 @@
 #include <boost/math/quadrature/gauss.hpp>
-
-
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/special_functions/binomial.hpp>
 #include "homeier.h"
 #include "bfunctions.h"
 #include "logger.h"
-#include <boost/math/constants/constants.hpp>
-#include <boost/math/special_functions/binomial.hpp>
+
+/// This implements details from two papers:
+/// [1] On the Evaluation of Overlap Integrals with Exponential-Type Basis FunctionsHERBERT H. H. HOMEIER
+/// AND E. OTTO STEINBORN
+///
+/// [2] Programs for the evaluation of overlap integrals with B functions , H.H.H. Homeier, E.J. Weniger
+/// and E.O. Steinborn
 
 namespace bm = boost::math;
 namespace slater {
 
-Homeier_Integrator dummy_integrator(overlap_homeier_imp_name);
+Homeier_Integrator dummy_overlap_integrator(overlap_homeier_imp_name);
+Homeier_Integrator dummy_kinetic_integrator(kinetic_homeier_imp_name);
+
 
 B_function_Engine Homeier_Integrator::B_function_engine;
 
 STO_Integrator *Homeier_Integrator::clone() const
 {
-    return new Homeier_Integrator();
+    return new Homeier_Integrator(this->which_type);
 }
 
-
-Homeier_Integrator::~Homeier_Integrator()
-{
-}
 
 energy_unit_t Homeier_Integrator::integrate( const std::vector<STO_Basis_Function> &functions, const std::vector<center_t> &centers)
 {
-    return overlap({functions[0], functions[1]});
+    if ( which_type == integration_types::OVERLAP ) {
+        return overlap({functions[0], functions[1]});
+    } else {
+        return kinetic({functions[0], functions[1]});
+    }
 }
-
 
 
 void Homeier_Integrator::init(const STO_Integration_Options &params)
@@ -52,7 +58,7 @@ void Homeier_Integrator::create_integration_pairs(const B_functions_representati
 /// \param c1  First center to shift. This one shifts to (0,0,0)
 /// \param c2 Second center to shift
 /// \param new_centers
-void shift_first_center_to_origin(const center_t &c1, const center_t c2, center_t *new_centers)
+void shift_first_center_to_origin(const center_t &c1, center_t c2, center_t *new_centers)
 {
     /// R = R_2 - R_1
     new_centers[1] = {c2[0]-c1[0],c2[1]-c1[1],c2[2]-c1[2]};
@@ -102,7 +108,7 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
 
 std::complex<double> Homeier_Integrator::integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const
 {
-    auto f = [&](const double& s) { return this->calculate_overlap_gaussian_point(f1, f2, s) ;};
+    auto f = [&](const double& s) { return calculate_overlap_gaussian_point(f1, f2, s) ;};
     // int(W_hat*S)
     std::complex<double> Q = boost::math::quadrature::gauss<double, 30>::integrate(f, 0, 1);
 
@@ -119,7 +125,7 @@ std::complex<double> Homeier_Integrator::integrate_overlap_using_b_functions(con
 }
 
 
-    std::complex<double> Homeier_Integrator::calculate_overlap_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s) const
+std::complex<double> Homeier_Integrator::calculate_overlap_gaussian_point(const B_function_details &f1, const B_function_details &f2, double s)
 {
     double W_hat = calculate_W_hat(f1, f2, s);
     std::complex<double> S = calculate_S(f1, f2 ,s);
@@ -127,14 +133,10 @@ std::complex<double> Homeier_Integrator::integrate_overlap_using_b_functions(con
 }
 
 
+//calculate W_hat(s) -- the weight at s  after mobius transformation
 
 double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s)
 {
-    //TESTING NEEDED
-    //Equation 30 in On the Evaluation of Overlap Integrals with Exponential-Type Basis Functions
-    //HERBERT H. H. HOMEIER AND E. OTTO STEINBORN
-    //W_hat(s) is the new weight function after mobius transformation
-    //eta is computed as per Equation 35
 
     auto quantum_numbers_1 = f1.get_quantum_numbers();
     auto quantum_numbers_2 = f2.get_quantum_numbers();
@@ -147,9 +149,11 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
 
     double alpha = f1.get_alpha();
     double beta = f2.get_alpha();
-    
+
+    //eta is computed as per Equation 35 in ref [1]
     double eta = beta/alpha;
 
+    //Below is equation 30 in ref. [1]
     double numerator = pow(1.0-s,n1+l1) * pow(s,n2+l2);
     double denom_1_power = (3.0 + l1 + l2 ) / 2.0 ;
     double denominator1 = pow(s+(1.0-s)*eta, denom_1_power);
@@ -160,6 +164,7 @@ double Homeier_Integrator::calculate_W_hat(const B_function_details &f1, const B
     
     return prefactor * numerator / (denominator1*denominator2);
 }
+
 
 double Homeier_Integrator::calculate_delta(const B_function_details &f1, const B_function_details &f2, double s)
 {
@@ -215,20 +220,14 @@ std::complex<double> Homeier_Integrator::get_gaunt_sum(const B_function_details 
 }
 
 
+// compute S_{n1,l1,m1}^{n2,l2,m2}(d,d,R) using Equation 13 in the first paper.
 std::complex<double> Homeier_Integrator::calculate_S(const B_function_details &f1, const B_function_details &f2, double s)
 {
-    // formula 13 second paper or 19 first paper
-    // We compute S_{n1,l1,m1}^{n2,l2,m2}(d,d,R) using Equation 13
-    // d = delta(alpha,beta,s)
-    // We will need Gaunt coefficients here
+    auto pi = boost::math::constants::pi<double>();
 
     auto l2 = f2.get_quantum_numbers().l;
     auto delta = calculate_delta(f1,f2,s);
-    auto pi = boost::math::constants::pi<double>();
-
-
     auto gaunt_sum = get_gaunt_sum(f1, f2, delta);
-
 
     std::complex<double> result = pow(-1, l2 ) * (4.0*pi) * gaunt_sum ;
 
@@ -249,11 +248,14 @@ std::complex<double> Homeier_Integrator::calculate_B_function_value(const Quantu
 
 int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2)
 {
-    /// l_min depends on whether max( |l1 - l2|, |m1-m2|) + l_max is even or odd
-
     auto m = std::max(abs(q1.l-q2.l),abs(q1.m-q2.m));
     auto switch_condition = m +q1.l+q2.l;
     return m + (switch_condition%2) ;
+}
+
+energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2> & functions)
+{
+    return 0; // Gautam - implement :-)
 }
 
 }

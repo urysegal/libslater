@@ -36,29 +36,18 @@ main()
         options.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(options);
-       auto result = engine->overlap({basis_set[0], basis_set[1]});
-
+        auto result = engine->overlap({basis_set[0], basis_set[1]});
 
         std::cout << std::fixed;
         std::cout << std::setprecision(16);
 
-       std::cout << result << std::endl;
-        //const double order = 5;
-       // const double z[3] ={ 2.2532185649430092, 7.3753971484553746 , 22.190479333842703 };
+        std::cout << "Overlap: " << result << std::endl;
 
-      //  for ( int i = 0 ; i < 3 ; ++i ) {
-        //    do_compute_reduced_bessel_function_half(
-          //          order,
-      //              z[i]
-        //    );
+        result = engine->kinetic({basis_set[0], basis_set[1]});
+        std::cout << "Kinetic: " << result << std::endl;
 
-
-            //printf("Bessel %15.15f\n", r);
-        //}
-      //  calculate_gauss_point(basis_set[0], basis_set[1], 1.5554323515926116E-004);
-
-        //result = engine->nuclear_attraction({basis_set[2], basis_set[0]}, {1,0,0.5});
-        //std::cout << result << std::endl;
+        result = engine->nuclear_attraction({basis_set[2], basis_set[0]}, {1,0,0.5});
+        std::cout << "Nuclear Attraction: " << result << std::endl;
 
         delete engine;
 
