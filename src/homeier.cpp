@@ -102,7 +102,6 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
     final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
 
     final_result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient() ;
-    equivalence_series.clear();
     return final_result;
 }
 
