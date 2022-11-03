@@ -92,7 +92,8 @@ public:
     // eqn. 31 in [1]
     static complex calculate_semi_infinite_integral(const double &s, Sum_State *state)
     {
-        return s; // Gautam - here is the majority of the work.... eqn 56
+        complex integral = semi_infinite_integral(s,state);
+        return integral; // Gautam - here is the majority of the work.... eqn 56
     }
 
     static complex calculate_integral(Sum_State *state)
@@ -331,7 +332,7 @@ protected:
 
 
     virtual indexer_t  get_next_sum_from() override { return 0 ;}
-    virtual indexer_t  get_next_sum_to() override { return STATE->l1; }
+    virtual indexer_t  get_next_sum_to() override { return STATE->l1; } //why l1?
 
     virtual complex expression() override
     {
@@ -381,7 +382,6 @@ complex Analytical_3C_evaluator::integrate(const std::vector<STO_Basis_Function>
     return evaluate();
 }
 
-
 complex Analytical_3C_evaluator::evaluate()
 {
     Sum_1 top_sum(&state);
@@ -421,5 +421,110 @@ STO_Integrator *Analytical_3C_evaluator::clone() const
 {
     return new Analytical_3C_evaluator();
 }
+
+
+//Semi-Infinite Integral Sums, eqn 56 in [1]
+
+// line 3 and 4 in eqn 56
+class Semi_Infinite_Integral_Sum_3 : public Nested_Summation<indexer_t, complex , Last_Nested_Summation<indexer_t,complex> >{
+
+protected:
+    complex expression() override
+    {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+
+    indexer_t & get_index_variable() override { return STATE->m_semi_inf ; }
+    indexer_t  get_next_sum_from() override { return 0; }
+    indexer_t  get_next_sum_to() override { return (2* STATE->niu - STATE->n_gamma)/2; }
+
+public:
+    Semi_Infinite_Integral_Sum_3( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    static auto get_niu(Sum_State *s) { return (s->n1 + s->n1 + s->l1 + s->l2 - s->l - s->j + 1.0/2.0); }
+    static complex calculate_expression( Sum_State *s )
+    {
+        //compute line 3 and 4 here
+        //GAUTAM -> THESE ARE STILL DUMMY VALUES
+        double binomial = 0;
+        double mpower = pow(1,s->m_semi_inf);
+        double niumiu = 0;
+        double K = 0;
+        double sqt =0;
+        double numerator = K*sqt;
+        double power = 0;
+        double denominator = pow(sqt,power);
+        return binomial*mpower*niumiu*(numerator/denominator) ;
+    }
+
+};
+
+// line 2 in eqn 56
+
+class Semi_Infinite_Integral_Sum_2 : public Nested_Summation<indexer_t, complex , Semi_Infinite_Integral_Sum_3 >{
+
+protected:
+    virtual indexer_t & get_index_variable() override { return STATE->sigma ; }
+    virtual indexer_t  get_next_sum_from() override { return 0; }
+    virtual indexer_t  get_next_sum_to() override { return (STATE->nx - STATE->gamma)/2.0 - 1.0 ; }
+    virtual complex expression() override
+    {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+public:
+
+    Semi_Infinite_Integral_Sum_2( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    static complex calculate_expression( Sum_State *s )
+    {
+        // compute line 2 expression here
+        //GAUTAM -> THESE ARE STILL DUMMY VALUES
+        double expression =
+                8 ;
+
+        return expression  ;
+    }
+};
+
+// line 1 in eqn 56
+class Semi_Infinite_Integral_Sum_1 : public Nested_Summation<indexer_t, complex , Semi_Infinite_Integral_Sum_2 >{
+
+protected:
+
+
+    virtual indexer_t  get_next_sum_from() override { return 0 ;}
+    virtual indexer_t  get_next_sum_to() override { return STATE->l1; } //why l1?
+
+    virtual complex expression() override
+    {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+public:
+    Semi_Infinite_Integral_Sum_1(Sum_State *s) : Nested_Summation(1, 1, s)
+    {}
+    //static auto get_niu(Sum_State *s) { return (s->n1 + s->n1 + s->l1 + s->l2 - s->l - s->j + 1.0/2.0); }
+    /// We calculate the expression as public and  static so we can call it directly
+    /// from the test suites.
+    static complex calculate_expression( Sum_State *s )
+    {
+        // compute line 1 expression here
+        //GAUTAM -> THESE ARE STILL DUMMY VALUES
+
+        double numerator =
+                s->niu  ; // compute line 1 numerator
+        double denominator =
+                1; // compute line 1 denominator
+
+        return numerator / denominator ;
+    }
+};
+
+complex semi_infinite_integral(const double &s,Sum_State *state){
+    //Evaluate Integral from top level sum here
+    Semi_Infinite_Integral_Sum_1 top_sum(state);
+    return top_sum.get_value();
+};
 
 }
