@@ -506,7 +506,6 @@ public:
     //static auto get_niu(Sum_State *s) { return (s->n1 + s->n1 + s->l1 + s->l2 - s->l - s->j + 1.0/2.0); }
 
     //ADD r here.. maybe
-    // We need to account for the case when r = -1 aka nx = lambda
 
     /// We calculate the expression as public and  static so we can call it directly
     /// from the test suites.
@@ -527,6 +526,8 @@ public:
 complex semi_infinite_integral(const double &s,Sum_State *state){
     //Evaluate Integral from top level sum here
     // What about s, should it be a state variable? Ask URY.
+    // We need to account for the case when r = -1 aka nx = lambda
+
     Semi_Infinite_Integral_Sum_1 top_sum(state);
     return top_sum.get_value();
 };
