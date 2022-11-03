@@ -36,7 +36,7 @@ struct Sum_State : public Summation_State<indexer_t> {
     indexer_t l2_tag;
     indexer_t m2_tag;
     indexer_t l;
-    indexer_t gamma; //should change this to lambda!
+    indexer_t lambda; //should change this to lambda!
     indexer_t j;
 
     /// These are parameters that change every iteration, see [1] eqn. 29

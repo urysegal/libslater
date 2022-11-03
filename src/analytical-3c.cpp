@@ -59,7 +59,7 @@ public:
 
     static complex calculate_Ylm(double s, Sum_State *state)
     {
-        Quantum_Numbers quantumNumbers({0, state->gamma, get_miu(state) });
+        Quantum_Numbers quantumNumbers({0, state->lambda, get_miu(state) });
 
 
         auto R1 = state->C;
@@ -81,7 +81,7 @@ public:
     {
         complex result;
         complex power1 = pow(s, state->n2 +state->l2 + state->l1  - state->l1_tag);
-        complex power2 = pow(s-1, state->n1 +state->l1 + state->l2  - state->l2_tag);
+        complex power2 = pow(1-s, state->n1 +state->l1 + state->l2  - state->l2_tag);
         complex ylm = calculate_Ylm(s, state);
         complex prefactor = power1 * power2 * ylm;
         complex semi_inf = calculate_semi_infinite_integral(s, state);
@@ -134,7 +134,7 @@ protected:
     }
 
 
-    virtual indexer_t & get_index_variable() override { return STATE->gamma ; }
+    virtual indexer_t & get_index_variable() override { return STATE->lambda ; }
 
     virtual indexer_t  get_next_sum_from() override { return 0; }
 
@@ -152,10 +152,10 @@ public:
         auto miu = Sum_8::get_miu(s);
         auto gaunt_part = Gaunt_Coefficient_Engine::get()->calculate({s->l2 - s->l2_tag, s->m2-s->m2_tag,
                                                                       s->l1 - s->l1_tag, s->m1 - s->m1_tag,
-                                                                      s->gamma, miu});
+                                                                      s->lambda, miu});
 
         if ( gaunt_part ) {
-            auto complex_part  = pow(-complex{0,1}, s->gamma);
+            auto complex_part  = pow(-complex{0,1}, s->lambda);
             result = gaunt_part * complex_part;
         }
         return result;
@@ -437,8 +437,8 @@ protected:
 
 
     indexer_t & get_index_variable() override { return STATE->m_semi_inf ; }
-    indexer_t  get_next_sum_from() override { return 0; }
-    indexer_t  get_next_sum_to() override { return (2* STATE->niu - STATE->n_gamma)/2; }
+    indexer_t  get_next_sum_from() override { return 1; }
+    indexer_t  get_next_sum_to() override { return 1; }
 
 public:
     Semi_Infinite_Integral_Sum_3( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
@@ -465,10 +465,10 @@ public:
 class Semi_Infinite_Integral_Sum_2 : public Nested_Summation<indexer_t, complex , Semi_Infinite_Integral_Sum_3 >{
 
 protected:
-    virtual indexer_t & get_index_variable() override { return STATE->sigma ; }
-    virtual indexer_t  get_next_sum_from() override { return 0; }
-    virtual indexer_t  get_next_sum_to() override { return (STATE->nx - STATE->gamma)/2.0 - 1.0 ; }
-    virtual complex expression() override
+    indexer_t & get_index_variable() override { return STATE->sigma ; }
+    indexer_t  get_next_sum_from() override { return 0; }
+    indexer_t  get_next_sum_to() override { return (2* STATE->niu - STATE->n_gamma)/2;  }
+    complex expression() override
     {
         auto s = STATE;
         return calculate_expression(s);
@@ -482,7 +482,6 @@ public:
         //GAUTAM -> THESE ARE STILL DUMMY VALUES
         double expression =
                 8 ;
-
         return expression  ;
     }
 };
@@ -493,18 +492,22 @@ class Semi_Infinite_Integral_Sum_1 : public Nested_Summation<indexer_t, complex 
 protected:
 
 
-    virtual indexer_t  get_next_sum_from() override { return 0 ;}
-    virtual indexer_t  get_next_sum_to() override { return STATE->l1; } //why l1?
+    indexer_t  get_next_sum_from() override { return 0 ;}
+    indexer_t  get_next_sum_to() override { return (STATE->nx - STATE->lambda) / 2.0 - 1.0; } //why l1?
 
-    virtual complex expression() override
+    complex expression() override
     {
         auto s = STATE;
         return calculate_expression(s);
     }
 public:
-    Semi_Infinite_Integral_Sum_1(Sum_State *s) : Nested_Summation(1, 1, s)
-    {}
+    Semi_Infinite_Integral_Sum_1(Sum_State *s) : Nested_Summation(1, 1, s){}
+    //Should the argument of the constructor be Sum_State or Summation_State?
     //static auto get_niu(Sum_State *s) { return (s->n1 + s->n1 + s->l1 + s->l2 - s->l - s->j + 1.0/2.0); }
+
+    //ADD r here.. maybe
+    // We need to account for the case when r = -1 aka nx = lambda
+
     /// We calculate the expression as public and  static so we can call it directly
     /// from the test suites.
     static complex calculate_expression( Sum_State *s )
@@ -523,6 +526,7 @@ public:
 
 complex semi_infinite_integral(const double &s,Sum_State *state){
     //Evaluate Integral from top level sum here
+    // What about s, should it be a state variable? Ask URY.
     Semi_Infinite_Integral_Sum_1 top_sum(state);
     return top_sum.get_value();
 };
