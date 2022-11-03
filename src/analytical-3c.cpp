@@ -332,7 +332,7 @@ protected:
 
 
     virtual indexer_t  get_next_sum_from() override { return 0 ;}
-    virtual indexer_t  get_next_sum_to() override { return STATE->l1; } //why l1?
+    virtual indexer_t  get_next_sum_to() override { return STATE->l1; }
 
     virtual complex expression() override
     {
@@ -436,9 +436,12 @@ protected:
     }
 
 
+
+
     indexer_t & get_index_variable() override { return STATE->m_semi_inf ; }
     indexer_t  get_next_sum_from() override { return 1; }
     indexer_t  get_next_sum_to() override { return 1; }
+    indexer_t  get_next_sum_step() override { return 1; }
 
 public:
     Semi_Infinite_Integral_Sum_3( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
@@ -493,7 +496,7 @@ protected:
 
 
     indexer_t  get_next_sum_from() override { return 0 ;}
-    indexer_t  get_next_sum_to() override { return (STATE->nx - STATE->lambda) / 2.0 - 1.0; } //why l1?
+    indexer_t  get_next_sum_to() override { return (STATE->nx - STATE->lambda) / 2.0 - 1.0; }
 
     complex expression() override
     {
