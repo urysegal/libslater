@@ -40,15 +40,18 @@ struct Sum_State : public Summation_State<indexer_t> {
     indexer_t j;
 
     /// These are parameters that change every iteration, see [1] eqn. 29
-    int n_gamma ;
-    double v  ;
-    int u   ;
-    int nx   ;
+    int n_gamma;
+    double v  ; //this was actually redefined in Sum 8 calculate_Ylm, can probably be removed
+    int u   ; //what's this?
+    int n_x;
+    double niu;
+    double miu;
+    double z;
 
     ///Parameters for semi-infinite integral, see [1] eqn. 56
+    double s;
     int sigma;
     int m_semi_inf;
-    int niu; //Do I need it here?
 
 };
 
@@ -97,5 +100,8 @@ private:
 
 };
 //Semi-Infinite Integral eqn 31 & 56 in [1]
-std::complex<double> semi_infinite_integral(const double &s,Sum_State *state);
+std::complex<double> semi_infinite_integral(Sum_State *state);
+void update_dependent_parameters(Sum_State *state);
+
+
 }

@@ -13,6 +13,12 @@ namespace slater {
             const center_t &B
     );
 
+/// Return the magnitude of a vector
+/// \param A vector
+/// \return magnitude of vector.
+    double vector_length(
+            const center_t &A
+    );
 
 /// Return the vector connecting A to B so that A+Return=B
 /// \param A first point
@@ -38,5 +44,9 @@ namespace slater {
     double compute_reduced_bessel_function_half(
             const double order,
             const double z
+    );
+    double pochhammer(
+            const double x,
+            const double n
     );
 }
