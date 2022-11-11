@@ -43,8 +43,9 @@ struct Sum_State : public Summation_State<indexer_t> {
     int n_gamma;
     double v  ; //this was actually redefined in Sum 8 calculate_Ylm, can probably be removed
     int n_x;
+    int delta_l;
     double niu;
-    double miu;
+    int miu;
     double z;
 
     ///Parameters for semi-infinite integral, see [1] eqn. 56

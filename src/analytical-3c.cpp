@@ -54,12 +54,11 @@ protected:
 public:
     Sum_8( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
-    static auto delta_l(Sum_State *s) { return  (s->l1_tag + s->l2_tag -s->l)/2 ; }
-    static auto get_miu(Sum_State *s) { return (s->m2-s->m2_tag) - (s->m1 - s->m1_tag); }
 
     static complex calculate_Ylm(double s, Sum_State *state)
     {
-        Quantum_Numbers quantumNumbers({0, state->lambda, get_miu(state) });
+        update_dependent_parameters(state);
+        Quantum_Numbers quantumNumbers({0, state->lambda, state->miu });
 
 
         auto R1 = state->C;
@@ -108,7 +107,8 @@ public:
     static complex calculate_expression( Sum_State *s )
     {
         complex result = 0;
-        auto choose = bm::binomial_coefficient<double>(delta_l(s) ,s->j);
+        update_dependent_parameters(s);
+        auto choose = bm::binomial_coefficient<double>(s->delta_l ,s->j);
         auto enumerator = pow(-1, s->j) ;
         auto x = s->n1+s->n2+s->l1+s->l2 - s->j +1;
         auto denominator_pow_2 = pow(2, x);
@@ -140,7 +140,7 @@ protected:
 
     virtual indexer_t  get_next_sum_from() override { return 0; }
 
-    virtual indexer_t  get_next_sum_to() override { return Sum_8::delta_l(STATE) ;}
+    virtual indexer_t  get_next_sum_to() override { update_dependent_parameters(STATE); return STATE->delta_l ;}
     virtual indexer_t  get_next_sum_step() override { return 1; }
 
 public:
@@ -150,11 +150,10 @@ public:
     static complex calculate_expression( Sum_State *s )
     {
         complex result = 0;
-
-        auto miu = Sum_8::get_miu(s);
+        update_dependent_parameters(s);
         auto gaunt_part = Gaunt_Coefficient_Engine::get()->calculate({s->l2 - s->l2_tag, s->m2-s->m2_tag,
                                                                       s->l1 - s->l1_tag, s->m1 - s->m1_tag,
-                                                                      s->lambda, miu});
+                                                                      s->lambda, s->miu});
 
         if ( gaunt_part ) {
             auto complex_part  = pow(-complex{0,1}, s->lambda);
@@ -556,8 +555,8 @@ void update_dependent_parameters(Sum_State *state){
     state->niu = state->n1 + state->n2 + state->l1 + state->l2 - state->l - state->j + 1.0/2.0;
     state->z = ( (1-state->s)*state->zeta1*state->zeta1 + state->s*state->zeta2*state->zeta2 )/(state->s*(1-state->s));
     state->miu = (state->m2-state->m2_tag) - (state->m1 - state->m1_tag);
-
-    //update v
+    state->delta_l =    (state->l1_tag + state->l2_tag -state->l)/2;
+        //update v
     auto R1 = state->C;
     center_t scaled_R2 =  scale_vector( state->R2_point, 1-state->s);
     auto v = vector_between (R1,scaled_R2 );
