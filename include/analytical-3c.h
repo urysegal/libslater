@@ -42,7 +42,6 @@ struct Sum_State : public Summation_State<indexer_t> {
     /// These are parameters that change every iteration, see [1] eqn. 29
     int n_gamma;
     double v  ; //this was actually redefined in Sum 8 calculate_Ylm, can probably be removed
-    int u   ; //what's this?
     int n_x;
     double niu;
     double miu;
