@@ -451,7 +451,7 @@ public:
     {
         //compute line 3 and 4 here
         //GAUTAM -> THESE ARE STILL DUMMY VALUES
-        double binomial = bm::binomial_coefficient<double>( (2*state->niu - state->n_gamma)/2,state->m_semi_inf);
+        double binomial = bm::binomial_coefficient<double>( (2*state->niu - state->n_gamma)/2.0,state->m_semi_inf);
 
         auto R2S = state->R2 * state->R2 * state->s * (1-state->s);
         double mpower = pow((R2S * state->z )/2.0,state->m_semi_inf);
@@ -489,7 +489,7 @@ public:
     {
         // compute line 2 expression here
         auto binomial = bm::binomial_coefficient<double>((s->n_x - s->lambda)/2 -1, s->sigma );
-        auto power = pow( (s->v * s->v* s->z) / 2,s->sigma) ;
+        auto power = pow( (s->v * s->v* s->z) / 2.0,s->sigma) ;
         auto poch = pochhammer( (-s->n_x - s->lambda +1.0)/2.0, (s->n_x - s->lambda) /2.0 - 1 - s->sigma);
         double expression =
                 binomial*power*poch;
