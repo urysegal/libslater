@@ -35,7 +35,8 @@ namespace slater {
     class Sum_8 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> > {
 
     protected:
-        complex expression() override {
+        complex expression() override
+        {
             auto s = STATE;
             return calculate_expression(s);
         }
@@ -54,7 +55,8 @@ namespace slater {
         Sum_8(int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
 
-        static complex calculate_Ylm(double s, Sum_State *state) {
+        static complex calculate_Ylm(double s, Sum_State *state)
+        {
             Quantum_Numbers quantumNumbers({0, state->lambda, state->miu()});
 
 
