@@ -476,7 +476,7 @@ protected:
     indexer_t & get_index_variable() override { return STATE->sigma ; }
 
     indexer_t  get_next_sum_from() override { return 0; }
-    indexer_t  get_next_sum_to() override { return (2* STATE->niu - STATE->n_gamma)/2;  }
+    indexer_t  get_next_sum_to() override { return (2* STATE->niu - STATE->n_gamma)/2.0;  }
     complex expression() override
     {
         auto s = STATE;
