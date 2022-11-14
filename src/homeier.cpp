@@ -254,7 +254,52 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
 
 energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2> & functions)
 {
-    return 0; // Gautam - implement :-)
+    //S_{n1,l1,m1}^{n2,l2,m2}
+    auto S1 = overlap(functions);
+    auto q1 = functions[0].get_quantum_numbers();
+    auto q2 = functions[1].get_quantum_numbers();
+
+    //maybe there's a nicer way to do the following
+    energy_unit_t S2;
+    sto_exponent_t coeff;
+
+
+    if (q1.n-1==0 && q2.n-1==0){
+        S2 = 0;
+
+        //recenter to 0 needed?
+        //create new STO function from second function for nuclear interaction with same center as first STO
+        STO_Basis_Function_Info info(functions[1].get_exponent(), {q2.n,q2.l,q2.m});
+        STO_Basis_Function temp_function(info,functions[0].get_center());
+
+        //Add a call to nuclear attraction integral here
+
+
+
+        coeff = functions[0].get_exponent();
+    }
+    else if(q1.n-1==0){
+        //S_{n1,l1,m1}^{n2-1,l2,m2} in eqn 29b
+
+        //create new STO function from second function for overlap with n2 = n2-1
+        STO_Basis_Function_Info info(functions[1].get_exponent(), {q2.n-1,q2.l,q2.m});
+        STO_Basis_Function temp_function(info,functions[1].get_center());
+
+        S2 = overlap({functions[0],temp_function});
+        coeff = functions[1].get_exponent(); //beta
+    }
+    else{
+        //S_{n1-1,l1,m1}^{n2,l2,m2} in eqn 29a
+
+        //create new STO function from first function for overlap with n1 = n1-1
+        STO_Basis_Function_Info info(functions[0].get_exponent(), {q1.n-1,q1.l,q1.m});
+        STO_Basis_Function temp_function(info,functions[0].get_center());
+
+        S2 = overlap({temp_function,functions[1]});
+        coeff = functions[0].get_exponent(); //alpha
+    }
+    auto T = -(1.0/2.0)*coeff*coeff*(S1-S2);
+    return T; // Gautam - implement :-)
 }
 
 }

@@ -54,12 +54,11 @@ protected:
 public:
     Sum_8( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
-    static auto delta_l(Sum_State *s) { return  (s->l1_tag + s->l2_tag -s->l)/2 ; }
-    static auto get_miu(Sum_State *s) { return (s->m2-s->m2_tag) - (s->m1 - s->m1_tag); }
 
     static complex calculate_Ylm(double s, Sum_State *state)
     {
-        Quantum_Numbers quantumNumbers({0, state->gamma, get_miu(state) });
+        update_dependent_parameters(state);
+        Quantum_Numbers quantumNumbers({0, state->lambda, state->miu });
 
 
         auto R1 = state->C;
@@ -81,7 +80,7 @@ public:
     {
         complex result;
         complex power1 = pow(s, state->n2 +state->l2 + state->l1  - state->l1_tag);
-        complex power2 = pow(s-1, state->n1 +state->l1 + state->l2  - state->l2_tag);
+        complex power2 = pow(1-s, state->n1 +state->l1 + state->l2  - state->l2_tag);
         complex ylm = calculate_Ylm(s, state);
         complex prefactor = power1 * power2 * ylm;
         complex semi_inf = calculate_semi_infinite_integral(s, state);
@@ -92,7 +91,10 @@ public:
     // eqn. 31 in [1]
     static complex calculate_semi_infinite_integral(const double &s, Sum_State *state)
     {
-        return s; // Gautam - here is the majority of the work.... eqn 56
+        state->s = s; //update value of s in Sum_state - may need to be changed.
+        update_dependent_parameters(state);
+        complex integral = semi_infinite_integral(state);
+        return integral; // Gautam - here is the majority of the work.... eqn 56
     }
 
     static complex calculate_integral(Sum_State *state)
@@ -105,7 +107,8 @@ public:
     static complex calculate_expression( Sum_State *s )
     {
         complex result = 0;
-        auto choose = bm::binomial_coefficient<double>(delta_l(s) ,s->j);
+        update_dependent_parameters(s);
+        auto choose = bm::binomial_coefficient<double>(s->delta_l ,s->j);
         auto enumerator = pow(-1, s->j) ;
         auto x = s->n1+s->n2+s->l1+s->l2 - s->j +1;
         auto denominator_pow_2 = pow(2, x);
@@ -133,11 +136,11 @@ protected:
     }
 
 
-    virtual indexer_t & get_index_variable() override { return STATE->gamma ; }
+    virtual indexer_t & get_index_variable() override { return STATE->lambda ; }
 
     virtual indexer_t  get_next_sum_from() override { return 0; }
 
-    virtual indexer_t  get_next_sum_to() override { return Sum_8::delta_l(STATE) ;}
+    virtual indexer_t  get_next_sum_to() override { update_dependent_parameters(STATE); return STATE->delta_l ;}
     virtual indexer_t  get_next_sum_step() override { return 1; }
 
 public:
@@ -147,14 +150,13 @@ public:
     static complex calculate_expression( Sum_State *s )
     {
         complex result = 0;
-
-        auto miu = Sum_8::get_miu(s);
+        update_dependent_parameters(s);
         auto gaunt_part = Gaunt_Coefficient_Engine::get()->calculate({s->l2 - s->l2_tag, s->m2-s->m2_tag,
                                                                       s->l1 - s->l1_tag, s->m1 - s->m1_tag,
-                                                                      s->gamma, miu});
+                                                                      s->lambda, s->miu});
 
         if ( gaunt_part ) {
-            auto complex_part  = pow(-complex{0,1}, s->gamma);
+            auto complex_part  = pow(-complex{0,1}, s->lambda);
             result = gaunt_part * complex_part;
         }
         return result;
@@ -381,7 +383,6 @@ complex Analytical_3C_evaluator::integrate(const std::vector<STO_Basis_Function>
     return evaluate();
 }
 
-
 complex Analytical_3C_evaluator::evaluate()
 {
     Sum_1 top_sum(&state);
@@ -420,6 +421,139 @@ void Analytical_3C_evaluator::init(const slater::STO_Integration_Options &params
 STO_Integrator *Analytical_3C_evaluator::clone() const
 {
     return new Analytical_3C_evaluator();
+}
+
+
+//Semi-Infinite Integral Sums, eqn 56 in [1]
+
+// line 3 and 4 in eqn 56
+class Semi_Infinite_Integral_Sum_3 : public Nested_Summation<indexer_t, complex , Last_Nested_Summation<indexer_t,complex> >{
+
+protected:
+    complex expression() override
+    {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+
+
+
+    indexer_t & get_index_variable() override { return STATE->m_semi_inf ; }
+    indexer_t  get_next_sum_from() override { return 1; }
+    indexer_t  get_next_sum_to() override { return 1; }
+    indexer_t  get_next_sum_step() override { return 1; }
+
+public:
+    Semi_Infinite_Integral_Sum_3( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    static auto get_niu(Sum_State *s) { return (s->n1 + s->n1 + s->l1 + s->l2 - s->l - s->j + 1.0/2.0); }
+    static complex calculate_expression( Sum_State *state )
+    {
+        //compute line 3 and 4 here
+        //GAUTAM -> THESE ARE STILL DUMMY VALUES
+        double binomial = bm::binomial_coefficient<double>( (2*state->niu - state->n_gamma)/2.0,state->m_semi_inf);
+
+        auto R2S = state->R2 * state->R2 * state->s * (1-state->s);
+        double mpower = pow((R2S * state->z )/2.0,state->m_semi_inf);
+
+        double poch = pochhammer(state->niu - state->miu,state->niu - state->m_semi_inf);
+
+        auto  vb = (state->n_x + state->lambda - state->n_gamma)/2.0 + state->sigma + state-> m_semi_inf + 1.0/2.0 ;
+        auto  x = state->z * sqrt(R2S + state->v*state->v);
+        double K = bm::cyl_bessel_k(vb,x);
+        double denominator = pow(sqrt(R2S + state->v*state->v),vb);
+
+        return binomial * mpower * poch * (K/denominator) ;
+    }
+
+};
+
+// line 2 in eqn 56
+
+class Semi_Infinite_Integral_Sum_2 : public Nested_Summation<indexer_t, complex , Semi_Infinite_Integral_Sum_3 >{
+
+protected:
+    indexer_t & get_index_variable() override { return STATE->sigma ; }
+
+    indexer_t  get_next_sum_from() override { return 0; }
+    indexer_t  get_next_sum_to() override { return (2* STATE->niu - STATE->n_gamma)/2.0;  }
+    complex expression() override
+    {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+public:
+
+    Semi_Infinite_Integral_Sum_2( int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    static complex calculate_expression( Sum_State *s )
+    {
+        // compute line 2 expression here
+        auto binomial = bm::binomial_coefficient<double>((s->n_x - s->lambda)/2 -1, s->sigma );
+        auto power = pow( (s->v * s->v* s->z) / 2.0,s->sigma) ;
+        auto poch = pochhammer( (-s->n_x - s->lambda +1.0)/2.0, (s->n_x - s->lambda) /2.0 - 1 - s->sigma);
+        double expression =
+                binomial*power*poch;
+        return expression  ;
+    }
+};
+
+// line 1 in eqn 56
+class Semi_Infinite_Integral_Sum_1 : public Nested_Summation<indexer_t, complex , Semi_Infinite_Integral_Sum_2 >{
+
+protected:
+    indexer_t  get_next_sum_from() override { return 0 ;}
+    indexer_t  get_next_sum_to() override { return (STATE->n_x - STATE->lambda) / 2.0 - 1.0; }
+
+    virtual complex expression() override
+    {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+public:
+    Semi_Infinite_Integral_Sum_1(Summation_State<indexer_t> *s) : Nested_Summation(1, 1, s){}
+
+    //rename it to r = nx - lambda /2
+
+    /// We calculate the expression as public and  static so we can call it directly
+    /// from the test suites.
+    static complex calculate_expression( Sum_State *state )
+    {
+        // compute line 1 expression here
+        double power1 = pow(-2.0,(state->n_x- state->lambda)/2.0 - 1.0 );
+        double power2 = pow(sqrt(state->z),state->n_x+ state->lambda - state->n_gamma+1.0);
+        double power3 = pow(state->v,state->lambda+1.0);
+        double numerator =
+                power1 * power2 * power3  ; // compute line 1 numerator
+
+        double d_power1 = pow(state->R2,2.0* state->niu);
+        double d_power2 = pow(state->s*(1-state->s),state->niu + state->n_gamma/2.0);
+        double denominator =
+                d_power1*d_power2; // compute line 1 denominator
+
+        return numerator / denominator ;
+    }
+};
+
+complex semi_infinite_integral(Sum_State *state){
+    //Evaluate Integral from top level sum here
+
+    // split cases r=-1 case here
+    Semi_Infinite_Integral_Sum_1 top_sum(state);
+    return top_sum.get_value();
+};
+
+//This function can be called to update the variables that depend on the summation variables and integral variable s
+void update_dependent_parameters(Sum_State *state){
+    state->n_x = state->l1 - state->l1_tag + state->l2 - state->l2_tag;
+    state->niu = state->n1 + state->n2 + state->l1 + state->l2 - state->l - state->j + 1.0/2.0;
+    state->z = ( (1-state->s)*state->zeta1*state->zeta1 + state->s*state->zeta2*state->zeta2 )/(state->s*(1-state->s));
+    state->miu = (state->m2-state->m2_tag) - (state->m1 - state->m1_tag);
+    state->delta_l =    (state->l1_tag + state->l2_tag -state->l)/2;
+        //update v
+    auto R1 = state->C;
+    center_t scaled_R2 =  scale_vector( state->R2_point, 1-state->s);
+    auto v = vector_between (R1,scaled_R2 );
+    state->v = vector_length(v);
 }
 
 }

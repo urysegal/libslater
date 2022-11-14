@@ -18,6 +18,12 @@ double distance(const center_t &A, const center_t &B)
     return bg::distance(A_point,B_point);
 }
 
+double vector_length(const center_t &A)
+{
+    auto mag = sqrt(A[0]*A[0] + A[1]*A[1] + A[2]*A[2]);
+    return mag;
+}
+
 center_t vector_between(const center_t &A, const center_t &B)
 {
     bg::model::point<double, 3, bg::cs::cartesian> A_point(A[0], A[1], A[2]);
@@ -33,7 +39,9 @@ center_t scale_vector( const center_t &P, double factor)
     return center_t {factor*P[0], factor*P[1], factor*P[2] } ;
 }
 
-
+double pochhammer(const double x, const double n){
+    return std::tgamma(x+n) / std::tgamma(x);
+}
 std::complex<double> eval_spherical_harmonics(const Quantum_Numbers &quantumNumbers,const double theta,const double phi)
 {
     // Evaluates Spherical Harmonics Y_l^m(theta,phi)

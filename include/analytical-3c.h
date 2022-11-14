@@ -36,15 +36,22 @@ struct Sum_State : public Summation_State<indexer_t> {
     indexer_t l2_tag;
     indexer_t m2_tag;
     indexer_t l;
-    indexer_t gamma;
+    indexer_t lambda;
     indexer_t j;
 
     /// These are parameters that change every iteration, see [1] eqn. 29
-    int n_gamma ;
-    double v  ;
-    int u   ;
-    int nx   ;
+    int n_gamma;
+    double v  ; //this was actually redefined in Sum 8 calculate_Ylm, can probably be removed
+    int n_x;
+    int delta_l;
+    double niu;
+    int miu;
+    double z;
 
+    ///Parameters for semi-infinite integral, see [1] eqn. 56
+    double s;
+    int sigma;
+    int m_semi_inf;
 
 };
 
@@ -75,7 +82,6 @@ public:
     ) override;
 
     std::complex<double> evaluate();
-
     void setup_state();
 
 private:
@@ -93,5 +99,9 @@ private:
     center_t C = {};
 
 };
+//Semi-Infinite Integral eqn 31 & 56 in [1]
+std::complex<double> semi_infinite_integral(Sum_State *state);
+void update_dependent_parameters(Sum_State *state);
+
 
 }
