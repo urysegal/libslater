@@ -34,6 +34,7 @@ namespace slater {
 
     class Sum_8 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> > {
 
+
     protected:
         complex expression() override
         {
