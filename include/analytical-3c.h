@@ -30,7 +30,7 @@ struct Sum_State : public Summation_State<indexer_t> {
     center_t R2_point = {}; /// Vector from A to B
     Spherical_Coordinates R2_spherical; /// Spherical coordinate of R2_point above
 
-    /// Nested iteration variables
+    /// Nested iteration variables, see [1] eqn. 28
     indexer_t l1_tag;
     indexer_t m1_tag;
     indexer_t l2_tag;
@@ -63,8 +63,10 @@ struct Sum_State : public Summation_State<indexer_t> {
         return vector_length(v_vec);
     }
 
+    ///Integration variable for semi-infinite integral, see[1] eqn. 28, lines 7-8
+    double s;
+
     ///Nested iteration variables for semi-infinite integral, see [1] eqn. 56
-    double s; //update this when gaussian point function is called
     int sigma;
     int m_semi_inf;
 
