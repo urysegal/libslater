@@ -516,7 +516,6 @@ protected:
     }
 public:
     Semi_Infinite_Integral_Sum_1(Summation_State<indexer_t> *s) : Nested_Summation(1, 1, s){}
-    //Should the argument of the constructor be Sum_State or Summation_State?
 
     //ADD r here.. maybe
 
