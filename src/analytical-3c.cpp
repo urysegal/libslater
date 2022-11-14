@@ -458,10 +458,10 @@ public:
 
         double poch = pochhammer(state->niu - state->miu,state->niu - state->m_semi_inf);
 
-        auto  v = (state->n_x + state->lambda - state->n_gamma)/2.0 + state->sigma + state-> m_semi_inf + 1.0/2.0 ;
+        auto  vb = (state->n_x + state->lambda - state->n_gamma)/2.0 + state->sigma + state-> m_semi_inf + 1.0/2.0 ;
         auto  x = state->z * sqrt(R2S + state->v*state->v);
         double K = bm::cyl_bessel_k(v,x);
-        double denominator = pow(sqrt(R2S + state->v*state->v),v);
+        double denominator = pow(sqrt(R2S + state->v*state->v),vb);
 
         return binomial * mpower * poch * (K/denominator) ;
     }
