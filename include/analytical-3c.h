@@ -4,7 +4,7 @@
 #include "integrators.h"
 #include "nested_summation.h"
 #include "coordinates.h"
-
+#include "slater-utils.h"
 namespace slater {
 
 const std::string analytical_3c_name = "analytical-3c-nuclear-attraction";
@@ -39,19 +39,44 @@ struct Sum_State : public Summation_State<indexer_t> {
     indexer_t lambda;
     indexer_t j;
 
-    /// These are parameters that change every iteration, see [1] eqn. 29
-    int n_gamma;
-    double v  ; //this was actually redefined in Sum 8 calculate_Ylm, can probably be removed
-    int n_x;
-    int delta_l;
-    double niu;
-    int miu;
-    double z;
 
-    ///Parameters for semi-infinite integral, see [1] eqn. 56
-    double s;
+    /// These are parameters that change every iteration, see [1] eqn. 29
+    int n_gamma() const{
+        return 2*(n1+l1+n2+l2)-(l1_tag+l2_tag)-l+1;
+    }
+    double niu() const {
+        return n1 + n2 + l1 + l2 -l - j + 1.0/2.0;
+    }
+    int miu() const{
+        return (m2-m2_tag) - (m1 - m1_tag);
+    }
+    double n_x() const{
+      return   l1 - l1_tag + l2 - l2_tag;
+    };
+    double delta_l() const{
+        return (l1_tag + l2_tag -l)/2.0;
+    }
+    double v() const{
+        auto R1 = C;
+        center_t scaled_R2 =  scale_vector( R2_point, 1-s);
+        auto v_vec = vector_between(R1,scaled_R2 );
+        return vector_length(v_vec);
+    }
+
+    ///Nested iteration variables for semi-infinite integral, see [1] eqn. 56
+    double s; //update this when gaussian point function is called
     int sigma;
     int m_semi_inf;
+
+    /// These are parameters for semi-infinite integral that change every iteration, see [1] eqn. 55
+    double z() const{
+        return ( (1-s)*zeta1*zeta1 + s*zeta2*zeta2 )/(s*(1-s));
+    }
+    double r() const{
+        return (n_x()-lambda)/2.0 -1;
+    }
+
+
 
 };
 
