@@ -501,11 +501,6 @@ public:
 class Semi_Infinite_Integral_Sum_1 : public Nested_Summation<indexer_t, complex , Semi_Infinite_Integral_Sum_2 >{
 
 protected:
-    //static auto get_nx(Sum_State *state) { return (state->l1 - state->l1_tag + state->l2 - state->l2_tag ); }
-    //static auto get_niu(Sum_State *state) { return (state->n1 + state->n2 + state->l1 + state->l2 - state->l - state->j + 1.0/2.0); }
-    //static auto get_z(Sum_State *state) { return ( ( (1-state->s)*state->zeta1*state->zeta1 + state->s*state->zeta2*state->zeta2 )/(state->s*(1-state->s))   ); }
-
-
     indexer_t  get_next_sum_from() override { return 0 ;}
     indexer_t  get_next_sum_to() override { return (STATE->n_x - STATE->lambda) / 2.0 - 1.0; }
 
