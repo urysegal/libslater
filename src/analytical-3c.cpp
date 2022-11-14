@@ -517,7 +517,7 @@ protected:
 public:
     Semi_Infinite_Integral_Sum_1(Summation_State<indexer_t> *s) : Nested_Summation(1, 1, s){}
 
-    //ADD r here.. maybe
+    //rename it to r = nx - lambda /2
 
     /// We calculate the expression as public and  static so we can call it directly
     /// from the test suites.
