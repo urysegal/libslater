@@ -32,8 +32,8 @@ namespace slater {
 
 // Sixth line in [1] eqn. 28
 
-    class Sum_8 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> > {
-
+    class Sum_8 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> >
+    {
 
     protected:
         complex expression() override
