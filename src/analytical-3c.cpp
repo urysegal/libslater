@@ -525,7 +525,6 @@ public:
     static complex calculate_expression( Sum_State *state )
     {
         // compute line 1 expression here
-        //GAUTAM -> THESE ARE STILL DUMMY VALUES
         double power1 = pow(-2.0,(state->n_x- state->lambda)/2.0 - 1.0 );
         double power2 = pow(sqrt(state->z),state->n_x+ state->lambda - state->n_gamma+1.0);
         double power3 = pow(state->v,state->lambda+1);
