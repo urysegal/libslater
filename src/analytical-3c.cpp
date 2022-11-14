@@ -543,8 +543,8 @@ public:
 
 complex semi_infinite_integral(Sum_State *state){
     //Evaluate Integral from top level sum here
-    // What about s, should it be a state variable? Ask URY.
-    // We need to account for the case when r = -1 aka nx = lambda
+
+    // split cases r=-1 case here
     Semi_Infinite_Integral_Sum_1 top_sum(state);
     return top_sum.get_value();
 };
