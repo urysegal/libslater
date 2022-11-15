@@ -538,6 +538,8 @@ complex semi_infinite_integral(Sum_State *state){
     //Evaluate Integral from top level sum here
 
     // split cases r=-1 case here
+    // Use formula 58 in :
+    // [2]Three-Center Nuclear Attraction_Rv5.pdf
     Semi_Infinite_Integral_Sum_1 top_sum(state);
     return top_sum.get_value();
 };
