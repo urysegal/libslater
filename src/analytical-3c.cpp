@@ -494,7 +494,6 @@ namespace slater {
             auto s = STATE;
             return calculate_expression(s);
         }
-
     public:
         Semi_Infinite_Integral_Sum_1(Summation_State<indexer_t> *s) : Nested_Summation(1, 1, s) {}
 
@@ -517,13 +516,16 @@ namespace slater {
 
             return numerator / denominator;
         }
-    };
+};
 
-    complex semi_infinite_integral(Sum_State *state) {
-        //Evaluate Integral from top level sum here
-        // SPLIT CASE r=-1 HERE
+complex semi_infinite_integral(Sum_State *state){
+    //Evaluate Integral from top level sum here
 
-        Semi_Infinite_Integral_Sum_1 top_sum(state);
-        return top_sum.get_value();
-    };
+    // split cases r=-1 case here
+    // Use formula 58 in :
+    // [2]Three-Center Nuclear Attraction_Rv5.pdf
+    Semi_Infinite_Integral_Sum_1 top_sum(state);
+    return top_sum.get_value();
+};
+
 }
