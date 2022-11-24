@@ -402,7 +402,6 @@ namespace slater {
         return new Analytical_3C_evaluator();
     }
 
-
 complex semi_infinite_integral(Sum_State *state){
     //Evaluate Integral from top level sum here
 
@@ -414,12 +413,10 @@ complex semi_infinite_integral(Sum_State *state){
     else{
         // Use formula 58 in :
         // [2]Three-Center Nuclear Attraction_Rv5.pdf
-
         Semi_Infinite_Integral_Sum_1 top_sum(state);
         I = top_sum.get_value();
     }
     return I;
 };
-
 
 }

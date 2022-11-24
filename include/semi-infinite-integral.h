@@ -48,7 +48,7 @@ namespace slater {
                                                                state->m_semi_inf);
 
             auto R2S = state->R2 * state->R2 * state->s * (1 - state->s);
-            double mpower = pow((R2S * state->z()) / 2.0, state->m_semi_inf);
+            double m_power = pow((R2S * state->z()) / 2.0, state->m_semi_inf);
 
             double poch = pochhammer(state->niu() - state->miu(), state->niu() - state->m_semi_inf);
 
@@ -58,7 +58,7 @@ namespace slater {
             double K = bm::cyl_bessel_k(vb, x);
             double denominator = pow(sqrt(R2S + state->v() * state->v()), vb);
 
-            return binomial * mpower * poch * (K / denominator);
+            return binomial * m_power * poch * (K / denominator);
         }
 
     };
@@ -132,38 +132,50 @@ namespace slater {
         }
     };
 
-// functions for =-1 case
-complex glevin(complex s_n,complex w_n,double beta, int n, std::vector<complex>& arup,std::vector<complex>& arlo){
+// functions for r=-1 case
+complex glevin(complex s_n, complex w_n, double beta, int n,
+               std::vector<complex>& numerator_array,
+               std::vector<complex>& denominator_array){
+    // The calling program needs to call glevin correctly by starting with n=0
+    // glevin computes both the estimates for the numerator and denominator sums for the levin's transformation
+    // Starting values for numerator and denominator arrays
+    // Adapted from FORTRAN 77 SUBROUTINE GLEVIN in NONLINEAR SEQUENCE TRANSFORMATIONS ..., Weniger et al.
 
-    //Insert glevin code here
-    arup[n] = s_n / w_n;
-    arlo[n] = 1.0 / w_n;
+    //Array length check
+    assert(numerator_array.size()>=n);
+    assert(denominator_array.size()>=n);
+
+    //Starting values. Computation proceeds backwards from nth index to 0th index.
+    numerator_array[n] = s_n / w_n; //7.2-9
+    denominator_array[n] = 1.0 / w_n; //7.2-10
+
+    //Inner loop to compute 7.5-3
     if (n>0){
-        //factor is just 1
-        //This is not circular, the previous value should be correctly computed in a previous call to glevin for n=0
-        arup[n-1] = arup[n] - arup[n-1];
-        arlo[n-1] = arlo[n] - arlo[n-1];
+        //factor is just 1 in this case
+        //The indexing is not circular, the previous value should be correctly computed in a previous call to glevin for n-1
+        numerator_array[n - 1] = numerator_array[n] - numerator_array[n - 1];
+        denominator_array[n - 1] = denominator_array[n] - denominator_array[n - 1];
         if (n>1){
-            auto bn1 = beta + n-1;
+            auto bn1 = beta + n - 1;
             auto bn2 = beta + n;
-            auto coef = bn1/bn2;
+            auto coef = bn1 / bn2;
             for (int j = 2; j<=n; j++){
-                auto factor = (beta+n-j)* pow(coef,j-2) / bn2 ;
-                //This is not circular, the previous value should be correctly computed in a previous call to glevin for n=n-1
-                arup[n-j] = arup[n-j+1] - factor*arup[n-j];
-                arlo[n-j] = arlo[n-j+1] - factor*arlo[n-j];
+                auto factor = ( beta + n - j ) * pow(coef,j - 2) / bn2 ;
+                //The indexing is not circular, the previous value should be correctly computed in a previous call to glevin for n-1
+                numerator_array[n - j] = numerator_array[n - j + 1] - factor * numerator_array[n - j];
+                denominator_array[n - j] = denominator_array[n - j + 1] - factor * denominator_array[n - j];
             }
         }
     }
-    //Compute estimate of sum
 
+    //Compute estimate of sum= numerator/denominator
     complex sum_est;
-    if (abs(arlo[0]) < 1e-10){
+    if (abs(denominator_array[0]) < 1e-10){
         //Sum is diverging
         sum_est = 1e60; //RAISE ERROR HERE
     }
     else{
-        sum_est = arup[0]/arlo[0];
+        sum_est = numerator_array[0] / denominator_array[0];
     }
     return sum_est;
 }
@@ -194,24 +206,23 @@ complex sum_kth_term(Sum_State *state,int p){
 }
 
 complex levin_estimate(Sum_State *state){
-        //Insert outer loop of levin summation here
-
         //Initialize variables
         complex s_k = 0;
         complex sum_est_k = 0;
         complex sum_est_kplus1 = 0;
         complex a_k;
-        double beta = 1;
         int MAX_SUM = 10;
         std::vector<complex> num_array(MAX_SUM);
         std::vector<complex> den_array(MAX_SUM);
+        // Outer Loop for levin's transformation
+        // Generate Sequence 7.5-5
         for (int m=0; m<=MAX_SUM;m++){
             //compute ak
             a_k = sum_kth_term(state,m);
             //compute sk
             s_k = s_k + a_k;
             //call glevin to get estimate
-            sum_est_kplus1 = glevin(s_k,a_k,beta,m, num_array, den_array);
+            sum_est_kplus1 = glevin(s_k,a_k, 1.0,m, num_array, den_array);
             //check convergence
             if (abs(sum_est_kplus1-sum_est_k)< 1e-10 ){
                 break;
