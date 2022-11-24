@@ -128,7 +128,5 @@ private:
 };
 //Semi-Infinite Integral eqn 31 & 56 in [1]
 std::complex<double> semi_infinite_integral(Sum_State *state);
-void update_dependent_parameters(Sum_State *state);
-
 
 }
