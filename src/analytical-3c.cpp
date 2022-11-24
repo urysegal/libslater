@@ -92,7 +92,7 @@ namespace slater {
         // eqn. 31 in [1]
         static complex calculate_semi_infinite_integral(const double &s, Sum_State *state) {
             state->s = s; //update value of s in State
-            complex integral = semi_infinite_integral(state);
+            complex integral = semi_infinite_3c_integral(state);
             return integral;
         }
 
@@ -360,7 +360,7 @@ namespace slater {
         zeta1 = functions[0].get_exponent();
         zeta2 = functions[1].get_exponent();
         A = functions[0].get_center();
-        B = functions[0].get_center();
+        B = functions[1].get_center();
         C = centers[0];
         setup_state();
 
@@ -402,21 +402,6 @@ namespace slater {
         return new Analytical_3C_evaluator();
     }
 
-complex semi_infinite_integral(Sum_State *state){
-    //Evaluate Integral from top level sum here
 
-    complex I;
-    if (state->r()==-1){
-        //Use Levin Transformation
-        I = levin_estimate(state);
-    }
-    else{
-        // Use formula 58 in :
-        // [2]Three-Center Nuclear Attraction_Rv5.pdf
-        Semi_Infinite_Integral_Sum_1 top_sum(state);
-        I = top_sum.get_value();
-    }
-    return I;
-};
 
 }

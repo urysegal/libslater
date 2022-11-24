@@ -11,6 +11,15 @@ const std::string analytical_3c_name = "analytical-3c-nuclear-attraction";
 
 typedef int indexer_t; /// For this algorithm, the indices are integers (negative and positive )
 
+//
+class Sum_State;
+
+/// Semi-Infinite Integral eqn 31 & 56 in [1] ( see the implementation code file and Readme )
+/// \param state
+/// \return
+std::complex<double> semi_infinite_3c_integral(Sum_State *state);
+
+
 /// This is the state of the summation in [1] eqn. 28
 
 struct Sum_State : public Summation_State<indexer_t> {
@@ -126,7 +135,6 @@ private:
     center_t C = {};
 
 };
-//Semi-Infinite Integral eqn 31 & 56 in [1]
-std::complex<double> semi_infinite_integral(Sum_State *state);
+
 
 }

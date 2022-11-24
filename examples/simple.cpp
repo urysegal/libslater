@@ -43,12 +43,25 @@ main()
 
         std::cout << "Overlap: " << result << std::endl;
 
-        result = engine->kinetic({basis_set[0], basis_set[1]});
-        std::cout << "Kinetic: " << result << std::endl;
+        //result = engine->kinetic({basis_set[0], basis_set[1]});
+        //std::cout << "Kinetic: " << result << std::endl;
 
-        result = engine->nuclear_attraction({basis_set[2], basis_set[0]}, {1,0,0.5});
-        std::cout << "Nuclear Attraction: " << result << std::endl;
 
+        {
+
+            Quantum_Numbers q1 = {4,2,2};
+            Quantum_Numbers q2 = {4,2,2};
+
+            STO_Basis_Function_Info f1_info( 1.5, q1);
+            STO_Basis_Function_Info f2_info(0.5, q2);
+
+            STO_Basis_Function f1(f1_info, {0, 0, 0.0});
+            STO_Basis_Function f2(f2_info, {0, 0, 2.5});
+
+
+            result = engine->nuclear_attraction({f1,f2}, {0, 0, 3});
+            std::cout << "Nuclear Attraction: " << result << std::endl;
+        }
         delete engine;
 
     }
