@@ -263,43 +263,57 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
     energy_unit_t S2;
     sto_exponent_t coeff;
 
-
-    if (q1.n-1==0 && q2.n-1==0){
-        S2 = 0;
-
-        //recenter to 0 needed?
-        //create new STO function from second function for nuclear interaction with same center as first STO
-        STO_Basis_Function_Info info(functions[1].get_exponent(), {q2.n,q2.l,q2.m});
-        STO_Basis_Function temp_function(info,functions[0].get_center());
-
-        //Add a call to nuclear attraction integral here
-
-
-
-        coeff = functions[0].get_exponent();
-    }
-    else if(q1.n-1==0){
+    if(q1.n-1==0 && q2.n > 0 && q2.n-1 > q2.l ){
         //S_{n1,l1,m1}^{n2-1,l2,m2} in eqn 29b
-
         //create new STO function from second function for overlap with n2 = n2-1
-        STO_Basis_Function_Info info(functions[1].get_exponent(), {q2.n-1,q2.l,q2.m});
+        Quantum_Numbers temp_q = {q2.n-1,q2.l,q2.m};
+        temp_q.validate();
+
+        STO_Basis_Function_Info info(functions[1].get_exponent(), temp_q);
         STO_Basis_Function temp_function(info,functions[1].get_center());
 
         S2 = overlap({functions[0],temp_function});
         coeff = functions[1].get_exponent(); //beta
     }
-    else{
+    else if (q2.n-1==0 && q1.n > 0 && q1.n-1 > q1.l ){
         //S_{n1-1,l1,m1}^{n2,l2,m2} in eqn 29a
-
         //create new STO function from first function for overlap with n1 = n1-1
-        STO_Basis_Function_Info info(functions[0].get_exponent(), {q1.n-1,q1.l,q1.m});
+        Quantum_Numbers temp_q = {q1.n-1,q1.l,q1.m};
+        temp_q.validate();
+        STO_Basis_Function_Info info(functions[0].get_exponent(), temp_q);
         STO_Basis_Function temp_function(info,functions[0].get_center());
 
         S2 = overlap({temp_function,functions[1]});
         coeff = functions[0].get_exponent(); //alpha
     }
+    else{
+
+        //Check case 31a or 31b
+
+        //recenter to 0 needed?
+        //create new STO function from second function for nuclear interaction with same center as first STO
+        STO_Basis_Function_Info info(functions[1].get_exponent(), {q2.n,q2.l,q2.m});
+        STO_Basis_Function recentered_function(info,functions[0].get_center());
+
+        //Gautam & Ury -- Add a call to nuclear attraction integral here
+        std::map<slater::integration_types, std::string> engines;
+        auto engine = STO_Integration_Engine().create(engines);
+        energy_unit_t Q;
+        if(engine) {
+            STO_Integration_Options options;
+            options.set(Use_Normalized_B_Functions_Parameter_Name, true);
+            engine->init(options);
+
+            Q = engine->nuclear_attraction({functions[0], recentered_function} ,{} );
+        }
+        delete engine;
+        S2 = Q; //GAUTAM & URY -- THIS IS WRONG
+        coeff = functions[0].get_exponent(); //alpha
+    }
+
+
     auto T = -(1.0/2.0)*coeff*coeff*(S1-S2);
-    return T; // Gautam - implement :-)
+    return T;
 }
 
 }
