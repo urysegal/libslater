@@ -101,7 +101,7 @@ public:
         new_item->is_zero = true;
         new_item->current_index_value = current_index_value;
         new_item->scaling = scaling;
-        current_state->parent->items.push_back(new_item) ;
+        current_state->items.push_back(new_item) ;
     }
 
     void pop_state(T total_sum)
