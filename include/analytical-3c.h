@@ -22,7 +22,7 @@ std::complex<double> semi_infinite_3c_integral(Sum_State *state);
 
 /// This is the state of the summation in [1] eqn. 28
 
-struct Sum_State : public Summation_State<indexer_t> {
+struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
 
     /// Problem parameters
     unsigned int n1,n2;

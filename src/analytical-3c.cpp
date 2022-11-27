@@ -44,8 +44,7 @@ namespace slater {
             return calculate_expression(s);
         }
 
-
-        indexer_t &get_index_variable() override { return STATE->j; }
+        DECLARE_INDEX_VARIABLE(j);
 
         indexer_t get_next_sum_from() override { return 1; }
 
@@ -55,7 +54,7 @@ namespace slater {
 
 
     public:
-        Sum_8(int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+        Sum_8(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
 
         static complex calculate_Ylm(double s, Sum_State *state)
@@ -130,7 +129,7 @@ namespace slater {
         }
 
 
-        indexer_t &get_index_variable() override { return STATE->lambda; }
+        DECLARE_INDEX_VARIABLE(lambda)
 
         indexer_t get_next_sum_from() override { return 0; }
 
@@ -139,7 +138,7 @@ namespace slater {
         indexer_t get_next_sum_step() override { return 1; }
 
     public:
-        Sum_7(int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+        Sum_7(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
 
         static complex calculate_expression(Sum_State *s) {
@@ -168,7 +167,7 @@ namespace slater {
         }
 
 
-        indexer_t &get_index_variable() override { return STATE->l; }
+        DECLARE_INDEX_VARIABLE(l)
 
         indexer_t get_next_sum_from() override {
             return get_l_min(STATE->l1 - STATE->l1_tag,
@@ -183,7 +182,7 @@ namespace slater {
 
 
     public:
-        Sum_6(int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+        Sum_6(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
         static indexer_t get_l_min(indexer_t l1, indexer_t l2, indexer_t m1, indexer_t m2) {
             /// Reference [1] eqn. 24
@@ -225,8 +224,7 @@ namespace slater {
             return calculate_expression(s);
         }
 
-
-        indexer_t &get_index_variable() override { return STATE->m2_tag; }
+        DECLARE_INDEX_VARIABLE(m2_tag)
 
         indexer_t get_next_sum_from() override {
             return Sum_6::get_l_min(STATE->l1_tag, STATE->l2_tag, STATE->m1_tag, STATE->m2_tag);
@@ -238,7 +236,7 @@ namespace slater {
 
 
     public:
-        Sum_5(int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+        Sum_5(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
         static complex calculate_expression(Sum_State *s) {
             return calculate_gaunt_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) * pow(-1, s->l2_tag);
@@ -263,14 +261,14 @@ namespace slater {
 
     protected:
 
-        indexer_t &get_index_variable() override { return STATE->l2_tag; }
+        DECLARE_INDEX_VARIABLE(l2_tag)
 
         indexer_t get_next_sum_from() override { return -1 * STATE->l2_tag; }
 
         indexer_t get_next_sum_to() override { return STATE->l2_tag; }
 
     public:
-        Sum_4(int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+        Sum_4(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
     };
 
 
@@ -284,14 +282,14 @@ namespace slater {
         }
 
 
-        indexer_t &get_index_variable() override { return STATE->m1_tag; }
+        DECLARE_INDEX_VARIABLE(m1_tag)
 
         indexer_t get_next_sum_from() override { return 0; }
 
         indexer_t get_next_sum_to() override { return STATE->l2; }
 
     public:
-        Sum_3(int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+        Sum_3(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
         static complex calculate_expression(Sum_State *s) {
             return Sum_5::calculate_gaunt_fraction(s->l1, s->l1_tag, s->m1, s->m1_tag);
@@ -305,14 +303,14 @@ namespace slater {
 
     protected:
 
-        indexer_t &get_index_variable() override { return STATE->l1_tag; }
+        DECLARE_INDEX_VARIABLE(l1_tag)
 
         indexer_t get_next_sum_from() override { return -1 * STATE->l1_tag; }
 
         indexer_t get_next_sum_to() override { return STATE->l1_tag; }
 
     public:
-        Sum_2(int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+        Sum_2(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
     };
 
 
@@ -332,7 +330,7 @@ namespace slater {
         }
 
     public:
-        Sum_1(Summation_State<indexer_t> *s) : Nested_Summation(1, 1, s) {}
+        Sum_1(Summation_State<indexer_t, complex> *s) : Nested_Summation(1, 1, s) {}
 
         /// We calculate the expression as public and  static so we can call it directly
         /// from the test suites.
