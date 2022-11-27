@@ -1,18 +1,20 @@
 #pragma once
 
 #include "libslater.h"
-
-namespace slater {
-
 #define SUMMATION_DEBUG 1
 
 #ifdef SUMMATION_DEBUG
-
 #include "nested_summation_debug.h"
+#endif
+
+namespace slater {
+
+
+#ifdef SUMMATION_DEBUG
 
 #define DECLARE_INDEX_VARIABLE(x) \
     indexer_t &get_index_variable() override { return STATE->x; } \
-    const char *get_index_variable_name() override { return """x"""; }
+    const char *get_index_variable_name() override { return #x; }
 
 
 #else
