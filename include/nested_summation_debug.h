@@ -102,13 +102,16 @@ public:
 
     void add_item(indexing_t current_index_value, T scaling, T inner_value, T new_value)
     {
-        auto new_item = this->current_state->items.back();
-        assert(new_item->is_loaded == false);
-        new_item->current_index_value = current_index_value;
-        new_item->scaling = scaling;
-        new_item->inner_value = inner_value;
-        new_item->new_value = new_value;
-        new_item->is_loaded = true;
+        if ( not this->current_state->items.empty() ) {
+            auto new_item = this->current_state->items.back();
+            if (new_item->is_loaded == false) {
+                new_item->current_index_value = current_index_value;
+                new_item->scaling = scaling;
+                new_item->inner_value = inner_value;
+                new_item->new_value = new_value;
+                new_item->is_loaded = true;
+            }
+        }
     }
 
     void add_zero_item(indexing_t current_index_value, T scaling)
