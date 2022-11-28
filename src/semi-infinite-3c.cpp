@@ -142,8 +142,8 @@ complex glevin(complex s_n, complex w_n, double beta, int n,
     // Adapted from FORTRAN 77 SUBROUTINE GLEVIN in NONLINEAR SEQUENCE TRANSFORMATIONS ..., Weniger et al.
 
     //Array length check
-    assert(int(numerator_array.size())>=n);
-    assert(int(denominator_array.size())>=n);
+    assert(int(numerator_array.size())>n);
+    assert(int(denominator_array.size())>n);
 
     //Starting values. Computation proceeds backwards from nth index to 0th index.
     numerator_array[n] = s_n / w_n; //7.2-9
