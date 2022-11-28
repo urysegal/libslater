@@ -27,28 +27,112 @@ inline auto gaunt( int l1, int m1, int l2, int m2, int l3, int m3 )
 
 static Electron_Repulsion_SDbar dummy_eri_sdbar(electron_repulsion_sdbar_name);
 
+#define miu_from(x) std::max( -1 * STATE->l##x##_tag, STATE->m##x - STATE->l##x + STATE->l##x##_tag )
+#define miu_to(x) std::max( STATE->l##x##_tag, STATE->m##x + STATE->l##x - STATE->l##x##_tag )
+
+
+// sixth summation at [4] eqn. 19 , fifth line second summation
+
+class ERI_Sum_6 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex>> {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(m3_tag)
+
+    indexer_t get_next_sum_from() override { return 0; }
+
+    indexer_t get_next_sum_to() override { return STATE->l4; }
+
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_6(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+private:
+    static complex calculate_expression(SDbar_Sum_State *s) {
+        complex p = pow( complex(0, 1.0) , s->l3 + s->l3_tag );
+        complex numerator = gaunt(s->l3, s->m3, s->l3_tag, s->m3_tag,s->l3 - s->l3_tag, s->m3 - s->m3_tag );
+        complex denominator = double_factorial(2*s->l3_tag+1) * double_factorial(2 * ( s->l3 - s->l3_tag ) + 1 );
+
+        return p * (numerator/denominator);
+    }
+};
+
+
+// fifth summation at [4] eqn. 19 , fifth line first summation
+
+class ERI_Sum_5 : public Nested_Summation<indexer_t, complex, ERI_Sum_6> {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(l3_tag)
+
+    indexer_t get_next_sum_from() override { return miu_from(3) ; }
+    indexer_t get_next_sum_to() override { return miu_to(3) ; }
+
+
+public:
+    ERI_Sum_5(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+};
+
+
+
+
+// fourth summation at [4] eqn. 19 , fourth line second summation
+
+class ERI_Sum_4 : public Nested_Summation<indexer_t, complex, ERI_Sum_5> {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(m2_tag)
+
+    indexer_t get_next_sum_from() override { return 0; }
+
+    indexer_t get_next_sum_to() override { return STATE->m2_tag; }
+
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_4(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+private:
+    static complex calculate_expression(SDbar_Sum_State *s) {
+        complex p = pow( complex(0, 1.0) , s->l2 + s->l2_tag );
+        p *= pow(-1, s->l2_tag);
+        complex numerator = gaunt(s->l2, s->m2, s->l2_tag, s->m2_tag,s->l2 - s->l2_tag, s->m2 - s->m2_tag );
+        complex denominator = double_factorial(2*s->l2_tag+1) * double_factorial(2 * ( s->l2 - s->l2_tag ) + 1 );
+
+        return p * (numerator/denominator);
+    }
+};
+
 
 // Third summation at [4] eqn. 19 , fourth line first summation
 
-class ERI_Sum_4 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex>> {
+class ERI_Sum_3 : public Nested_Summation<indexer_t, complex, ERI_Sum_4> {
 
 protected:
 
     DECLARE_INDEX_VARIABLE(l2_tag)
 
-    indexer_t get_next_sum_from() override { return std::max( -1 * STATE->l2_tag, STATE->m2 - STATE->l2 + STATE->l2_tag ); }
-
-    indexer_t get_next_sum_to() override { return std::min(STATE->l2_tag, STATE->m2 + STATE->l2 - STATE->l2_tag ); }
+    indexer_t get_next_sum_from() override { return miu_from(2) ; }
+    indexer_t get_next_sum_to() override { return miu_to(2) ; }
 
 
 public:
-    ERI_Sum_4(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    ERI_Sum_3(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 };
 
 
-// Second summation at [4] eqn. 19 third line
+// Second summation at [4] eqn. 19 third line, second summation
 
-class ERI_Sum_3 : public Nested_Summation<indexer_t, complex, ERI_Sum_4> {
+class ERI_Sum_2 : public Nested_Summation<indexer_t, complex, ERI_Sum_3> {
 
 protected:
 
@@ -63,7 +147,7 @@ protected:
     }
 
 public:
-    ERI_Sum_3(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    ERI_Sum_2(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
 private:
     static complex calculate_expression(SDbar_Sum_State *s) {
@@ -80,25 +164,24 @@ private:
 
 // First summation at [4] eqn. 19 third line
 
-class ERI_Sum_2 : public Nested_Summation<indexer_t, complex, ERI_Sum_3> {
+class ERI_Sum_1 : public Nested_Summation<indexer_t, complex, ERI_Sum_2> {
 
 protected:
 
     DECLARE_INDEX_VARIABLE(l1_tag)
 
-    indexer_t get_next_sum_from() override { return std::max( -1 * STATE->l1_tag, STATE->m1 - STATE->l1 + STATE->l1_tag ); }
-
-    indexer_t get_next_sum_to() override { return std::min(STATE->l1_tag, STATE->m1 + STATE->l1 - STATE->l1_tag ); }
+    indexer_t get_next_sum_from() override { return miu_from(1) ; }
+    indexer_t get_next_sum_to() override { return miu_to(1) ; }
 
 
 public:
-    ERI_Sum_2(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+    ERI_Sum_1(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 };
 
 
 
 // initial coefficient at [4] eqn. 19 - up to the first sum (lines 1,2, some of 3)
-class ERI_Sum_1 : public Nested_Summation<indexer_t, complex, ERI_Sum_2 > {
+class ERI_Top_Sum : public Nested_Summation<indexer_t, complex, ERI_Sum_1 > {
 
 protected:
 
@@ -113,7 +196,7 @@ protected:
     }
 
 public:
-    ERI_Sum_1(Summation_State<indexer_t, complex> *s) : Nested_Summation(1, 1, s) {}
+    ERI_Top_Sum(Summation_State<indexer_t, complex> *s) : Nested_Summation(1, 1, s) {}
 
     static complex calculate_expression(SDbar_Sum_State *s) {
         // Follow the lines fromr ref. [4] so that it's easy to debug.
@@ -193,7 +276,7 @@ void Electron_Repulsion_SDbar::setup_state(const std::vector<STO_Basis_Function>
 }
 
 complex Electron_Repulsion_SDbar::evaluate() {
-    ERI_Sum_1 top_sum(&state);
+    ERI_Top_Sum top_sum(&state);
     return top_sum.get_value();
 }
 
