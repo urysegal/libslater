@@ -5,8 +5,10 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/reporters/catch_reporter_registrars.hpp>
 #include <catch2/interfaces/catch_interfaces_reporter.hpp>
+#include "analytical-3c.h"
 
 using namespace slater;
+using complex = std::complex<double>;
 
 struct sum_state : public Summation_State<int, long> {
     int i=0;
@@ -74,4 +76,32 @@ TEST_CASE( "two simple sums", "[sums]" ) {
     Integer_Sum_Sum ins(0,5,&s);
 
     CHECK(ins.get_value() == 140 );
+}
+
+TEST_CASE( "alternating series sum", "[sums]" ) {
+//Initialize variables
+    complex s_k = 0;
+    complex sum_est_k = 0;
+    complex sum_est_kplus1 = 0;
+    complex a_k;
+    int MAX_SUM = 100;
+    std::vector<complex> num_array(MAX_SUM+1);
+    std::vector<complex> den_array(MAX_SUM+1);
+    // Outer Loop for levin's transformation
+    // Generate Sequence for alternating harmonic series
+    for (int m=0; m<=MAX_SUM;m++){
+        //compute ak
+        a_k = pow(-1.0,m+1) / double(m+1);
+        //compute sk
+        s_k = s_k + a_k;
+        //call glevin to get estimate
+        sum_est_kplus1 = glevin(s_k,a_k, 1.0,m, num_array, den_array);
+        //check convergence
+        if (abs(sum_est_kplus1-sum_est_k) < 1e-17 ){
+            break;
+        }
+        sum_est_k = sum_est_kplus1;
+    }
+    CHECK(abs(sum_est_kplus1 - -0.6931471805599453) < 1e-14 );
+
 }

@@ -141,9 +141,9 @@ complex glevin(complex s_n, complex w_n, double beta, int n,
     // Starting values for numerator and denominator arrays
     // Adapted from FORTRAN 77 SUBROUTINE GLEVIN in NONLINEAR SEQUENCE TRANSFORMATIONS ..., Weniger et al.
 
-    //Array length check
-    assert(int(numerator_array.size())>n);
-    assert(int(denominator_array.size())>n);
+    //Array length check, values populated from 0 to n
+    assert(int(numerator_array.size())  >= n+1);
+    assert(int(denominator_array.size())>= n+1);
 
     //Starting values. Computation proceeds backwards from nth index to 0th index.
     numerator_array[n] = s_n / w_n; //7.2-9
@@ -212,9 +212,9 @@ complex levin_estimate(Sum_State *state){
     complex sum_est_k = 0;
     complex sum_est_kplus1 = 0;
     complex a_k;
-    int MAX_SUM = 10;
-    std::vector<complex> num_array(MAX_SUM);
-    std::vector<complex> den_array(MAX_SUM);
+    int MAX_SUM = 100;
+    std::vector<complex> num_array(MAX_SUM+1);
+    std::vector<complex> den_array(MAX_SUM+1);
     // Outer Loop for levin's transformation
     // Generate Sequence 7.5-5
     for (int m=0; m<=MAX_SUM;m++){
@@ -225,7 +225,7 @@ complex levin_estimate(Sum_State *state){
         //call glevin to get estimate
         sum_est_kplus1 = glevin(s_k,a_k, 1.0,m, num_array, den_array);
         //check convergence
-        if (abs(sum_est_kplus1-sum_est_k)< 1e-10 ){
+        if (abs(sum_est_kplus1-sum_est_k)< 1e-16 ){
             break;
         }
         sum_est_k = sum_est_kplus1;
