@@ -232,7 +232,7 @@ std::complex<double> Homeier_Integrator::calculate_S(const B_function_details &f
     return result;
 }
 
-double Homeier_Integrator::get_gaunt_coeff(const std::array<const int, 6> &args)
+double Homeier_Integrator::get_gaunt_coeff(const std::array<int, 6> &args)
 {
     return Gaunt_Coefficient_Engine::get()->calculate(args);
 }

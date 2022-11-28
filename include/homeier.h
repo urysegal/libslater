@@ -103,7 +103,7 @@ private:
     static std::complex<double> get_B_function_sum(const B_function_details &f1, const B_function_details &f2, double alpha, int l) ;
     static double calculate_delta(const B_function_details &f1, const B_function_details &f2, double s) ;
     static int get_l_min( const Quantum_Numbers &q1, const Quantum_Numbers &q2) ;
-    static double get_gaunt_coeff(const std::array<const int, 6> &) ;
+    static double get_gaunt_coeff(const std::array<int, 6> &) ;
     static std::complex<double> calculate_B_function_value(const Quantum_Numbers &quantum_numbers, double alpha, const center_t &point);
 
 };

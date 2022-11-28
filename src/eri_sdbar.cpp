@@ -6,6 +6,7 @@
 #include <boost/geometry/geometries/geometries.hpp>
 #include <boost/math/special_functions.hpp>
 #include "eri_sdbar.h"
+#include "gaunt.h"
 
 
 namespace slater {
@@ -18,6 +19,8 @@ namespace bm = boost::math;
 
 inline auto double_factorial(unsigned i) { return boost::math::double_factorial<double>(i); }
 inline auto factorial(unsigned i) { return boost::math::factorial<double>(i); }
+inline auto gaunt( int l1, int m1, int l2, int m2, int l3, int m3 )
+    { return Gaunt_Coefficient_Engine::get()->calculate({l1, m1, l2, m2, l3, m3}); }
 
 #define STATE (static_cast<SDbar_Sum_State *> (state))
 
@@ -25,8 +28,59 @@ inline auto factorial(unsigned i) { return boost::math::factorial<double>(i); }
 static Electron_Repulsion_SDbar dummy_eri_sdbar(electron_repulsion_sdbar_name);
 
 
+// Second summation at [4] eqn. 19 third line
+
+class ERI_Sum_3 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex>> {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(m1_tag)
+
+    indexer_t get_next_sum_from() override { return 0; }
+
+    indexer_t get_next_sum_to() override { return STATE->l2; }
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_3(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+private:
+    static complex calculate_expression(SDbar_Sum_State *s) {
+        complex p = pow( complex(0, 1.0) , s->l1 + s->l1_tag );
+        complex numerator = gaunt(s->l1, s->m1, s->l1_tag, s->m1_tag,s->l1 - s->l1_tag, s->m1 - s->m1_tag );
+        complex denominator = double_factorial(2*s->l1_tag+1) * double_factorial(2 * ( s->l1 - s->l1_tag ) + 1 );
+
+        return p * (numerator/denominator);
+    }
+};
+
+
+
+
+// First summation at [4] eqn. 19 third line
+
+class ERI_Sum_2 : public Nested_Summation<indexer_t, complex, ERI_Sum_3> {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(l1_tag)
+
+    indexer_t get_next_sum_from() override { return std::max( -1 * STATE->l1_tag, STATE->m1 - STATE->l1 + STATE->l1_tag ); }
+
+    indexer_t get_next_sum_to() override { return std::min(STATE->l1_tag, STATE->m1 + STATE->l1 - STATE->l1_tag ); }
+
+
+public:
+    ERI_Sum_2(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+};
+
+
+
 // initial coefficient at [4] eqn. 19 - up to the first sum (lines 1,2, some of 3)
-class ERI_Sum_1 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> > {
+class ERI_Sum_1 : public Nested_Summation<indexer_t, complex, ERI_Sum_2 > {
 
 protected:
 

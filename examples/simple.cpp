@@ -10,7 +10,6 @@ int
 main()
 {
 
-
     Quantum_Numbers quantum_numbers1 = {5,4,-3};
     Quantum_Numbers quantum_numbers2 = {4,3,2};
 

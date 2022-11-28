@@ -31,6 +31,16 @@ public:
     center_t D = {};
     std::array<sto_exponent_t, 4> zeta;
 
+    indexer_t l1_tag;
+    indexer_t l2_tag;
+    indexer_t l3_tag;
+    indexer_t l4_tag;
+
+    indexer_t m1_tag;
+    indexer_t m2_tag;
+    indexer_t m3_tag;
+    indexer_t m4_tag;
+
 };
 
 class Electron_Repulsion_SDbar : public STO_Integrator {

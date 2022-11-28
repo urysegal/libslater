@@ -27,7 +27,7 @@ int Gaunt_Coefficient_Engine::get_maximal_gaunt_l()
 }
 
 
-double Gaunt_Coefficient_Engine::calculate(const std::array<const int, 6> &args) const
+double Gaunt_Coefficient_Engine::calculate(const std::array< int, 6> &args) const
 {
     auto l1 = args[0];
 
