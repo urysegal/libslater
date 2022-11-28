@@ -28,9 +28,27 @@ inline auto gaunt( int l1, int m1, int l2, int m2, int l3, int m3 )
 static Electron_Repulsion_SDbar dummy_eri_sdbar(electron_repulsion_sdbar_name);
 
 
+// Third summation at [4] eqn. 19 , fourth line first summation
+
+class ERI_Sum_4 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex>> {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(l2_tag)
+
+    indexer_t get_next_sum_from() override { return std::max( -1 * STATE->l2_tag, STATE->m2 - STATE->l2 + STATE->l2_tag ); }
+
+    indexer_t get_next_sum_to() override { return std::min(STATE->l2_tag, STATE->m2 + STATE->l2 - STATE->l2_tag ); }
+
+
+public:
+    ERI_Sum_4(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+};
+
+
 // Second summation at [4] eqn. 19 third line
 
-class ERI_Sum_3 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex>> {
+class ERI_Sum_3 : public Nested_Summation<indexer_t, complex, ERI_Sum_4> {
 
 protected:
 
