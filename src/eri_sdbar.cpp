@@ -31,9 +31,61 @@ static Electron_Repulsion_SDbar dummy_eri_sdbar(electron_repulsion_sdbar_name);
 #define miu_to(x) std::max( STATE->l##x##_tag, STATE->m##x + STATE->l##x - STATE->l##x##_tag )
 
 
+
+// eights summation at [4] eqn. 19 , sixth line second summation
+
+class ERI_Sum_8 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex>> {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(m4_tag)
+
+    indexer_t get_next_sum_from() override ; // HERE
+
+    indexer_t get_next_sum_to() override { return STATE->l1_tag + STATE->l2_tag; }
+
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_8(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+private:
+    static complex calculate_expression(SDbar_Sum_State *s) {
+        complex p = pow( complex(0, 1.0) , s->l4 + s->l4_tag );
+        p *= pow(-1, s->l4_tag);
+        complex numerator = gaunt(s->l4, s->m4, s->l4_tag, s->m4_tag,s->l4 - s->l4_tag, s->m4 - s->m4_tag );
+        complex denominator = double_factorial(2*s->l4_tag+1) * double_factorial(2 * ( s->l4 - s->l4_tag ) + 1 );
+
+        return p * (numerator/denominator);
+    }
+};
+
+
+// seventh summation at [4] eqn. 19 , sixth line first summation
+
+class ERI_Sum_7 : public Nested_Summation<indexer_t, complex, ERI_Sum_8> {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(l4_tag)
+
+    indexer_t get_next_sum_from() override { return miu_from(4) ; }
+    indexer_t get_next_sum_to() override { return miu_to(4) ; }
+
+
+public:
+    ERI_Sum_7(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+};
+
+
+
+
 // sixth summation at [4] eqn. 19 , fifth line second summation
 
-class ERI_Sum_6 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex>> {
+class ERI_Sum_6 : public Nested_Summation<indexer_t, complex, ERI_Sum_7> {
 
 protected:
 
@@ -42,6 +94,8 @@ protected:
     indexer_t get_next_sum_from() override { return 0; }
 
     indexer_t get_next_sum_to() override { return STATE->l4; }
+
+    indexer_t get_next_sum_step() override { return 2; }
 
     complex expression() override {
         auto s = STATE;
@@ -54,6 +108,7 @@ public:
 private:
     static complex calculate_expression(SDbar_Sum_State *s) {
         complex p = pow( complex(0, 1.0) , s->l3 + s->l3_tag );
+        p *= pow(-1, s->l2_tag);
         complex numerator = gaunt(s->l3, s->m3, s->l3_tag, s->m3_tag,s->l3 - s->l3_tag, s->m3 - s->m3_tag );
         complex denominator = double_factorial(2*s->l3_tag+1) * double_factorial(2 * ( s->l3 - s->l3_tag ) + 1 );
 
