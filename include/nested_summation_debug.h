@@ -36,7 +36,16 @@ struct summation_debug_item {
             item->dump(tab_depth+1);
         }
     }
-    };
+
+    void cleanup()
+    {
+        if ( item ) {
+            item->cleanup();
+            delete item;
+        }
+    }
+
+};
 
 template<typename indexing_t, class T>
 struct summation_debug_state {
@@ -57,6 +66,14 @@ struct summation_debug_state {
             << " step of " << step << std::endl;
         for ( auto const &it: items ) {
             it->dump(index_variable_name, tab_depth+1);
+        }
+    }
+
+    void cleanup()
+    {
+        for ( auto it: items ) {
+            it->cleanup();
+            delete it;
         }
     }
 };
@@ -107,18 +124,25 @@ public:
     void pop_state(T total_sum)
     {
         current_state->final_value = total_sum;
-        auto new_item = new summation_debug_item<indexing_t, T>();
         if (current_state != top_state) {
+            auto new_item = new summation_debug_item<indexing_t, T>();
             new_item->item = current_state;
             current_state->parent->items.push_back(new_item);
+            current_state = current_state->parent;
         } else {
             dump();
+            cleanup();
         }
-        current_state = current_state->parent;
     }
 
     void dump() {
         top_state->dump(0);
+    }
+
+    void cleanup()
+    {
+        top_state->cleanup();
+        delete top_state;
     }
 
 private:
