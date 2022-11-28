@@ -22,8 +22,8 @@ std::complex<double> semi_infinite_3c_integral(Sum_State *state);
 
 /// This is the state of the summation in [1] eqn. 28
 
-struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
-
+class Sum_State : public Summation_State<indexer_t, std::complex<double> > {
+public:
     /// Problem parameters
     unsigned int n1,n2;
     int l1,l2;
@@ -96,7 +96,7 @@ class Analytical_3C_evaluator : public STO_Integrator {
 
 public:
 
-    /// Build an analitical 3-center nuclear attraction integral
+    /// Build an analytical 3-center nuclear attraction integral evaluator
     Analytical_3C_evaluator() ;
 
     /// This constructor is only used for building the factory
@@ -108,7 +108,7 @@ public:
     virtual STO_Integrator *clone() const override;
 
 
-    /// Initialize the Homeier integrator with a set of options
+    /// Initialize the integrator with a set of options
     /// \param params set of options for the integrator
     virtual void init(const STO_Integration_Options &params) override;
 

@@ -45,7 +45,8 @@ enum class spin_quantum_number_t  { UNDEFINED, UP, DOWN } ;
 enum class integration_types : int {
     OVERLAP,
     KINETIC,
-    NUCLEAR_ATTRACTION
+    NUCLEAR_ATTRACTION,
+    ELECTRON_REPULSION
 };
 
 

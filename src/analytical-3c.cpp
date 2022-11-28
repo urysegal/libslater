@@ -391,15 +391,15 @@ namespace slater {
     }
 
 
-    Analytical_3C_evaluator::Analytical_3C_evaluator() : STO_Integrator(3, 1, 1) {}
+Analytical_3C_evaluator::Analytical_3C_evaluator() : STO_Integrator(3, 1, 1) {}
 
-    void Analytical_3C_evaluator::init(const slater::STO_Integration_Options &params) {
-        params.get(Number_of_quadrature_points_Parameter_Name, number_of_quadrature_points);
-    }
+void Analytical_3C_evaluator::init(const slater::STO_Integration_Options &params) {
+    params.get(Number_of_quadrature_points_Parameter_Name, number_of_quadrature_points);
+}
 
-    STO_Integrator *Analytical_3C_evaluator::clone() const {
-        return new Analytical_3C_evaluator();
-    }
+STO_Integrator *Analytical_3C_evaluator::clone() const {
+    return new Analytical_3C_evaluator();
+}
 
 
 
