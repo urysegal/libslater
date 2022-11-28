@@ -86,6 +86,9 @@ public:
     void
     push_state(const char *class_name, const char *index_variable_name, indexing_t from, indexing_t to, indexing_t step)
     {
+        if ( paused ) {
+            return;
+        }
         auto new_state = new summation_debug_state<indexing_t, T>();
 
         if ( not current_state ) {
@@ -102,6 +105,10 @@ public:
 
     void add_item(indexing_t current_index_value, T scaling, T inner_value, T new_value)
     {
+        if ( paused ) {
+            return;
+        }
+
         if ( not this->current_state->items.empty() ) {
             auto new_item = this->current_state->items.back();
             if (new_item->is_loaded == false) {
@@ -116,6 +123,10 @@ public:
 
     void add_zero_item(indexing_t current_index_value, T scaling)
     {
+        if ( paused ) {
+            return;
+        }
+
         auto new_item = new summation_debug_item<indexing_t, T>();
         new_item->is_loaded = true;
         new_item->is_zero = true;
@@ -126,6 +137,10 @@ public:
 
     void pop_state(T total_sum)
     {
+        if ( paused ) {
+            return;
+        }
+
         current_state->final_value = total_sum;
         if (current_state != top_state) {
             auto new_item = new summation_debug_item<indexing_t, T>();
@@ -148,10 +163,14 @@ public:
         delete top_state;
     }
 
+    void pause() { paused = true; }
+    void resume() { paused = false; }
+
 private:
     summation_debug_state<indexing_t, T> *current_state = nullptr;
     summation_debug_state<indexing_t, T> *top_state = nullptr;
 
+    bool paused = false;
 };
 
 }

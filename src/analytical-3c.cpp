@@ -10,7 +10,6 @@
 #include "gaunt.h"
 #include "analytical-3c.h"
 #include "slater-utils.h"
-#include "semi-infinite-integral.h"
 
 
 
@@ -102,6 +101,10 @@ namespace slater {
         }
 
         static complex calculate_expression(Sum_State *s) {
+#ifdef SUMMATION_DEBUG
+            s->debug_state.pause();
+#endif
+
             complex result = 0;
             auto choose = bm::binomial_coefficient<double>(s->delta_l(), s->j);
             auto enumerator = pow(-1, s->j);
@@ -113,6 +116,10 @@ namespace slater {
             complex integral_value = calculate_integral(s);
 
             result = factor * integral_value;
+#ifdef SUMMATION_DEBUG
+            s->debug_state.resume();
+#endif
+
             return result;
         }
     };
@@ -339,7 +346,7 @@ namespace slater {
 
             double numerator =
                     8 * pow(4 * pi, 2) * pow(-1, s->l1 + s->l2)
-                    * bm::double_factorial<double>(2 * s->l1 + 1) * bm::double_factorial<double>(2 * s->l1 + 1)
+                    * bm::double_factorial<double>(2 * s->l1 + 1) * bm::double_factorial<double>(2 * s->l2 + 1)
                     * bm::factorial<double>(s->l1 + s->n1 + s->n2 + s->l2 + 1)
                     * pow(s->zeta1, 2 * s->n1 + s->l1 - 1)
                     * pow(s->zeta2, 2 * s->n2 + s->l2 - 1);
