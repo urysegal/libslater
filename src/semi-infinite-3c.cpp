@@ -247,6 +247,7 @@ complex semi_infinite_3c_integral(Sum_State *state)
         // Use formula 58 in :
         // [2]Three-Center Nuclear Attraction_Rv5.pdf
         Semi_Infinite_Integral_Sum_1 top_sum(state);
+
         I = top_sum.get_value();
     }
     return I;

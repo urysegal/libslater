@@ -101,6 +101,10 @@ namespace slater {
         }
 
         static complex calculate_expression(Sum_State *s) {
+#ifdef SUMMATION_DEBUG
+            s->debug_state.pause();
+#endif
+
             complex result = 0;
             auto choose = bm::binomial_coefficient<double>(s->delta_l(), s->j);
             auto enumerator = pow(-1, s->j);
@@ -112,6 +116,10 @@ namespace slater {
             complex integral_value = calculate_integral(s);
 
             result = factor * integral_value;
+#ifdef SUMMATION_DEBUG
+            s->debug_state.resume();
+#endif
+
             return result;
         }
     };
