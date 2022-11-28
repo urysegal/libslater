@@ -338,7 +338,7 @@ namespace slater {
 
             double numerator =
                     8 * pow(4 * pi, 2) * pow(-1, s->l1 + s->l2)
-                    * bm::double_factorial<double>(2 * s->l1 + 1) * bm::double_factorial<double>(2 * s->l1 + 1)
+                    * bm::double_factorial<double>(2 * s->l1 + 1) * bm::double_factorial<double>(2 * s->l2 + 1)
                     * bm::factorial<double>(s->l1 + s->n1 + s->n2 + s->l2 + 1)
                     * pow(s->zeta1, 2 * s->n1 + s->l1 - 1)
                     * pow(s->zeta2, 2 * s->n2 + s->l2 - 1);
