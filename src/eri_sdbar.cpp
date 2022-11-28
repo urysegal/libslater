@@ -1,9 +1,74 @@
+#include <complex>
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/special_functions/factorials.hpp>
+#include <boost/math/quadrature/gauss.hpp>
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/geometries.hpp>
+#include <boost/math/special_functions.hpp>
 #include "eri_sdbar.h"
 
 
 namespace slater {
 
+auto pi = boost::math::constants::pi<double>();
+namespace bg = boost::geometry;
+
+using complex = std::complex<double>;
+namespace bm = boost::math;
+
+inline auto double_factorial(unsigned i) { return boost::math::double_factorial<double>(i); }
+inline auto factorial(unsigned i) { return boost::math::factorial<double>(i); }
+
+#define STATE (static_cast<SDbar_Sum_State *> (state))
+
+
 static Electron_Repulsion_SDbar dummy_eri_sdbar(electron_repulsion_sdbar_name);
+
+
+// initial coefficient at [4] eqn. 19 - up to the first sum (lines 1,2, some of 3)
+class ERI_Sum_1 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> > {
+
+protected:
+
+
+    indexer_t get_next_sum_from() override { return 0; }
+
+    indexer_t get_next_sum_to() override { return STATE->l1; }
+
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_1(Summation_State<indexer_t, complex> *s) : Nested_Summation(1, 1, s) {}
+
+    static complex calculate_expression(SDbar_Sum_State *s) {
+        // Follow the lines fromr ref. [4] so that it's easy to debug.
+        double line1_coeff = 8 * pow(4 * pi, 5) * double_factorial(2*s->l1+1) * double_factorial(2*s->l2+1) ;
+
+        double line1_fraction =
+                factorial(s->n1 + s->l1 + s->n2 + s->l2 + 1)
+                /
+                ( factorial(s->n1 + s->l1) * factorial(s->n2 + s->l2) )
+                ;
+
+        double line2_coeff = pow(-1.0, s->l1 + s->l2) * double_factorial(2*s->l3+1) * double_factorial(2*s->l4+1);
+        double line2_fraction =
+                factorial(s->n3 + s->l3 + s->n4 + s->l4 + 1)
+                /
+                ( factorial(s->n3 + s->l3) * factorial(s->n4 + s->l4) );
+                ;
+
+        double zettas = 1;
+        for ( auto i = 0U ; i < 4 ; ++i ) {
+            zettas *= pow(s->zeta[i], 2*s->n_as_vec[i] + s->l_as_vec[i] - 1 );
+        }
+
+        return line1_coeff * line1_fraction * line2_coeff * line2_fraction * zettas ;
+    }
+
+};
 
 
 Electron_Repulsion_SDbar::Electron_Repulsion_SDbar() : STO_Integrator(3, 1, 1) {}
@@ -34,11 +99,30 @@ void Electron_Repulsion_SDbar::setup_state(const std::vector<STO_Basis_Function>
     state.D = functions[3].get_center();
     for ( auto i = 0U ; i < 4 ; ++i ) {
         state.zeta[i] = functions[i].get_exponent();
-        state.n[i] = functions[i].get_quantum_numbers().n;
-        state.l[i] = functions[i].get_quantum_numbers().l;
-        state.m[i] = functions[i].get_quantum_numbers().m;
+        state.n_as_vec[i] = functions[i].get_quantum_numbers().n;
+        state.l_as_vec[i] = functions[i].get_quantum_numbers().l;
+        state.m_as_vec[i] = functions[i].get_quantum_numbers().m;
     }
+    state.n1 = state.n_as_vec[0];
+    state.n2 = state.n_as_vec[1];
+    state.n3 = state.n_as_vec[2];
+    state.n4 = state.n_as_vec[3];
 
+    state.l1 = state.l_as_vec[0];
+    state.l2 = state.l_as_vec[1];
+    state.l3 = state.l_as_vec[2];
+    state.l4 = state.l_as_vec[3];
+
+    state.m1 = state.m_as_vec[0];
+    state.m2 = state.m_as_vec[1];
+    state.m3 = state.m_as_vec[2];
+    state.m4 = state.m_as_vec[3];
+
+}
+
+complex Electron_Repulsion_SDbar::evaluate() {
+    ERI_Sum_1 top_sum(&state);
+    return top_sum.get_value();
 }
 
 

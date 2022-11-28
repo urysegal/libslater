@@ -116,6 +116,17 @@ energy_unit_t STO_Integrations::nuclear_attraction(const std::array<STO_Basis_Fu
 }
 
 
+energy_unit_t STO_Integrations::electron_repulsion(const std::array<STO_Basis_Function, 4> &functions)
+{
+    auto it = this->integrators.find(integration_types::ELECTRON_REPULSION);
+    if ( it != this->integrators.end() ) {
+        return it->second->integrate({functions[0],functions[1], functions[2],functions[3] }, {});
+    } else {
+        throw std::runtime_error("Cannot find ERI integral implementation"); // LCOV_EXCL_LINE
+    }
+
+}
+
 void STO_Integrations::init(const slater::STO_Integration_Options &options) {
     for (auto it: this->integrators) {
         it.second->init(options);

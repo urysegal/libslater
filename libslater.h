@@ -200,10 +200,15 @@ public:
     energy_unit_t kinetic(const std::array<STO_Basis_Function, 2> &functions) ;
 
     /// Calculate the nuclear attraction integral <f|1/R|g> over the given two STO basis functions and the one nuclei
-    /// \param functions The two function whose overlap is to be calculated
+    /// \param functions The two function whose integral is to be calculated
     /// \param nuclei the position of the nuclei
     /// \return The value of the nuclear attraction integral
     energy_unit_t nuclear_attraction(const std::array<STO_Basis_Function, 2> &functions, const center_t &nuclei) ;
+
+    /// Calculate the electron repulsion integral <ij|1/R|kl> over the given four STO basis functions
+    /// \param functions The four function whose overlap is to be calculated
+    /// \return The value of the integral
+    energy_unit_t electron_repulsion(const std::array<STO_Basis_Function, 4> &functions) ;
 
 private:
 

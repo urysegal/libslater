@@ -42,12 +42,20 @@ target_link_libraries (libslater PUBLIC Eigen3::Eigen)
 target_link_libraries (libslater PUBLIC ${Boost_LIBRARIES})
 
 
-add_executable(simple examples/simple.cpp)
+add_executable(simple examples/simple.cpp examples/simple_eri.cpp)
 add_dependencies(simple libslater)
 target_include_directories(simple PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(simple PUBLIC ${COMPILE_FLAGS})
 target_link_options(simple PUBLIC ${LINK_FLAGS})
 target_link_libraries(simple libslater)
+
+add_executable(simple-eri examples/simple_eri.cpp)
+add_dependencies(simple-eri libslater)
+target_include_directories(simple-eri PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(simple-eri PUBLIC ${COMPILE_FLAGS})
+target_link_options(simple-eri PUBLIC ${LINK_FLAGS})
+target_link_libraries(simple-eri libslater)
+
 
 if(COVERAGE)
     message(STATUS "Enabling coverage")

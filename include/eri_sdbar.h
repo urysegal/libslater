@@ -17,9 +17,13 @@ public:
     // The naming of the members here is done with the goal of one-to-one match with the paper in reference [4]
     // for easier reading and comparing.
 
-    std::array<unsigned int, 4> n;
-    std::array< int, 4> l;
-    std::array< int, 4> m;
+    std::array<unsigned int, 4> n_as_vec;
+    std::array< int, 4> l_as_vec;
+    std::array< int, 4> m_as_vec;
+
+    unsigned int n1,n2,n3,n4;
+    int l1,l2,l3,l4;
+    int m1,m2,m3,m4;
 
     center_t A = {};
     center_t B = {};
