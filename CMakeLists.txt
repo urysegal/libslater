@@ -31,7 +31,7 @@ add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp s
         include/homeier.h src/homeier.cpp src/parameters.cpp include/bfunctions.h src/bfunctions.cpp include/gaunt.h
         src/gaunt.cpp include/nested_summation.h src/nested_summation.cpp src/analytical-3c.cpp include/coordinates.h
         include/integrators.h include/analytical-3c.h precalculate/gaunt-table.h precalculate/gaunt-table.cpp
-        include/slater-utils.h src/utils.cpp src/semi-infinite-3c.cpp)
+        include/slater-utils.h src/utils.cpp src/semi-infinite-3c.cpp include/nested_summation_debug.h)
 
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})

@@ -28,7 +28,7 @@ protected:
     }
 
 
-    indexer_t &get_index_variable() override { return STATE->m_semi_inf; }
+    DECLARE_INDEX_VARIABLE(m_semi_inf)
 
     indexer_t get_next_sum_from() override { return 1; }
 
@@ -37,7 +37,7 @@ protected:
     indexer_t get_next_sum_step() override { return 1; }
 
 public:
-    Semi_Infinite_Integral_Sum_3(int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(
+    Semi_Infinite_Integral_Sum_3(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(
             from_, to_, s, step_) {}
 
 
@@ -68,7 +68,7 @@ public:
 class Semi_Infinite_Integral_Sum_2 : public Nested_Summation<indexer_t, complex, Semi_Infinite_Integral_Sum_3> {
 
 protected:
-    indexer_t &get_index_variable() override { return STATE->sigma; }
+    DECLARE_INDEX_VARIABLE(sigma);
 
     indexer_t get_next_sum_from() override { return 0; }
 
@@ -81,7 +81,7 @@ protected:
 
 public:
 
-    Semi_Infinite_Integral_Sum_2(int from_, int to_, Summation_State<indexer_t> *s, int step_) : Nested_Summation(
+    Semi_Infinite_Integral_Sum_2(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(
             from_, to_, s, step_) {}
 
     static complex calculate_expression(Sum_State *s) {
@@ -109,7 +109,7 @@ protected:
     }
 
 public:
-    Semi_Infinite_Integral_Sum_1(Summation_State<indexer_t> *s) : Nested_Summation(1, 1, s) {}
+    Semi_Infinite_Integral_Sum_1(Summation_State<indexer_t, complex> *s) : Nested_Summation(1, 1, s) {}
 
     //rename it to r = nx - lambda /2
 
