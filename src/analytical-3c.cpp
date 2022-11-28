@@ -10,7 +10,6 @@
 #include "gaunt.h"
 #include "analytical-3c.h"
 #include "slater-utils.h"
-#include "semi-infinite-integral.h"
 
 
 

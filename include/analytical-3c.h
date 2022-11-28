@@ -5,6 +5,8 @@
 #include "nested_summation.h"
 #include "coordinates.h"
 #include "slater-utils.h"
+using complex = std::complex<double>;
+
 namespace slater {
 
 const std::string analytical_3c_name = "analytical-3c-nuclear-attraction";
@@ -12,16 +14,27 @@ const std::string analytical_3c_name = "analytical-3c-nuclear-attraction";
 typedef int indexer_t; /// For this algorithm, the indices are integers (negative and positive )
 
 //
-class Sum_State;
+struct Sum_State;
 
 /// Semi-Infinite Integral eqn 31 & 56 in [1] ( see the implementation code file and Readme )
 /// \param state
 /// \return
 std::complex<double> semi_infinite_3c_integral(Sum_State *state);
 
+/// Glevin function adapted from FORTRAN 77 SUBROUTINE GLEVIN in NONLINEAR SEQUENCE TRANSFORMATIONS ..., Weniger et al.
+/// \param s_n
+/// \param w_n
+/// \param beta
+/// \param n
+/// \param numerator_array
+/// \param denominator_array
+/// \return L_m^0
+complex glevin(complex s_n, complex w_n, double beta, int n,
+                   std::vector<complex>& numerator_array,
+                   std::vector<complex>& denominator_array);
+
 
 /// This is the state of the summation in [1] eqn. 28
-
 struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
 
     /// Problem parameters
