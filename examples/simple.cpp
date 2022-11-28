@@ -52,7 +52,7 @@ main()
             Quantum_Numbers q1 = {4,2,2};
             Quantum_Numbers q2 = {4,2,2};
 
-            STO_Basis_Function_Info f1_info( 1.5, q1);
+            STO_Basis_Function_Info f1_info(1.5, q1);
             STO_Basis_Function_Info f2_info(0.5, q2);
 
             STO_Basis_Function f1(f1_info, {0, 0, 0.0});

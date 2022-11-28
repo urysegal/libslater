@@ -245,6 +245,7 @@ namespace slater {
         static complex calculate_gaunt_fraction(indexer_t l, indexer_t l_tag, indexer_t m, indexer_t m_tag) {
             /// Ref [1] eqn. 28 second line
             complex factor = pow(complex(0, 1), l + l_tag);
+            //printf("gaunt(%d, %d, %d, %d, %d, %d)\n",l,l_tag,l-l_tag,m,m_tag,m-m_tag);
             complex enumerator = Gaunt_Coefficient_Engine::get()->calculate({l, m, l_tag, m_tag, l - l_tag, m - m_tag});
 
             complex denominator = bm::double_factorial<double>(2 * l_tag + 1) *
