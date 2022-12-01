@@ -44,15 +44,6 @@ void Homeier_Integrator::init(const STO_Integration_Options &params)
 }
 
 
-void Homeier_Integrator::create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2)
-{
-    equivalence_series.clear();
-    for ( auto i : f1) {
-        for (auto j: f2) {
-            equivalence_series.emplace_back(i, j);
-        }
-    }
-}
 
 /// Shift the centers of the B functions so that one for f1 is (0,0,0) and the other shifted accordingly
 /// \param c1  First center to shift. This one shifts to (0,0,0)
@@ -314,6 +305,17 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
     auto T = -(1.0/2.0)*coeff*coeff*(S1-S2);
     return T;
 }
+
+void STO_Integrator::create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2)
+{
+    equivalence_series.clear();
+    for ( auto i : f1) {
+        for (auto j: f2) {
+            equivalence_series.emplace_back(i, j);
+        }
+    }
+}
+
 
 }
 
