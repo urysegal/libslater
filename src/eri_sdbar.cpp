@@ -40,9 +40,88 @@ static indexer_t get_l_min_for_gaunt_summations(indexer_t l1, indexer_t m1, inde
 static Electron_Repulsion_SDbar dummy_eri_sdbar(electron_repulsion_sdbar_name);
 
 
+
+// twelve summation at [4] eqn. 19 , nineth line
+
+class ERI_Sum_12 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> > {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(l34)
+
+    indexer_t get_next_sum_from() override
+    {
+        return get_l_min_for_gaunt_summations(STATE->l12, STATE->get_m21(), STATE->l34, STATE->get_m43());
+    }
+
+    indexer_t get_next_sum_to() override { return STATE->l12 + STATE->l34; }
+    indexer_t get_next_sum_step() override { return 2; }
+
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_12(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+private:
+    static complex calculate_expression(SDbar_Sum_State *s) {
+
+        return gaunt(s->l4 - s->l4_tag, s->m4 - s->m4_tag,
+                     s->l3 - s->l3_tag, s->m3 - s->m3_tag,
+                     s->l34 , s->get_m43() );
+    }
+};
+
+// eleventh summation at [4] eqn. 19 , eighth line
+
+class ERI_Sum_11 : public Nested_Summation<indexer_t, complex, ERI_Sum_12> {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(l_tag)
+
+    indexer_t get_next_sum_from() override
+    {
+        return get_l_min_for_gaunt_summations(STATE->l4 - STATE->l4_tag, STATE->m4 - STATE->m4_tag,
+                                              STATE->l3 - STATE->l3_tag, STATE->m3 - STATE->m3_tag);
+    }
+
+    indexer_t get_next_sum_to() override { return STATE->l3 - STATE->l3_tag + STATE->l4 -STATE->l4_tag; }
+    indexer_t get_next_sum_step() override { return 2; }
+
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_11(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+private:
+    static complex calculate_expression(SDbar_Sum_State *s) {
+        auto g = gaunt(s->l4_tag, s->m4_tag, s->l3_tag, s->m3_tag, s->l_tag , s->m4_tag - s->m3_tag );
+
+        auto r_pow = pow( s->R34 , s->l_tag);
+
+        Quantum_Numbers quantumNumbers({0, s->l_tag, s->m4_tag - s->m3_tag});
+
+        Spherical_Coordinates v_vec_spherical{s->R43_vec};
+        auto theta = v_vec_spherical.theta;
+        auto phi = v_vec_spherical.phi;
+
+        auto Y = eval_spherical_harmonics(quantumNumbers, theta, phi  );
+
+        return g * r_pow * Y;
+    }
+};
+
+
+
 // tenth summation at [4] eqn. 19 , eighth line
 
-class ERI_Sum_10 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> > {
+class ERI_Sum_10 : public Nested_Summation<indexer_t, complex, ERI_Sum_11 > {
 
 protected:
 
@@ -66,10 +145,10 @@ public:
 
 private:
     static complex calculate_expression(SDbar_Sum_State *s) {
-        auto m21 = s->m2 - s->m2_tag - (s->m1 - s->m1_tag) ;
+
         return gaunt(s->l2 - s->l2_tag, s->m2 - s->m2_tag,
                      s->l1 - s->l1_tag, s->m1 - s->m1_tag,
-                     s->l12 , m21 );
+                     s->l12 , s->get_m21() );
     }
 };
 

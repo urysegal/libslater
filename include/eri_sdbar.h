@@ -58,6 +58,9 @@ public:
     indexer_t l_tag;
     indexer_t l34;
 
+    auto get_m21() { return m2 - m2_tag - (m1 - m1_tag) ; }
+    auto get_m43() { return m4 - m4_tag - (m3 - m3_tag) ; }
+
 
 
 };
