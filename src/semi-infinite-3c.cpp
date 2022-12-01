@@ -212,11 +212,14 @@ complex levin_estimate(Sum_State *state){
     complex sum_est_k = 0;
     complex sum_est_kplus1 = 0;
     complex a_k;
+    double err_pre = 2.0;
+    double err_cur = 1.0;
     int MAX_SUM = 100;
 
     // Initialize vectors for 0...n values of numerator and denominator
     std::vector<complex> num_array(MAX_SUM+1);
     std::vector<complex> den_array(MAX_SUM+1);
+
     // Outer Loop for levin's transformation
     // Generate Sequence 7.5-5
     for (int m=0; m<=MAX_SUM;m++){
@@ -226,12 +229,21 @@ complex levin_estimate(Sum_State *state){
         s_k = s_k + a_k;
         //call glevin to get estimate
         sum_est_kplus1 = glevin(s_k,a_k, 1.0,m, num_array, den_array);
+        err_cur = abs(sum_est_kplus1-sum_est_k);
         //check convergence
-        if (abs(sum_est_kplus1-sum_est_k)< 1e-16 ){
+        if (err_cur< 1e-16 ){
             break;
         }
+        //check divergence
+        if (err_cur > err_pre){
+            break;
+        }
+        err_pre = err_cur;
         sum_est_k = sum_est_kplus1;
     }
+    // when the difference in the sum starts getting bigger than the previous diff i.e. diverging
+    // use the previous value
+
     return sum_est_kplus1;
 }
 
