@@ -231,7 +231,9 @@ complex levin_estimate(Sum_State *state){
             break;
         }
         sum_est_k = sum_est_kplus1;
+        std::cerr << sum_est_k  << " ";
     }
+    std::cerr << std::endl;
     return sum_est_kplus1;
 }
 
