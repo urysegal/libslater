@@ -36,7 +36,7 @@ public:
     // Precalculated values
 
     center_t R21_vec;
-    center_t R43_vec;
+    center_t R34_vec;
     double R21 ;
     double R34 ;
 
@@ -58,10 +58,21 @@ public:
     indexer_t l_tag;
     indexer_t l34;
 
-    auto get_m21() { return m2 - m2_tag - (m1 - m1_tag) ; }
-    auto get_m43() { return m4 - m4_tag - (m3 - m3_tag) ; }
+    indexer_t lambda;
 
+    indexer_t j12;
+    indexer_t j34;
 
+    auto get_m21() const { return m2 - m2_tag - (m1 - m1_tag) ; }
+    auto get_m43() const { return m4 - m4_tag - (m3 - m3_tag) ; }
+
+    auto get_delta12() const { return (l1_tag + l2_tag - l ) / 2 ; }
+    auto get_delta34() const { return (l3_tag + l4_tag - l_tag ) / 2 ; }
+
+    auto get_miu() const { return (m2-m2_tag) - (m1-m1_tag)  + (m4-m4_tag) + (m3-m3_tag); }
+
+    auto get_nu1() const {return n1 + n2 + l1 + l2 - l - j12 + 0.5 ;}
+    auto get_nu2() const {return n3 + n3 + l4 + l4 - l_tag - j34 + 0.5 ;}
 
 };
 

@@ -39,11 +39,105 @@ static indexer_t get_l_min_for_gaunt_summations(indexer_t l1, indexer_t m1, inde
 
 static Electron_Repulsion_SDbar dummy_eri_sdbar(electron_repulsion_sdbar_name);
 
+// fifteenth summation at [4] eqn. 19 , twelfth line, second summation
+
+class ERI_Sum_15 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> > {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(j12)
+
+    indexer_t get_next_sum_from() override { return 0 ;}
+
+    indexer_t get_next_sum_to() override { return STATE->get_delta34(); }
+
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_15(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+private:
+    static complex calculate_expression(SDbar_Sum_State *s) {
+
+        auto choose1 = bm::binomial_coefficient<double>(s->get_delta12(), s->j12);
+        auto choose2 = bm::binomial_coefficient<double>(s->get_delta34(), s->j34);
+
+        auto power = s->get_nu1() + s->get_nu2() + s->l + s->l1_tag + 1 ;
+
+        auto fraction =
+                ( pow(-1.0, s->j12 + s->j34))
+                /
+                ( pow(2.0, power) * factorial(s->get_nu1() + 0.5 + s->l ) * factorial(s->get_nu2() + 0.5 + s->l_tag));
+
+        auto integrals = calculate_integrals(s);
+
+        return choose1 * choose2 * fraction * integrals ;
+
+    }
+
+    static complex calculate_integrals(SDbar_Sum_State *s) ;
+
+};
+
+// fourteenth summation at [4] eqn. 19 , twelfth line, first summation
+
+class ERI_Sum_14 : public Nested_Summation<indexer_t, complex, ERI_Sum_15 > {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(j12)
+
+    indexer_t get_next_sum_from() override { return 0 ;}
+
+    indexer_t get_next_sum_to() override { return STATE->get_delta34(); }
 
 
-// twelve summation at [4] eqn. 19 , nineth line
+public:
+    ERI_Sum_14(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
-class ERI_Sum_12 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> > {
+private:
+
+};
+
+
+// thirteen summation at [4] eqn. 19 , eleventh line
+
+class ERI_Sum_13 : public Nested_Summation<indexer_t, complex, ERI_Sum_14 > {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(lambda)
+
+    indexer_t get_next_sum_from() override { return 0 ;}
+
+    indexer_t get_next_sum_to() override { return STATE->get_delta12(); }
+
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_13(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+private:
+    static complex calculate_expression(SDbar_Sum_State *s) {
+
+        complex p = pow(complex(0,-1), s->lambda );
+        auto g = gaunt(s->l12 , s->get_m21(),
+                     s->l34 , s->get_m43(),
+                     s->lambda, s->get_miu() );
+        return p * g;
+    }
+};
+
+
+// twelfth summation at [4] eqn. 19 , tenth line
+
+class ERI_Sum_12 : public Nested_Summation<indexer_t, complex, ERI_Sum_13 > {
 
 protected:
 
@@ -74,7 +168,7 @@ private:
     }
 };
 
-// eleventh summation at [4] eqn. 19 , eighth line
+// eleventh summation at [4] eqn. 19 , ninth line
 
 class ERI_Sum_11 : public Nested_Summation<indexer_t, complex, ERI_Sum_12> {
 
@@ -107,7 +201,7 @@ private:
 
         Quantum_Numbers quantumNumbers({0, s->l_tag, s->m4_tag - s->m3_tag});
 
-        Spherical_Coordinates v_vec_spherical{s->R43_vec};
+        Spherical_Coordinates v_vec_spherical{s->R34_vec};
         auto theta = v_vec_spherical.theta;
         auto phi = v_vec_spherical.phi;
 
@@ -498,10 +592,10 @@ void Electron_Repulsion_SDbar::setup_state(const std::vector<STO_Basis_Function>
 
 
     state.R21_vec = vector_between(state.B, state.A);
-    state.R43_vec = vector_between(state.D, state.C);
+    state.R34_vec = vector_between(state.C, state.D);
 
     state.R21 = vector_length(state.R21_vec);
-    state.R34 = vector_length(state.R43_vec);
+    state.R34 = vector_length(state.R34_vec);
 
 }
 
