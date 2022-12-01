@@ -183,7 +183,7 @@ complex glevin(complex s_n, complex w_n, double beta, int n,
 complex sum_kth_term(Sum_State *state,int p)
 {
     auto power = pow(state->v()*state->v()*state->z() / 2.0 , p);
-    auto pochfrac = 1 / pochhammer(state->lambda + 0.5,p+1);
+    auto pochfrac = 1.0 / pochhammer(state->lambda + 0.5,p+1);
 
     complex sum =0;
     for (int m =0; m<=state->miu(); m++){
@@ -195,10 +195,10 @@ complex sum_kth_term(Sum_State *state,int p)
         double poch = pochhammer(state->niu() - state->miu(), state->miu() - m);
 
         auto vb = state->lambda + state->miu() - state->niu() + p + m +  1.0 / 2.0;
-        auto x = state->z() * sqrt(R2S * R2S + state->v() * state->v());
-        double K = bm::cyl_bessel_k(vb, x);
+        auto xb = state->z() * sqrt(R2S * R2S + state->v() * state->v());
+        double K = bm::cyl_bessel_k(vb, xb);
 
-        double denominator = pow(sqrt(R2S * R2S + state->v() * state->v()), vb/2.0);
+        double denominator = pow(R2S * R2S + state->v() * state->v(), vb/2.0);
 
         sum = sum + binomial * m_power * poch * K/denominator ;
     }
@@ -213,6 +213,8 @@ complex levin_estimate(Sum_State *state){
     complex sum_est_kplus1 = 0;
     complex a_k;
     int MAX_SUM = 100;
+
+    // Initialize vectors for 0...n values of numerator and denominator
     std::vector<complex> num_array(MAX_SUM+1);
     std::vector<complex> den_array(MAX_SUM+1);
     // Outer Loop for levin's transformation
@@ -237,11 +239,14 @@ complex levin_estimate(Sum_State *state){
 complex semi_infinite_3c_integral(Sum_State *state)
 {
     //Evaluate Integral from top level sum here
-
+    std::cout << state->r() << std::endl;
     complex I;
     if (state->r()==-1){
         //Use Levin Transformation
-        I = levin_estimate(state);
+        auto sum = levin_estimate(state);
+        auto fac1 = 1.0 / pow(state->s*(1-state->s),state->n_gamma()/2.0) ;
+        auto fac2 = pow(2.0,state->miu()-1)*pow(state->z(),state->lambda+state->miu()-state->niu()+1.0/2.0);
+        I = fac1*fac2*sum;
     }
     else{
         // Use formula 58 in :
