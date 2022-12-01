@@ -106,11 +106,11 @@ namespace slater {
 
             complex result = 0;
             auto choose = bm::binomial_coefficient<double>(s->delta_l(), s->j);
-            auto enumerator = pow(-1, s->j);
+            auto numerator = pow(-1, s->j);
             auto x = s->n1 + s->n2 + s->l1 + s->l2 - s->j + 1;
             auto denominator_pow_2 = pow(2, x);
             auto denominator_factorial = bm::factorial<double>(x);
-            auto factor = choose * (enumerator / (denominator_pow_2 * denominator_factorial));
+            auto factor = choose * (numerator / (denominator_pow_2 * denominator_factorial));
 
             complex integral_value = calculate_integral(s);
 
