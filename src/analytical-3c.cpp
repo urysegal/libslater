@@ -12,7 +12,6 @@
 #include "slater-utils.h"
 
 
-
 // Comments in this file reference the following works.
 // Reference [1]:
 // Slevinsky, R.M., Safouhi, H. Compact formulae for three-center nuclear attraction integrals over exponential type functions. J Math Chem 60, 1337–1355 (2022).
@@ -246,7 +245,9 @@ namespace slater {
         Sum_5(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
 
         static complex calculate_expression(Sum_State *s) {
-            return calculate_gaunt_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) * pow(-1, s->l2_tag);
+            auto coeff = pow(-1.0, s->l2_tag);
+            auto g = calculate_gaunt_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) * pow(-1, s->l2_tag);
+            return coeff * g ;
         }
 
         static complex calculate_gaunt_fraction(indexer_t l, indexer_t l_tag, indexer_t m, indexer_t m_tag) {
@@ -360,18 +361,59 @@ namespace slater {
 
 
     complex Analytical_3C_evaluator::integrate(const std::vector<STO_Basis_Function> &functions,
-                                               const std::vector<center_t> &centers) {
-        q1 = functions[0].get_quantum_numbers();
-        q2 = functions[1].get_quantum_numbers();
-        zeta1 = functions[0].get_exponent();
-        zeta2 = functions[1].get_exponent();
-        A = functions[0].get_center();
-        B = functions[1].get_center();
+                                               const std::vector<center_t> &centers)
+   {
+
         C = centers[0];
+
+        assert(functions[0].get_quantum_numbers().l + functions[1].get_quantum_numbers().l
+               <= Gaunt_Coefficient_Engine::get_maximal_gaunt_l());
+
+        functions[0].get_quantum_numbers().validate();
+        functions[1].get_quantum_numbers().validate();
+
+        B_functions_representation_of_STO f1(functions[0], functions[0].get_center());
+        B_functions_representation_of_STO f2(functions[1], functions[1].get_center());
+
+        create_integration_pairs(f1, f2);
+
+        std::vector<energy_unit_t> partial_results;
+        for (auto const &p: equivalence_series) {
+            // int(B_1*B_2)
+            energy_unit_t partial_result = integrate_nuclei_attraction_using_b_functions(p.first.second,
+                                                                                         p.second.second);
+
+            // Bcoeff1*Bcoeff2 * int(B_1*B_2)
+            partial_result *= p.first.first * p.second.first;
+            partial_results.emplace_back(partial_result);
+        }
+
+        // sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
+        energy_unit_t final_result = 0;
+        for (auto &pr: partial_results)
+            final_result += pr;
+
+        final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient();
+
+        final_result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient();
+
+        return final_result;
+    }
+
+complex Analytical_3C_evaluator::integrate_nuclei_attraction_using_b_functions(const B_function_details &f1, const B_function_details &f2)
+{
+        q1 = f1.get_quantum_numbers();
+        q2 = f2.get_quantum_numbers();
+        zeta1 = f1.get_alpha();
+        zeta2 = f2.get_alpha();
+        A = f1.get_center();
+        B = f2.get_center();
         setup_state();
 
-        return evaluate();
-    }
+        auto res = evaluate();
+
+    return res;
+}
 
     complex Analytical_3C_evaluator::evaluate() {
         Sum_1 top_sum(&state);
@@ -380,6 +422,7 @@ namespace slater {
 
 
     void Analytical_3C_evaluator::setup_state() {
+        bzero((void *)&state, sizeof(state));
         state.n1 = q1.n;
         state.n2 = q2.n;
         state.l1 = q1.l;

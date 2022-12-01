@@ -62,11 +62,6 @@ private:
     int number_of_quadrature_points = 30; /// How many quadrature points we should calculate
 
     static B_function_Engine B_function_engine; /// B-functions evaluator
-    /// When integrating of each pair of functions in this vector and then summing up the values, you get the
-    /// Overlap integral value
-    std::vector<std::pair<
-    std::pair<double,B_function_details>,
-    std::pair<double, B_function_details> > > equivalence_series;
 
     /// Calculate the Overlap integral between the two given STO basis functions
     /// \return the resulting energy quantity
@@ -77,11 +72,6 @@ private:
     virtual energy_unit_t kinetic(const std::array<STO_Basis_Function, 2> &) ;
 
 
-    /// Create all the pair of B functions and their normalization coefficients from the two given sequences of B functions,
-    /// each representing an STO. The result is kept in the "equivalence_series" member
-    /// \param f1 First sequences of B functions
-    /// \param f2 Second sequences of B functions
-    void create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2) ;
 
     /// Given two specific B functions, calculate the overlap integral
     /// \param f1 First B function

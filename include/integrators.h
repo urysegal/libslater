@@ -1,4 +1,5 @@
 #pragma once
+#include "bfunctions.h"
 
 namespace slater {
 /// Implementation the integrals needed for HF or DFT calculation in STO basis set. A class implements
@@ -36,10 +37,24 @@ public:
     /// \return pointer to the integrator
     static STO_Integrator *create(const std::string &name);
 
+    /// Create all the pair of B functions and their normalization coefficients from the two given sequences of B functions,
+    /// each representing an STO. The result is kept in the "equivalence_series" member
+    /// \param f1 First sequences of B functions
+    /// \param f2 Second sequences of B functions
+    void create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2) ;
+
+
 protected:
     const int number_of_centers = 0;
     const int number_of_electrons = 1;
     const int number_of_external_centers = 0;
+
+    /// When integrating of each pair of functions in this vector and then summing up the values, you get the
+    /// Overlap integral value
+    std::vector<std::pair<
+            std::pair<double,B_function_details>,
+            std::pair<double, B_function_details> > > equivalence_series;
+
 
     static std::map<std::string, STO_Integrator *> all_integrators;
 

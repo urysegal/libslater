@@ -161,10 +161,13 @@ public:
     {
         top_state->cleanup();
         delete top_state;
+        top_state = nullptr;
+        current_state = nullptr;
     }
 
     void pause() { paused = true; }
     void resume() { paused = false; }
+
 
 private:
     summation_debug_state<indexing_t, T> *current_state = nullptr;

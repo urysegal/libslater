@@ -5,6 +5,8 @@
 #include "nested_summation.h"
 #include "coordinates.h"
 #include "slater-utils.h"
+#include "bfunctions.h"
+
 using complex = std::complex<double>;
 
 namespace slater {
@@ -146,6 +148,9 @@ private:
     center_t A = {};
     center_t B = {};
     center_t C = {};
+
+    complex integrate_nuclei_attraction_using_b_functions(const B_function_details &f1, const B_function_details &f2) ;
+
 
 };
 

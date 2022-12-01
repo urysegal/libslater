@@ -239,7 +239,7 @@ complex levin_estimate(Sum_State *state){
 complex semi_infinite_3c_integral(Sum_State *state)
 {
     //Evaluate Integral from top level sum here
-    std::cout << state->r() << std::endl;
+
     complex I;
     if (state->r()==-1){
         //Use Levin Transformation
