@@ -78,9 +78,58 @@ private:
 
     }
 
-    static complex calculate_integrals(SDbar_Sum_State *s) ;
+    static complex calculate_integrals(SDbar_Sum_State *state)
+    {
+        auto f = [&](const double &s) { return calculate_outer_integral_point(s, state); };
+        auto Q = boost::math::quadrature::gauss<double, 30>::integrate(f, 0, 1);
+        return Q;
+    }
 
-};
+    static complex calculate_outer_integral_point(const double &s, SDbar_Sum_State *state)
+    {
+        state->s = s;
+
+        auto coeff =
+                ( pow(s, state->n2 + state->l2 + state->l1 )*pow(1.0-s, state->n1 + state->l1 + state->l2) )
+                /
+                (pow(s, state->l1_tag)  * pow(1.0-s, state->l2_tag) ) ;
+        auto integral = calculate_inner_integral(state);
+        return coeff * integral ;
+
+    };
+
+    static complex calculate_inner_integral(SDbar_Sum_State *state)
+    {
+
+        auto f = [&](const double &t) { return calculate_inner_integral_point(t, state); };
+        auto Q = boost::math::quadrature::gauss<double, 30>::integrate(f, 0, 1);
+        return Q;
+    }
+
+    static complex calculate_inner_integral_point(const double &t, SDbar_Sum_State *state)
+    {
+        state->t = t;
+        auto coeff =
+                ( pow(t, state->n4 + state->l4 + state->l3 )*pow(1.0-t, state->n3 + state->l3 + state->l4) )
+                /
+                (pow(t, state->l3_tag)  * pow(1.0-t, state->l4_tag) ) ;
+
+        Quantum_Numbers quantumNumbers({0, state->lambda, state->m2 - state->get_miu()});
+
+        Spherical_Coordinates v_vec_spherical{state->v_vec};
+        auto theta = v_vec_spherical.theta;
+        auto phi = v_vec_spherical.phi;
+
+        auto Y = eval_spherical_harmonics(quantumNumbers, theta, phi  );
+
+
+        auto semi_infinite = calculate_eri_sdbar_semi_infinite(state);
+        return coeff * Y * semi_infinite ;
+
+    };
+
+
+}
 
 // fourteenth summation at [4] eqn. 19 , twelfth line, first summation
 

@@ -63,6 +63,11 @@ public:
     indexer_t j12;
     indexer_t j34;
 
+    // Quadrature Integration points
+
+    std::complex<double> s;
+    std::complex<double> t;
+
     auto get_m21() const { return m2 - m2_tag - (m1 - m1_tag) ; }
     auto get_m43() const { return m4 - m4_tag - (m3 - m3_tag) ; }
 
