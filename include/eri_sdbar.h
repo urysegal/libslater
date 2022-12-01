@@ -17,6 +17,7 @@ public:
     // The naming of the members here is done with the goal of one-to-one match with the paper in reference [4]
     // for easier reading and comparing.
 
+    // Problem parameters
     std::array<unsigned int, 4> n_as_vec;
     std::array< int, 4> l_as_vec;
     std::array< int, 4> m_as_vec;
@@ -31,6 +32,17 @@ public:
     center_t D = {};
     std::array<sto_exponent_t, 4> zeta;
 
+
+    // Precalculated values
+
+    center_t R21_vec;
+    center_t R43_vec;
+    double R21 ;
+    double R34 ;
+
+
+    // Indexing variables
+
     indexer_t l1_tag;
     indexer_t l2_tag;
     indexer_t l3_tag;
@@ -40,6 +52,13 @@ public:
     indexer_t m2_tag;
     indexer_t m3_tag;
     indexer_t m4_tag;
+
+    indexer_t l;
+    indexer_t l12;
+    indexer_t l_tag;
+    indexer_t l34;
+
+
 
 };
 

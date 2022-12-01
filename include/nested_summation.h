@@ -30,7 +30,7 @@ struct Summation_State
 {
     indexing_t _dummy; // to be used if we don't care about the value of the current index.
     unsigned int skipped = 0; /// How many elements were skipped as the coefficient was smaller than the threshold.
-
+    virtual ~Summation_State() = default;
 #ifdef SUMMATION_DEBUG
 
     Summation_Debug_State<indexing_t, T> debug_state;

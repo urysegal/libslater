@@ -7,6 +7,12 @@
 #include <boost/math/special_functions.hpp>
 #include "eri_sdbar.h"
 #include "gaunt.h"
+#include "slater-utils.h"
+#include "coordinates.h"
+
+#define STATE (dynamic_cast<SDbar_Sum_State *> (state))
+#define miu_from(x) std::max( -1 * STATE->l##x##_tag, STATE->m##x - STATE->l##x + STATE->l##x##_tag )
+#define miu_to(x) std::max( STATE->l##x##_tag, STATE->m##x + STATE->l##x - STATE->l##x##_tag )
 
 
 namespace slater {
@@ -22,27 +28,110 @@ inline auto factorial(unsigned i) { return boost::math::factorial<double>(i); }
 inline auto gaunt( int l1, int m1, int l2, int m2, int l3, int m3 )
     { return Gaunt_Coefficient_Engine::get()->calculate({l1, m1, l2, m2, l3, m3}); }
 
-#define STATE (static_cast<SDbar_Sum_State *> (state))
+
+static indexer_t get_l_min_for_gaunt_summations(indexer_t l1, indexer_t m1, indexer_t l2, indexer_t m2) {
+    /// Reference [1] eqn. 24
+    indexer_t m = std::max(std::abs(l2 - l1), std::abs(m1 - m2));
+    int selector = l1 + l2 + m;
+    return m + selector % 2;
+}
 
 
 static Electron_Repulsion_SDbar dummy_eri_sdbar(electron_repulsion_sdbar_name);
 
-#define miu_from(x) std::max( -1 * STATE->l##x##_tag, STATE->m##x - STATE->l##x + STATE->l##x##_tag )
-#define miu_to(x) std::max( STATE->l##x##_tag, STATE->m##x + STATE->l##x - STATE->l##x##_tag )
+
+// tenth summation at [4] eqn. 19 , eighth line
+
+class ERI_Sum_10 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex> > {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(l12)
+
+    indexer_t get_next_sum_from() override
+    {
+        return get_l_min_for_gaunt_summations(STATE->l4_tag, STATE->m4_tag, STATE->l3_tag, STATE->m3_tag);
+    }
+
+    indexer_t get_next_sum_to() override { return STATE->l3_tag + STATE->l4_tag; }
+    indexer_t get_next_sum_step() override { return 2; }
+
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_10(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+private:
+    static complex calculate_expression(SDbar_Sum_State *s) {
+        auto m21 = s->m2 - s->m2_tag - (s->m1 - s->m1_tag) ;
+        return gaunt(s->l2 - s->l2_tag, s->m2 - s->m2_tag,
+                     s->l1 - s->l1_tag, s->m1 - s->m1_tag,
+                     s->l12 , m21 );
+    }
+};
+
+// ninth summation at [4] eqn. 19 , seventh line
+
+class ERI_Sum_9 : public Nested_Summation<indexer_t, complex, ERI_Sum_10> {
+
+protected:
+
+    DECLARE_INDEX_VARIABLE(l)
+
+    indexer_t get_next_sum_from() override
+    {
+        return get_l_min_for_gaunt_summations(STATE->l2 - STATE->l2_tag, STATE->m2 - STATE->m2_tag,
+                                              STATE->l1 - STATE->l1_tag, STATE->m1 - STATE->m1_tag);
+    }
+
+    indexer_t get_next_sum_to() override { return STATE->l1 - STATE->l1_tag + STATE->l2 -STATE->l2_tag; }
+    indexer_t get_next_sum_step() override { return 2; }
+
+    complex expression() override {
+        auto s = STATE;
+        return calculate_expression(s);
+    }
+
+public:
+    ERI_Sum_9(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(from_, to_, s, step_) {}
+
+private:
+    static complex calculate_expression(SDbar_Sum_State *s) {
+        auto g = gaunt(s->l2_tag, s->m2_tag, s->l1_tag, s->m1_tag, s->l , s->m2_tag - s->m1_tag );
+
+        auto r_pow = pow( s->R21, s->l);
+
+        Quantum_Numbers quantumNumbers({0, s->l, s->m2_tag - s->m1_tag});
+
+        Spherical_Coordinates v_vec_spherical{s->R21_vec};
+        auto theta = v_vec_spherical.theta;
+        auto phi = v_vec_spherical.phi;
+
+        auto Y = eval_spherical_harmonics(quantumNumbers, theta, phi  );
+
+        return g * r_pow * Y;
+    }
+};
 
 
+// eighth summation at [4] eqn. 19 , sixth line second summation
 
-// eights summation at [4] eqn. 19 , sixth line second summation
-
-class ERI_Sum_8 : public Nested_Summation<indexer_t, complex, Last_Nested_Summation<indexer_t, complex>> {
+class ERI_Sum_8 : public Nested_Summation<indexer_t, complex, ERI_Sum_9 > {
 
 protected:
 
     DECLARE_INDEX_VARIABLE(m4_tag)
 
-    indexer_t get_next_sum_from() override ; // HERE
+    indexer_t get_next_sum_from() override
+    {
+        return get_l_min_for_gaunt_summations(STATE->l2_tag, STATE->m2_tag, STATE->l1_tag, STATE->m1_tag);
+    }
 
     indexer_t get_next_sum_to() override { return STATE->l1_tag + STATE->l2_tag; }
+    indexer_t get_next_sum_step() override { return 2; }
 
     complex expression() override {
         auto s = STATE;
@@ -95,7 +184,6 @@ protected:
 
     indexer_t get_next_sum_to() override { return STATE->l4; }
 
-    indexer_t get_next_sum_step() override { return 2; }
 
     complex expression() override {
         auto s = STATE;
@@ -327,6 +415,14 @@ void Electron_Repulsion_SDbar::setup_state(const std::vector<STO_Basis_Function>
     state.m2 = state.m_as_vec[1];
     state.m3 = state.m_as_vec[2];
     state.m4 = state.m_as_vec[3];
+
+
+
+    state.R21_vec = vector_between(state.B, state.A);
+    state.R43_vec = vector_between(state.D, state.C);
+
+    state.R21 = vector_length(state.R21_vec);
+    state.R34 = vector_length(state.R43_vec);
 
 }
 
