@@ -77,7 +77,7 @@ private:
     /// \param f1 First B function
     /// \param f2 Second B function
     /// \return Partial overlap integral value
-    [[nodiscard]] std::complex<double> integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const;
+    [[nodiscard]] std::complex<double> integrate_using_b_functions(const B_function_details &f1, const B_function_details &f2)  override;
 
     /// This function is called back from the Gaussian Quadrature mechanism to get one value, at s, of the overlap
     /// integral.

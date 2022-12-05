@@ -42,6 +42,41 @@ STO_Integrator::STO_Integrator(const std::string name_)
     all_integrators.emplace(name_, this);
 }
 
+void STO_Integrator::create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2)
+{
+    equivalence_series.clear();
+    for ( auto i : f1) {
+        for (auto j: f2) {
+            equivalence_series.emplace_back(i, j);
+        }
+    }
+}
+
+complex STO_Integrator::do_integrate( const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2 )
+{
+    create_integration_pairs(f1, f2);
+
+    std::vector<energy_unit_t> partial_results;
+    for (auto const &p: equivalence_series) {
+        // int(B_1*B_2)
+        energy_unit_t partial_result = integrate_using_b_functions(p.first.second,p.second.second);
+
+        // Bcoeff1*Bcoeff2 * int(B_1*B_2)
+        partial_result *= p.first.first * p.second.first;
+        partial_results.emplace_back(partial_result);
+    }
+
+    // sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
+    energy_unit_t result = 0;
+    for (auto &pr: partial_results)
+        result += pr;
+
+    result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient();
+
+    return result;
+
+}
+
 STO_Integrations *STO_Integration_Engine::create(std::map<integration_types, std::string > &engines)
 {
     auto res = new STO_Integrations;
@@ -86,6 +121,14 @@ energy_unit_t STO_Integrations::two_functions_integral(const std::array<STO_Basi
                                                        const center_t &nuclei,
                                                        integration_types which_type)
 {
+
+    assert(functions[0].get_quantum_numbers().l + functions[1].get_quantum_numbers().l
+           <= Gaunt_Coefficient_Engine::get_maximal_gaunt_l());
+
+    functions[0].get_quantum_numbers().validate();
+    functions[1].get_quantum_numbers().validate();
+
+
     auto it = this->integrators.find(which_type);
     if ( it != this->integrators.end() ) {
         return it->second->integrate({functions[0], functions[1]}, {nuclei});

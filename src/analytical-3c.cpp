@@ -363,44 +363,19 @@ namespace slater {
     complex Analytical_3C_evaluator::integrate(const std::vector<STO_Basis_Function> &functions,
                                                const std::vector<center_t> &centers)
    {
-
         C = centers[0];
-
-        assert(functions[0].get_quantum_numbers().l + functions[1].get_quantum_numbers().l
-               <= Gaunt_Coefficient_Engine::get_maximal_gaunt_l());
-
-        functions[0].get_quantum_numbers().validate();
-        functions[1].get_quantum_numbers().validate();
 
         B_functions_representation_of_STO f1(functions[0], functions[0].get_center());
         B_functions_representation_of_STO f2(functions[1], functions[1].get_center());
 
-        create_integration_pairs(f1, f2);
-
-        std::vector<energy_unit_t> partial_results;
-        for (auto const &p: equivalence_series) {
-            // int(B_1*B_2)
-            energy_unit_t partial_result = integrate_nuclei_attraction_using_b_functions(p.first.second,
-                                                                                         p.second.second);
-
-            // Bcoeff1*Bcoeff2 * int(B_1*B_2)
-            partial_result *= p.first.first * p.second.first;
-            partial_results.emplace_back(partial_result);
-        }
-
-        // sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
-        energy_unit_t final_result = 0;
-        for (auto &pr: partial_results)
-            final_result += pr;
+        energy_unit_t final_result = do_integrate(f1, f2);
 
         final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient();
-
-        final_result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient();
 
         return final_result;
     }
 
-complex Analytical_3C_evaluator::integrate_nuclei_attraction_using_b_functions(const B_function_details &f1, const B_function_details &f2)
+complex Analytical_3C_evaluator::integrate_using_b_functions(const B_function_details &f1, const B_function_details &f2)
 {
         q1 = f1.get_quantum_numbers();
         q2 = f2.get_quantum_numbers();
