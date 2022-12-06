@@ -19,8 +19,8 @@ typedef int indexer_t; /// For this algorithm, the indices are integers (negativ
 struct Sum_State;
 
 /// Semi-Infinite Integral eqn 31 & 56 in [1] ( see the implementation code file and Readme )
-/// \param state
-/// \return
+/// \param state state of the nested summation
+/// \return value of the semi infinite integral in [1]
 std::complex<double> semi_infinite_3c_integral(Sum_State *state);
 
 /// Glevin function adapted from FORTRAN 77 SUBROUTINE GLEVIN in NONLINEAR SEQUENCE TRANSFORMATIONS ..., Weniger et al.
@@ -102,6 +102,8 @@ struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
         return (n_x()-lambda)/2.0 -1;
     }
 
+    // for debugging only
+    std::set<double> quad_points;
 
 
 };

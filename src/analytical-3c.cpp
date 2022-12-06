@@ -76,6 +76,11 @@ namespace slater {
 
         // Seventh line in [1] eqn. 28
         static complex calculate_gaussian_point(const double &s, Sum_State *state) {
+
+            if ( s >  0.23168792 and s < 0.232 ) {
+                std::cout << "Stop Here" << std::endl;
+            }
+
             complex result;
             complex power1 = pow(s, state->n2 + state->l2 + state->l1 - state->l1_tag);
             complex power2 = pow(1 - s, state->n1 + state->l1 + state->l2 - state->l2_tag);
@@ -89,13 +94,20 @@ namespace slater {
         // eqn. 31 in [1]
         static complex calculate_semi_infinite_integral(const double &s, Sum_State *state) {
             state->s = s; //update value of s in State
+            state->quad_points.emplace(s);
             complex integral = semi_infinite_3c_integral(state);
             return integral;
         }
 
         static complex calculate_integral(Sum_State *state) {
             auto f = [&](const double &s) { return calculate_gaussian_point(s, state); };
+            state->quad_points.clear();
             complex Q = boost::math::quadrature::gauss<double, 30>::integrate(f, 0, 1);
+            std::cout << "-----" << std::endl;
+            for ( auto p : state->quad_points) {
+                std::cout << p << std::endl;
+            }
+            std::cout << "-----" << std::endl;
             return Q;
         }
 
