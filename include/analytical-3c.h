@@ -81,7 +81,7 @@ struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
         return (l1_tag + l2_tag -l)/2.0;
     }
     double v() const{
-        auto R1 = vector_between(A,C);
+        auto R1 = C;
         center_t scaled_R2 =  scale_vector( R2_point, 1-s);
         auto v_vec = vector_between(R1,scaled_R2 );
         return vector_length(v_vec);
