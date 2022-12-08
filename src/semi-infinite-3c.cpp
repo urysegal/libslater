@@ -195,17 +195,16 @@ complex sum_kth_term(Sum_State *state,int p)
 
         double poch = pochhammer(state->niu() - state->miu(), state->miu() - m);
 
-        auto vb = ( m );
-
+        auto vb = ( state->lambda + state->miu() - state->niu()+ m + p +  1.0 / 2.0 );
         double K = bm::cyl_bessel_k(vb, xb);
 
-        double denominator = pow(R2S * R2S + state->v() * state->v(), vb/2.0); //outside
+        double denominator = pow(R2S * R2S + state->v() * state->v(), m/2.0); //outside
 
         sum = sum + binomial * m_power * poch * K/denominator ;
     }
 
-    auto vb = ( p );
-    double denominator = pow(R2S * R2S + state->v() * state->v(), vb/2.0); //outside
+
+    double denominator = pow(R2S * R2S + state->v() * state->v(), p/2.0); //outside
     sum = sum / denominator;
 
     return power * pochfrac * sum;
@@ -232,13 +231,10 @@ complex levin_estimate(Sum_State *state){
         //compute ak
         a_k = sum_kth_term(state,m);
 
-        auto R2S = state->R2 * sqrt(state->s * (1 - state->s)) ;
-        auto vb = (state->lambda + state->miu() - state->niu()+  1.0 / 2.0);
-        double denominator = pow(R2S * R2S + state->v() * state->v(), vb/2.0); //outside
 
-        a_k = a_k/denominator;
+        std::cout << m << a_k << "  ";
 
-        if ( abs(a_k) < 1.e-16 ) {
+        if ( abs(a_k) < 1.e-16 && m>10) {
 
             break;
         }
@@ -247,13 +243,15 @@ complex levin_estimate(Sum_State *state){
         s_k = s_k + a_k;
         //call glevin to get estimate
         sum_est_kplus1 = glevin(s_k,a_k, 1.0,m, num_array, den_array);
+        std::cout  << sum_est_kplus1 << std::endl;
+
         err_cur = abs(sum_est_kplus1-sum_est_k);
         //check convergence
-        if (m > 2 and err_cur< 1e-16 ){
+        if (m > 2 and err_cur< 1e-16 && m>10){
             break;
         }
         //check divergence
-        if (m > 2 and err_cur > err_pre){
+        if (m > 2 and err_cur > err_pre && m>10){
             //std::cerr << " BREAKING: " << err_cur << " > " << err_pre ;
             break;
         }
@@ -261,10 +259,14 @@ complex levin_estimate(Sum_State *state){
         sum_est_k = sum_est_kplus1;
         //std::cerr << sum_est_k << " ";
     }
+    auto R2S = state->R2 * sqrt(state->s * (1 - state->s)) ;
+    auto ordc = (state->lambda + state->miu() - state->niu()+  1.0 / 2.0);
+    double denominator = pow(R2S * R2S + state->v() * state->v(), ordc/2.0); //outside
+
     // when the difference in the sum starts getting bigger than the previous diff i.e. diverging
     // use the previous value
     //std::cerr <<  " s= " << state->s << " FINAL : " << sum_est_kplus1 << std::endl;
-    return sum_est_kplus1;
+    return sum_est_kplus1/denominator;
 }
 
 
@@ -273,13 +275,18 @@ complex semi_infinite_3c_integral(Sum_State *state)
 {
     //Evaluate Integral from top level sum here
 
+    std::cout << std::endl << state->s << std::endl << std::endl;
+
     complex I;
     if (state->r()==-1){
         //Use Levin Transformation
         auto sum = levin_estimate(state);
         auto fac1 = 1.0 / pow(state->s*(1-state->s),state->n_gamma()/2.0) ;
         auto fac2 = pow(2.0,state->miu()-1)*pow(state->z(),state->lambda+state->miu()-state->niu()+1.0/2.0);
-        I = fac1*fac2*sum;
+        auto fac3 = pow(state->v(), state->lambda);
+        I = fac1*fac2*fac3*sum;
+        std::cout << "levin sum " << I << std::endl;
+
     }
     else{
         // Use formula 58 in :
