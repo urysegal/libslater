@@ -96,7 +96,7 @@ struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
 
     /// These are parameters for semi-infinite integral that change every iteration, see [1] eqn. 55
     double z() const{
-        return ( (1-s)*zeta1*zeta1 + s*zeta2*zeta2 )/(s*(1-s));
+        return sqrt( ( (1-s)*zeta1*zeta1 + s*zeta2*zeta2 )/(s*(1-s)));
     }
     double r() const{
         return (n_x()-lambda)/2.0 -1;
