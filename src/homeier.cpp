@@ -59,45 +59,21 @@ void shift_first_center_to_origin(const center_t &c1, center_t c2, center_t *new
 
 energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2> &functions)
 {
-
-    assert(functions[0].get_quantum_numbers().l + functions[1].get_quantum_numbers().l
-        <= Gaunt_Coefficient_Engine::get_maximal_gaunt_l());
-
-    functions[0].get_quantum_numbers().validate();
-    functions[1].get_quantum_numbers().validate();
-
     center_t new_centers[2];
+
     shift_first_center_to_origin(functions[0].get_center(), functions[1].get_center(), new_centers);
 
     B_functions_representation_of_STO f1(functions[0] , new_centers[0]);
     B_functions_representation_of_STO f2(functions[1], new_centers[1]);
 
-    create_integration_pairs(f1, f2);
-
-    std::vector<energy_unit_t> partial_results;
-    for ( auto const &p : equivalence_series )
-    {
-        // int(B_1*B_2)
-        energy_unit_t partial_result = integrate_overlap_using_b_functions(p.first.second, p.second.second);
-
-        // Bcoeff1*Bcoeff2 * int(B_1*B_2)
-        partial_result *= p.first.first*p.second.first;
-        partial_results.emplace_back(partial_result);
-    }
-
-    // sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
-    energy_unit_t final_result = 0 ;
-    for ( auto &pr : partial_results )
-        final_result += pr;
+    energy_unit_t final_result = do_integrate(f1, f2);
 
     final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
-
-    final_result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient() ;
 
     return final_result;
 }
 
-std::complex<double> Homeier_Integrator::integrate_overlap_using_b_functions(const B_function_details &f1, const B_function_details &f2) const
+std::complex<double> Homeier_Integrator::integrate_using_b_functions(const B_function_details &f1, const B_function_details &f2)
 {
     auto f = [&](const double& s) { return calculate_overlap_gaussian_point(f1, f2, s) ;};
     // int(W_hat*S)
@@ -304,16 +280,6 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
 
     auto T = -(1.0/2.0)*coeff*coeff*(S1-S2);
     return T;
-}
-
-void STO_Integrator::create_integration_pairs(const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2)
-{
-    equivalence_series.clear();
-    for ( auto i : f1) {
-        for (auto j: f2) {
-            equivalence_series.emplace_back(i, j);
-        }
-    }
 }
 
 

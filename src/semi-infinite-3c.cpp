@@ -196,6 +196,7 @@ complex sum_kth_term(Sum_State *state,int p)
         double poch = pochhammer(state->niu() - state->miu(), state->miu() - m);
 
         auto vb = ( m );
+
         double K = bm::cyl_bessel_k(vb, xb);
 
         double denominator = pow(R2S * R2S + state->v() * state->v(), vb/2.0); //outside
@@ -209,6 +210,7 @@ complex sum_kth_term(Sum_State *state,int p)
 
     return power * pochfrac * sum;
 }
+
 
 complex levin_estimate(Sum_State *state){
     //Initialize variables
@@ -236,27 +238,35 @@ complex levin_estimate(Sum_State *state){
 
         a_k = a_k/denominator;
 
+        if ( abs(a_k) < 1.e-16 ) {
+
+            break;
+        }
+        
         //compute sk
         s_k = s_k + a_k;
         //call glevin to get estimate
         sum_est_kplus1 = glevin(s_k,a_k, 1.0,m, num_array, den_array);
         err_cur = abs(sum_est_kplus1-sum_est_k);
         //check convergence
-        if (err_cur< 1e-16 ){
+        if (m > 2 and err_cur< 1e-16 ){
             break;
         }
         //check divergence
-        if (err_cur > err_pre){
+        if (m > 2 and err_cur > err_pre){
+            //std::cerr << " BREAKING: " << err_cur << " > " << err_pre ;
             break;
         }
         err_pre = err_cur;
         sum_est_k = sum_est_kplus1;
+        //std::cerr << sum_est_k << " ";
     }
     // when the difference in the sum starts getting bigger than the previous diff i.e. diverging
     // use the previous value
-
+    //std::cerr <<  " s= " << state->s << " FINAL : " << sum_est_kplus1 << std::endl;
     return sum_est_kplus1;
 }
+
 
 
 complex semi_infinite_3c_integral(Sum_State *state)

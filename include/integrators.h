@@ -69,6 +69,18 @@ protected:
     {
     }
 
+    /// Do an integration of two STO using their B functions representation.
+    /// \param f1 first representation of STO by B functions
+    /// \param f2 second representation of STO by B functions
+    /// \return  integral value
+    std::complex<double> do_integrate( const B_functions_representation_of_STO &f1, const B_functions_representation_of_STO &f2 ) ;
+
+    /// Do an integration using the two B functions given. The specific integral to calculate is defined on the subclass.
+    /// \param f1 first B function
+    /// \param f2 second B functions
+    /// \return  integral value
+    [[nodiscard]] virtual std::complex<double> integrate_using_b_functions(const B_function_details &f1, const B_function_details &f2)  = 0;
+
 
 };
 

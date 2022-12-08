@@ -149,7 +149,7 @@ private:
     center_t B = {};
     center_t C = {};
 
-    complex integrate_nuclei_attraction_using_b_functions(const B_function_details &f1, const B_function_details &f2) ;
+    [[nodiscard]] complex integrate_using_b_functions(const B_function_details &f1, const B_function_details &f2) override;
 
 
 };
