@@ -184,24 +184,29 @@ complex sum_kth_term(Sum_State *state,int p)
 {
     auto power = pow(state->v()*state->v()*state->z() / 2.0 , p);
     auto pochfrac = 1.0 / pochhammer(state->lambda + 0.5,p+1);
+    auto R2S = state->R2 * sqrt(state->s * (1 - state->s)) ;
+    auto xb = state->z() * sqrt(R2S * R2S + state->v() * state->v());
 
     complex sum =0;
-    for (int m =0; m<=state->miu(); m++){
+    for (int m =0; m <= state->miu(); m++){
         auto binomial = bm::binomial_coefficient<double>(state->miu(),m);
 
-        auto R2S = state->R2 * sqrt(state->s * (1 - state->s)) ;
         auto m_power = pow((R2S * state->z()) / 2.0, m);
 
         double poch = pochhammer(state->niu() - state->miu(), state->miu() - m);
 
-        auto vb = state->lambda + state->miu() - state->niu() + p + m +  0.5;
-        auto xb = state->z() * sqrt(R2S * R2S + state->v() * state->v());
+        auto vb = ( m );
+
         double K = bm::cyl_bessel_k(vb, xb);
 
-        double denominator = pow(R2S * R2S + state->v() * state->v(), vb/2.0);
+        double denominator = pow(R2S * R2S + state->v() * state->v(), vb/2.0); //outside
 
         sum = sum + binomial * m_power * poch * K/denominator ;
     }
+
+    auto vb = ( p );
+    double denominator = pow(R2S * R2S + state->v() * state->v(), vb/2.0); //outside
+    sum = sum / denominator;
 
     return power * pochfrac * sum;
 }
@@ -226,10 +231,18 @@ complex levin_estimate(Sum_State *state){
     for (int m=0; m<=MAX_SUM;m++){
         //compute ak
         a_k = sum_kth_term(state,m);
+
+        auto R2S = state->R2 * sqrt(state->s * (1 - state->s)) ;
+        auto vb = (state->lambda + state->miu() - state->niu()+  1.0 / 2.0);
+        double denominator = pow(R2S * R2S + state->v() * state->v(), vb/2.0); //outside
+
+        a_k = a_k/denominator;
+
         if ( abs(a_k) < 1.e-16 ) {
 
             break;
         }
+        
         //compute sk
         s_k = s_k + a_k;
         //call glevin to get estimate
