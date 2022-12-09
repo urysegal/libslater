@@ -170,13 +170,13 @@ complex glevin(complex s_n, complex w_n, double beta, int n,
 
     //Compute estimate of sum= numerator/denominator
     complex sum_est;
-    if (abs(denominator_array[0]) < 1e-10){
-        //Sum is diverging
-        sum_est = 1e60; //RAISE ERROR HERE
-    }
-    else{
-        sum_est = numerator_array[0] / denominator_array[0];
-    }
+//    if (abs(denominator_array[0]) < 1e-10){
+//        //Sum is diverging
+//        sum_est = 1e60; //RAISE ERROR HERE
+//    }
+//    else{
+    sum_est = numerator_array[0] / denominator_array[0];
+//  }
     return sum_est;
 }
 
@@ -214,12 +214,12 @@ complex sum_kth_term(Sum_State *state,int p)
 complex levin_estimate(Sum_State *state){
     //Initialize variables
     complex s_k = 0;
-    complex sum_est_k = 0;
-    complex sum_est_kplus1 = 0;
+    complex sum_pre = 0;
+    complex sum_cur = 0;
     complex a_k;
     double err_pre = 2.0;
     double err_cur = 1.0;
-    int MAX_SUM = 100;
+    int MAX_SUM = 30;
 
     // Initialize vectors for 0...n values of numerator and denominator
     std::vector<complex> num_array(MAX_SUM+1);
@@ -227,46 +227,36 @@ complex levin_estimate(Sum_State *state){
 
     // Outer Loop for levin's transformation
     // Generate Sequence 7.5-5
-    for (int m=0; m<=MAX_SUM;m++){
+    for (int m=0; m<=MAX_SUM; m++){
         //compute ak
         a_k = sum_kth_term(state,m);
-
-
         std::cout << m << a_k << "  ";
 
-        if ( abs(a_k) < 1.e-16 && m>10) {
-
-            break;
-        }
-        
         //compute sk
         s_k = s_k + a_k;
         //call glevin to get estimate
-        sum_est_kplus1 = glevin(s_k,a_k, 1.0,m, num_array, den_array);
-        std::cout  << sum_est_kplus1 << std::endl;
+        sum_cur = glevin(s_k, a_k, 1.0, m, num_array, den_array);
+        std::cout << sum_cur << " ";
 
-        err_cur = abs(sum_est_kplus1-sum_est_k);
-        //check convergence
-        if (m > 2 and err_cur< 1e-16 && m>10){
-            break;
+        err_cur = abs(sum_cur - sum_pre);
+
+        //Do at least 10 iterations before breaking
+        if( m > 10 ) {
+            //check if a_k is too small, or levin's estimate converged/diverged
+            if ( abs(a_k) < 1.e-16 || err_cur < 1e-16 || err_cur > err_pre) {
+                break;
+            }
         }
-        //check divergence
-        if (m > 2 and err_cur > err_pre && m>10){
-            //std::cerr << " BREAKING: " << err_cur << " > " << err_pre ;
-            break;
-        }
+        // update previous terms to current terms
         err_pre = err_cur;
-        sum_est_k = sum_est_kplus1;
-        //std::cerr << sum_est_k << " ";
+        sum_pre = sum_cur;
     }
+    std::cout << sum_pre << std::endl;
     auto R2S = state->R2 * sqrt(state->s * (1 - state->s)) ;
-    auto ordc = (state->lambda + state->miu() - state->niu()+  1.0 / 2.0);
-    double denominator = pow(R2S * R2S + state->v() * state->v(), ordc/2.0); //outside
+    auto ordc = (state->lambda + state->miu() - state->niu() +  1.0 / 2.0);
+    double denominator = pow(R2S * R2S + state->v() * state->v(), ordc/2.0);
 
-    // when the difference in the sum starts getting bigger than the previous diff i.e. diverging
-    // use the previous value
-    //std::cerr <<  " s= " << state->s << " FINAL : " << sum_est_kplus1 << std::endl;
-    return sum_est_kplus1/denominator;
+    return sum_pre / denominator;
 }
 
 
