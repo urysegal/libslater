@@ -185,29 +185,23 @@ complex sum_kth_term(Sum_State *state,int p)
     auto power = pow(state->v()*state->v()*state->z() / 2.0 , p);
     auto pochfrac = 1.0 / pochhammer(state->lambda + 0.5,p+1);
     auto R2S = state->R2 * sqrt(state->s * (1 - state->s)) ;
-    auto xb = state->z() * sqrt(R2S * R2S + state->v() * state->v());
 
     complex sum =0;
     for (int m =0; m <= state->miu(); m++){
         auto binomial = bm::binomial_coefficient<double>(state->miu(),m);
-
         auto m_power = pow((R2S * state->z()) / 2.0, m);
-
         double poch = pochhammer(state->niu() - state->miu(), state->miu() - m);
-
         auto vb = ( state->lambda + state->miu() - state->niu()+ m + p +  1.0 / 2.0 );
+        auto xb = state->z() * sqrt(R2S * R2S + state->v() * state->v());
         double K = bm::cyl_bessel_k(vb, xb);
-
         double denominator = pow(R2S * R2S + state->v() * state->v(), m/2.0); //outside
-
         sum = sum + binomial * m_power * poch * K/denominator ;
     }
 
-
+    //denominator factor pulled out of the inner sum
     double denominator = pow(R2S * R2S + state->v() * state->v(), p/2.0); //outside
-    sum = sum / denominator;
 
-    return power * pochfrac * sum;
+    return power * pochfrac * sum/ denominator;
 }
 
 
@@ -231,7 +225,6 @@ complex levin_estimate(Sum_State *state){
         //compute ak
         a_k = sum_kth_term(state,m);
         std::cout << m << a_k << "  ";
-
         //compute sk
         s_k = s_k + a_k;
         //call glevin to get estimate
@@ -239,7 +232,6 @@ complex levin_estimate(Sum_State *state){
         std::cout << sum_cur << " ";
 
         err_cur = abs(sum_cur - sum_pre);
-
         //Do at least 10 iterations before breaking
         if( m > 10 ) {
             //check if a_k is too small, or levin's estimate converged/diverged
@@ -252,11 +244,8 @@ complex levin_estimate(Sum_State *state){
         sum_pre = sum_cur;
     }
     std::cout << sum_pre << std::endl;
-    auto R2S = state->R2 * sqrt(state->s * (1 - state->s)) ;
-    auto ordc = (state->lambda + state->miu() - state->niu() +  1.0 / 2.0);
-    double denominator = pow(R2S * R2S + state->v() * state->v(), ordc/2.0);
 
-    return sum_pre / denominator;
+    return sum_pre;
 }
 
 
@@ -271,10 +260,16 @@ complex semi_infinite_3c_integral(Sum_State *state)
     if (state->r()==-1){
         //Use Levin Transformation
         auto sum = levin_estimate(state);
+
+        //denominator factor pulled out of the sums
+        auto R2S = state->R2 * sqrt(state->s * (1 - state->s)) ;
+        auto ordc = (state->lambda + state->miu() - state->niu() +  1.0 / 2.0);
+        double denominator = pow(R2S * R2S + state->v() * state->v(), ordc/2.0);
+
         auto fac1 = 1.0 / pow(state->s*(1-state->s),state->n_gamma()/2.0) ;
         auto fac2 = pow(2.0,state->miu()-1)*pow(state->z(),state->lambda+state->miu()-state->niu()+1.0/2.0);
         auto fac3 = pow(state->v(), state->lambda);
-        I = fac1*fac2*fac3*sum;
+        I = fac1*fac2*fac3*sum/denominator;
         std::cout << "levin sum " << I << std::endl;
 
     }
