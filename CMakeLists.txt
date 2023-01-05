@@ -10,9 +10,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-option(COVERAGE "Coverage" ON)
-set(COMPILE_FLAGS -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread)
-set(LINK_FLAGS -fsanitize=address)
+#option(COVERAGE "Coverage" ON)
+set(COMPILE_FLAGS -Wall -Werror -fno-omit-frame-pointer -pthread)
+
+#set(COMPILE_FLAGS -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread)
+#set(LINK_FLAGS -fsanitize=address)
 
 
 find_package(Boost 1.71 REQUIRED )
@@ -48,6 +50,14 @@ target_include_directories(simple PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(simple PUBLIC ${COMPILE_FLAGS})
 target_link_options(simple PUBLIC ${LINK_FLAGS})
 target_link_libraries(simple libslater)
+
+add_executable(test3c examples/test3c.cpp)
+add_dependencies(test3c libslater)
+target_include_directories(test3c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(test3c PUBLIC ${COMPILE_FLAGS})
+target_link_options(test3c PUBLIC ${LINK_FLAGS})
+target_link_libraries(test3c libslater)
+
 
 if(COVERAGE)
     message(STATUS "Enabling coverage")
