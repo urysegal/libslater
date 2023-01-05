@@ -118,7 +118,7 @@ public:
     static complex calculate_expression(Sum_State *state) {
         // compute line 1 expression here
         double power1 = pow(-2.0, state->r());
-        double power2 = pow(sqrt(state->z()), state->n_x() + state->lambda - state->n_gamma() + 1.0);
+        double power2 = pow(state->z(), state->n_x() + state->lambda - state->n_gamma() + 1.0);
         double power3 = pow(state->v(), state->lambda + 1.0);
         double numerator =
                 power1 * power2 * power3; // compute line 1 numerator
