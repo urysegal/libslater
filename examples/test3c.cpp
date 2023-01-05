@@ -27,7 +27,7 @@ main(int argc, const char *argv[])
     assert(engine != nullptr);
 
 
-    struct three_c_tests_t &ti = three_c_tests[atoi(argv[1])];
+    struct three_c_tests_t &ti = three_c_tests[atoi(argv[1])-1];
 
     Quantum_Numbers quantum_numbers1 = {ti.n1, ti.l1, ti.m1};
     Quantum_Numbers quantum_numbers2 = {ti.n2, ti.l2, ti.m2};
