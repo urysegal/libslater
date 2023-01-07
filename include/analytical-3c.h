@@ -17,6 +17,7 @@ typedef int indexer_t; /// For this algorithm, the indices are integers (negativ
 
 //
 struct Sum_State;
+struct Integral_State;
 
 /// Semi-Infinite Integral eqn 31 & 56 in [1] ( see the implementation code file and Readme )
 /// \param state state of the nested summation
@@ -95,8 +96,14 @@ struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
     int m_semi_inf;
 
     /// These are parameters for semi-infinite integral that change every iteration, see [1] eqn. 55
-    double z() const{
-        return sqrt( ( (1-s)*zeta1*zeta1 + s*zeta2*zeta2 )/(s*(1-s)));
+    //double z() const{
+    //    return sqrt( ( (1-s)*zeta1*zeta1 + s*zeta2*zeta2 )/(s*(1-s)));
+    //}
+    double a() const{
+        return  (1.0-s)*zeta1*zeta1 + s*zeta2*zeta2 ;
+    }
+    double b() const{
+        return s*(1.0-s);
     }
     double r() const{
         return (n_x()-lambda)/2.0 -1;
@@ -107,7 +114,24 @@ struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
 
 
 };
+struct Integral_State : public Summation_State<indexer_t, std::complex<double> > {
+    double mu;
+    double nu;
+    indexer_t lambda;
+    double r;
+    double alpha;
+    double beta;
+    double z;
 
+    void update(Sum_State *state){
+        mu = state->miu();
+        nu = state->niu();
+        lambda = state->r();
+        alpha = state->R2*sqrt(vector_length(state->B));
+        beta = state->v();
+        z = sqrt(state->a()/state->b());
+    }
+    };
 
 class Analytical_3C_evaluator : public STO_Integrator {
 
