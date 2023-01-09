@@ -248,9 +248,8 @@ complex levin_estimate(Integral_State *state){
     return sum_pre;
 }
 
-Integral_State* setup_integral_state(Sum_State *state) {
+Integral_State* setup_integral_state(Sum_State *state, Integral_State *i_state) {
 
-    Integral_State *i_state;
     bzero((void *)&i_state, sizeof(i_state));
     i_state->mu = state->miu();
     i_state->nu = state->niu();
@@ -270,17 +269,18 @@ complex semi_infinite_3c_integral(Sum_State *state)
     complex I;
     if (state->r()==-1){
         //Use Levin Transformation
-        Integral_State* i_state = setup_integral_state(state);
+        Integral_State i_state;
+        setup_integral_state(state, &i_state);
 
-        auto sum = levin_estimate(i_state);
+        auto sum = levin_estimate(&i_state);
 
         //denominator factor pulled out of the sums
-        auto R2S = i_state->alpha  ;
+        auto R2S = i_state.alpha  ;
         auto ordc = (state->lambda + state->miu() - state->niu() +  1.0 / 2.0);
         double denominator = pow(R2S * R2S + state->v() * state->v(), ordc/2.0);
 
         auto fac1 = 1.0 / pow(state->s*(1-state->s),state->n_gamma()/2.0) ;
-        auto fac2 = pow(2.0,state->miu()-1)*pow(i_state->z, state->lambda + state->miu() - state->niu() + 1.0 / 2.0);
+        auto fac2 = pow(2.0,state->miu()-1)*pow(i_state.z, state->lambda + state->miu() - state->niu() + 1.0 / 2.0);
         auto fac3 = pow(state->v(), state->lambda);
         I = fac1*fac2*fac3*sum/denominator;
         std::cout << "levin sum " << I << std::endl;
