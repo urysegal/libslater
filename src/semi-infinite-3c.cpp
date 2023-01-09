@@ -248,16 +248,15 @@ complex levin_estimate(Integral_State *state){
     return sum_pre;
 }
 
-Integral_State* setup_integral_state(Sum_State *state, Integral_State *i_state) {
+void setup_integral_state(Sum_State *state, Integral_State *i_state) {
 
-    bzero((void *)&i_state, sizeof(i_state));
+    bzero((void *)i_state, sizeof(*i_state));
     i_state->mu = state->miu();
     i_state->nu = state->niu();
     i_state->lambda = state->r();
     i_state->alpha = state->R2*sqrt(vector_length(state->B));
     i_state->beta = state->v();
     i_state->z = sqrt(state->a()/state->b());
-    return i_state;
 }
 
 complex semi_infinite_3c_integral(Sum_State *state)
