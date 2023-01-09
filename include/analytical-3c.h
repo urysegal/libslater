@@ -91,9 +91,6 @@ struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
     ///Integration variable for semi-infinite integral, see[1] eqn. 28, lines 7-8
     double s;
 
-    ///Nested iteration variables for semi-infinite integral, see [1] eqn. 56
-    int sigma;
-    int m_semi_inf;
 
     /// These are parameters for semi-infinite integral that change every iteration, see [1] eqn. 55
     //double z() const{
@@ -123,14 +120,10 @@ struct Integral_State : public Summation_State<indexer_t, std::complex<double> >
     double beta;
     double z;
 
-    void update(Sum_State *state){
-        mu = state->miu();
-        nu = state->niu();
-        lambda = state->r();
-        alpha = state->R2*sqrt(vector_length(state->B));
-        beta = state->v();
-        z = sqrt(state->a()/state->b());
-    }
+    ///Nested iteration variables for semi-infinite integral, see [1] eqn. 56
+    int sigma;
+    int m_semi_inf;
+
     };
 
 class Analytical_3C_evaluator : public STO_Integrator {

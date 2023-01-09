@@ -11,7 +11,7 @@ namespace bg = boost::geometry;
 
 using complex = std::complex<double>;
 namespace bm = boost::math;
-#define STATE (static_cast<Sum_State *> (state))
+#define STATE (static_cast<Integral_State *> (state))
 
 namespace slater {
 
@@ -41,7 +41,7 @@ public:
             from_, to_, s, step_) {}
 
 
-    static complex calculate_expression(Sum_State *state) {
+    static complex calculate_expression(Integral_State *state) {
         //compute line 3 and 4 here
         //GAUTAM -> THESE ARE STILL DUMMY VALUES
         auto binomial = bm::binomial_coefficient<double>((2 * state->niu() - state->n_gamma()) / 2.0,
@@ -84,7 +84,7 @@ public:
     Semi_Infinite_Integral_Sum_2(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(
             from_, to_, s, step_) {}
 
-    static complex calculate_expression(Sum_State *s) {
+    static complex calculate_expression(Integral_State *s) {
         // compute line 2 expression here
         auto binomial = bm::binomial_coefficient<double>((s->r()), s->sigma);
         auto power = pow((s->v() * s->v() * sqrt(s->a()/s->b())) / 2.0, s->sigma);
@@ -115,7 +115,7 @@ public:
 
     /// We calculate the expression as public and  static so we can call it directly
     /// from the test suites.
-    static complex calculate_expression(Sum_State *state) {
+    static complex calculate_expression(Integral_State *state) {
         // compute line 1 expression here
         double power1 = pow(-2.0, state->r());
         double power2 = pow(sqrt(state->a()/state->b()), state->n_x() + state->lambda - state->n_gamma() + 1.0);
@@ -250,36 +250,41 @@ complex levin_estimate(Integral_State *state){
 
 void setup_integral_state(Sum_State *state, Integral_State *i_state) {
 
+
+    /// TCNAI(mu,nu,lambda,r,alpha,beta,z
+
+    ///call TCNAI(int(nu-ng/2D0+0.5D0),nu,lambda,
+    ///                   (nx-lambda)/2-1,ab*dsqrt(b),
+    ///                   V(i), dsqrt(a/b),
+    ///
+
     bzero((void *)i_state, sizeof(*i_state));
     i_state->mu = state->miu();
     i_state->nu = state->niu();
-    i_state->lambda = state->r();
+    i_state->lambda = state->lambda;
+    i_state->r = state->r();
     i_state->alpha = state->R2*sqrt(vector_length(state->B));
     i_state->beta = state->v();
     i_state->z = sqrt(state->a()/state->b());
 }
 
-complex semi_infinite_3c_integral(Sum_State *state)
-{
-    //Evaluate Integral from top level sum here
 
-    std::cout << std::endl << state->s << std::endl << std::endl;
+complex do_semi_infinite_3c_integral(Integral_State *state)
+{
 
     complex I;
     if (state->r()==-1){
         //Use Levin Transformation
-        Integral_State i_state;
-        setup_integral_state(state, &i_state);
 
-        auto sum = levin_estimate(&i_state);
+        auto sum = levin_estimate(state);
 
         //denominator factor pulled out of the sums
-        auto R2S = i_state.alpha  ;
+        auto R2S = state.alpha  ;
         auto ordc = (state->lambda + state->miu() - state->niu() +  1.0 / 2.0);
         double denominator = pow(R2S * R2S + state->v() * state->v(), ordc/2.0);
 
         auto fac1 = 1.0 / pow(state->s*(1-state->s),state->n_gamma()/2.0) ;
-        auto fac2 = pow(2.0,state->miu()-1)*pow(i_state.z, state->lambda + state->miu() - state->niu() + 1.0 / 2.0);
+        auto fac2 = pow(2.0,state->miu()-1)*pow(state.z, state->lambda + state->miu() - state->niu() + 1.0 / 2.0);
         auto fac3 = pow(state->v(), state->lambda);
         I = fac1*fac2*fac3*sum/denominator;
         std::cout << "levin sum " << I << std::endl;
@@ -294,5 +299,13 @@ complex semi_infinite_3c_integral(Sum_State *state)
     }
     return I;
 };
+
+
+complex semi_infinite_3c_integral(Sum_State *state)
+{
+    Integral_State i_state;
+    setup_integral_state(state, &i_state);
+    return do_semi_infinite_3c_integral(&i_state);
+}
 
 }
