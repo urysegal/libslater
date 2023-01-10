@@ -77,10 +77,6 @@ namespace slater {
         // Seventh line in [1] eqn. 28
         static complex calculate_gaussian_point(const double &s, Sum_State *state) {
 
-            if ( s >  0.23168792 and s < 0.232 ) {
-                std::cout << "Stop Here" << std::endl;
-            }
-
             complex result;
             complex power1 = pow(s, state->n2 + state->l2 + state->l1 - state->l1_tag);
             complex power2 = pow(1 - s, state->n1 + state->l1 + state->l2 - state->l2_tag);
