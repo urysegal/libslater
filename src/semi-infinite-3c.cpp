@@ -307,7 +307,7 @@ void setup_integral_state(Sum_State *state, Integral_State *i_state) {
     i_state->nu = state->niu();
     i_state->lambda = state->lambda;
     i_state->r = state->r();
-    i_state->alpha = state->R2*sqrt(vector_length(state->B));
+    i_state->alpha = state->R2*sqrt(state->b());
     i_state->beta = state->v();
     i_state->z = sqrt(state->a()/state->b());
 }
