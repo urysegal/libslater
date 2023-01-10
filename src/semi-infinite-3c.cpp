@@ -43,21 +43,31 @@ public:
 
     static complex calculate_expression(Integral_State *state) {
         //compute line 3 and 4 here
-        //GAUTAM -> THESE ARE STILL DUMMY VALUES
-        auto binomial = bm::binomial_coefficient<double>((2 * state->niu() - state->n_gamma()) / 2.0,
+        //
+        //Cnp(mu*(mu+1)/2+m)
+        auto binomial = bm::binomial_coefficient<double>(state->mu,
                                                          state->m_semi_inf);
 
-        auto R2S = state->R2 * state->R2 * state->s * (1 - state->s);
-        double m_power = pow((R2S * sqrt(state->a()/state->b())) / 2.0, state->m_semi_inf);
-
-        double poch = pochhammer(state->niu() - state->miu(), state->niu() - state->m_semi_inf);
-
-        auto vb = (state->n_x() + state->lambda - state->n_gamma()) / 2.0 + state->sigma + state->m_semi_inf +
+        //temptaz=alpha**2*z/2D0
+        //temptaz**m
+        auto R2S = state->alpha;
+        double m_power = pow(R2S * R2S * state->z/2.0 , state->m_semi_inf);
+        //Poch2(mu-m)
+        double poch = pochhammer(state->nu - state->mu, state->nu - state->m_semi_inf);
+        //ordc = lambda+r+mu-nu+1
+        //ordbk = max(ordc+r+mu,nu-lambda-r-mu-1) -- WHY?
+        //BK(ordbk)
+        //use mu and r in eq 55 to obtain expression for vb independent of nx and ngamma
+        auto vb = state->r + 1.0 + state->lambda - state->nu + state->mu + state->sigma + state->m_semi_inf +
                   1.0 / 2.0;
-        auto x = sqrt(state->a()/state->b()) * sqrt(R2S + state->v() * state->v());
+        auto x = state->z * sqrt(R2S*R2S + state->beta * state->beta);
         double K = bm::cyl_bessel_k(vb, x);
-        double denominator = pow(sqrt(R2S + state->v() * state->v()), vb);
+        //tempab**(m/2D0)
+        double denominator = pow(sqrt(R2S*R2S + state->beta * state->beta), state->m_semi_inf);
 
+
+        //temp1 = temp1 + Cnp(mu*(mu+1)/2+m)
+        //     $	         	*temptaz**m*Poch2(mu-m)*BK(ordbk)/tempab**(m/2D0)
         return binomial * m_power * poch * (K / denominator);
     }
 
@@ -72,7 +82,7 @@ protected:
 
     indexer_t get_next_sum_from() override { return 0; }
 
-    indexer_t get_next_sum_to() override { return (2 * STATE->niu() - STATE->n_gamma()) / 2.0; }
+    indexer_t get_next_sum_to() override { return ( STATE->mu) ; }
 
     complex expression() override {
         auto s = STATE;
@@ -84,13 +94,25 @@ public:
     Semi_Infinite_Integral_Sum_2(int from_, int to_, Summation_State<indexer_t, complex> *s, int step_) : Nested_Summation(
             from_, to_, s, step_) {}
 
-    static complex calculate_expression(Integral_State *s) {
+    static complex calculate_expression(Integral_State *state) {
         // compute line 2 expression here
-        auto binomial = bm::binomial_coefficient<double>((s->r()), s->sigma);
-        auto power = pow((s->v() * s->v() * sqrt(s->a()/s->b())) / 2.0, s->sigma);
-        auto poch = pochhammer((-s->n_x() - s->lambda + 1.0) / 2.0, s->r() - s->sigma);
+
+
+        //Cnp(r*(r+1)/2+s)
+        auto binomial = bm::binomial_coefficient<double>((state->r), state->sigma);
+        //temptbz**s
+        auto power = pow((state->beta * state->beta * state->z) / 2.0, state->sigma);
+        //Poch1(r-s)
+        //rewrite first argument of pochhammer using eq 55
+        auto poch = pochhammer(-state->r - state->lambda , state->r - state->sigma);
+
+        //tempab**(s/2D0)
+        auto R2S = state->alpha;
+        double denominator = pow(sqrt(R2S*R2S + state->beta * state->beta), state->sigma);
+        //valTC + Cnp(r*(r+1)/2+s)*temptbz**s
+        //     $		      *Poch1(r-s)/tempab**(s/2D0)*temp1
         double expression =
-                binomial * power * poch;
+                binomial * power * poch/denominator;
         return expression;
     }
 };
@@ -101,7 +123,7 @@ class Semi_Infinite_Integral_Sum_1 : public Nested_Summation<indexer_t, complex,
 protected:
     indexer_t get_next_sum_from() override { return 0; }
 
-    indexer_t get_next_sum_to() override { return STATE->r(); }
+    indexer_t get_next_sum_to() override { return STATE->r; }
 
     complex expression() override {
         auto s = STATE;
@@ -117,18 +139,30 @@ public:
     /// from the test suites.
     static complex calculate_expression(Integral_State *state) {
         // compute line 1 expression here
-        double power1 = pow(-2.0, state->r());
-        double power2 = pow(sqrt(state->a()/state->b()), state->n_x() + state->lambda - state->n_gamma() + 1.0);
-        double power3 = pow(state->v(), state->lambda + 1.0);
+        //(-2)**r
+        double power2 = pow(-2.0, state->r);
+        //ordc = lambda+mu-nu+1
+        //z**ordc
+        //use eq 55 to rewrite (sqrt(z))^(nx+lambda-ngamma+1) term
+        double powerz = pow(state->z, state->r + state->lambda - state->nu + state->mu + 3.0 );
+        //beta**lambda
+        double powerv = pow(state->beta, state->lambda + 1.0);
         double numerator =
-                power1 * power2 * power3; // compute line 1 numerator
+                power2 * powerz * powerv; // compute line 1 numerator
 
-        double d_power1 = pow(state->R2, 2.0 * state->niu());
-        double d_power2 = pow(state->s * (1 - state->s), state->niu() + state->n_gamma() / 2.0);
-        double denominator =
-                d_power1 * d_power2; // compute line 1 denominator
+        //  tempab**((ordc)/2D0)
+        auto R2S = state->alpha;
 
-        return numerator / denominator;
+        auto ordc =   state->lambda + state->mu - state->nu + 1.0/2.0;
+        double denominator1 = pow(sqrt(R2S*R2S + state->beta * state->beta), ordc);
+
+        // Can't find this in Fortran Code
+        double denominator2 =
+                pow(state->alpha,state->nu); // compute line 1 denominator
+        //valTC*(-2)**r*2**mu
+        //     $	     *z**ordc*beta**lambda
+        //     $	     /tempab**((ordc)/2D0)
+        return numerator / (denominator1*denominator2);
     }
 };
 
@@ -182,23 +216,33 @@ complex glevin(complex s_n, complex w_n, double beta, int n,
 
 complex sum_kth_term(Integral_State *state,int p)
 {
-    auto power = pow(state->beta*state->beta *state->z / 2.0 , p);
-    auto pochfrac = 1.0 / pochhammer(state->lambda + 0.5,p+1);
+
     auto R2S = state->alpha;
 
     complex sum =0;
     for (int m =0; m <= state->mu; m++){
+        //Cnp(mu*(mu+1)/2+m)
         auto binomial = bm::binomial_coefficient<double>(state->mu,m);
+        //temptaz**m
         auto m_power = pow((R2S * state->z) / 2.0, m);
+        //Poch2(mu-m)
         double poch = pochhammer(state->nu - state->mu, state->mu - m);
-        auto vb = ( state->lambda + state->nu - state->nu+ m + p +  1.0 / 2.0 );
+        //ordbk = max(ordc+r+mu,nu-lambda-r-mu-1)
+        //BK(ordbk)
+        auto vb = ( state->lambda + state->mu - state->nu + m + p +  1.0 / 2.0 );
         auto xb = state->z * sqrt(R2S * R2S + state->beta * state->beta);
         double K = bm::cyl_bessel_k(vb, xb);
-        double denominator = pow(R2S * R2S + state->beta * state->beta, m/2.0); //outside
+        //tempab**(m/2D0)
+        double denominator = pow(R2S * R2S + state->beta * state->beta, m/2.0);
         sum = sum + binomial * m_power * poch * K/denominator ;
     }
+    //temptbz**s
+    auto power = pow(state->beta*state->beta *state->z / 2.0 , p);
+    // Poch1dp
+    auto pochfrac = 1.0 / pochhammer(state->lambda + 0.5,p+1);
 
     //denominator factor pulled out of the inner sum
+    //tempab**(s/2D0)
     double denominator = pow(R2S * R2S + state->beta * state->beta, p/2.0); //outside
 
     return power * pochfrac * sum/ denominator;
@@ -259,7 +303,7 @@ void setup_integral_state(Sum_State *state, Integral_State *i_state) {
     ///
 
     bzero((void *)i_state, sizeof(*i_state));
-    i_state->mu = state->miu();
+    i_state->mu = (2.0*state->niu() - state->n_gamma())/2.0;
     i_state->nu = state->niu();
     i_state->lambda = state->lambda;
     i_state->r = state->r();
@@ -273,20 +317,24 @@ complex do_semi_infinite_3c_integral(Integral_State *state)
 {
 
     complex I;
-    if (state->r()==-1){
+    std::cout << "r = " << state->r << std::endl;
+    if (state->r==-1){
         //Use Levin Transformation
 
         auto sum = levin_estimate(state);
+        //valTC = ESTLIM(s-1)*2D0**(mu-1)
+        //     $      	*z**ordc*beta**lambda
+        //     $	     /tempab**((ordc)/2D0)
 
         //denominator factor pulled out of the sums
-        auto R2S = state.alpha  ;
-        auto ordc = (state->lambda + state->miu() - state->niu() +  1.0 / 2.0);
-        double denominator = pow(R2S * R2S + state->v() * state->v(), ordc/2.0);
+        auto ordc = (state->lambda + state->mu - state->nu +  1.0 / 2.0);
 
-        auto fac1 = 1.0 / pow(state->s*(1-state->s),state->n_gamma()/2.0) ;
-        auto fac2 = pow(2.0,state->miu()-1)*pow(state.z, state->lambda + state->miu() - state->niu() + 1.0 / 2.0);
-        auto fac3 = pow(state->v(), state->lambda);
-        I = fac1*fac2*fac3*sum/denominator;
+        auto fac1 = pow(2.0,state->mu-1)*pow(state->z, ordc);
+        auto fac2 = pow(state->beta, state->lambda);
+
+        auto R2S = state->alpha  ;
+        double denominator = pow(R2S * R2S + state->beta* state->beta, ordc/2.0);
+        I = fac1*fac2*sum/denominator;
         std::cout << "levin sum " << I << std::endl;
 
     }
@@ -305,7 +353,10 @@ complex semi_infinite_3c_integral(Sum_State *state)
 {
     Integral_State i_state;
     setup_integral_state(state, &i_state);
-    return do_semi_infinite_3c_integral(&i_state);
+    auto valTC = do_semi_infinite_3c_integral(&i_state);
+
+    // 1/ [s(1-s)]^(ngamma/2) factor pulled out of both type of sum formulas
+    return valTC / pow(state->b(),state->n_gamma()/2.0) ;
 }
 
 }
