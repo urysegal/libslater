@@ -103,43 +103,6 @@ std::complex<double> B_function_Engine::calculate(const Quantum_Numbers &quantum
     return prefactor * k_hat * Y;
 }//calculate
 
-Spherical_Coordinates::Spherical_Coordinates(const center_t &cartesian)
-{
-    auto x = cartesian[0];
-    auto y = cartesian[1];
-    auto z = cartesian[2];
-    auto pi = bm::constants::pi<double>();
-
-    radius = sqrt(x*x + y*y + z*z);
-    if (radius == 0){
-        theta=0;
-        phi =0;
-    }
-    else {
-        theta = acos(z / radius);
-        if (x > 0) {
-            phi = atan(y / x);
-        } else if (x < 0) {
-            if (y >= 0) {
-                phi = atan(y / x) + pi;
-            } else {
-                phi = atan(y / x) - pi;
-            }
-        }
-            // x==0
-        else {
-            if (y > 0) {
-                phi = pi / 2;
-            } else if (y < 0) {
-                phi = -pi / 2;
-            }
-                //x==0, y==0, phi = undefined
-            else {
-                phi = 0;
-            }
-        }
-    }
-}
 
 
 }//namespace slater

@@ -1,7 +1,7 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
 #include <boost/math/special_functions.hpp>
-
+#include "coordinates.h"
 #include "slater-utils.h"
 #include "libslater.h"
 
@@ -92,6 +92,43 @@ double compute_reduced_bessel_function_half(const double order,const double z){
     }
     return k_hat;
 }
+    Spherical_Coordinates::Spherical_Coordinates(const center_t &cartesian)
+    {
+        auto x = cartesian[0];
+        auto y = cartesian[1];
+        auto z = cartesian[2];
+        auto pi = bm::constants::pi<double>();
+
+        radius = sqrt(x*x + y*y + z*z);
+        if (radius == 0){
+            theta=0;
+            phi =0;
+        }
+        else {
+            theta = acos(z / radius);
+            if (x > 0) {
+                phi = atan(y / x);
+            } else if (x < 0) {
+                if (y >= 0) {
+                    phi = atan(y / x) + pi;
+                } else {
+                    phi = atan(y / x) - pi;
+                }
+            }
+                // x==0
+            else {
+                if (y > 0) {
+                    phi = pi / 2;
+                } else if (y < 0) {
+                    phi = -pi / 2;
+                }
+                    //x==0, y==0, phi = undefined
+                else {
+                    phi = 0;
+                }
+            }
+        }
+    }
 
 
 }
