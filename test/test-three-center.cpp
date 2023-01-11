@@ -13,7 +13,7 @@ extern struct three_c_tests_t  three_c_tests[]  ;
 TEST_CASE( "attraction integrals", "[three-center]" )
 {
 
-    auto epsilon = 10e-7;
+    auto epsilon = 10e-8;
 
     STO_Integration_Engine engine_factory;
     std::map<slater::integration_types, std::string> engines;
@@ -22,8 +22,9 @@ TEST_CASE( "attraction integrals", "[three-center]" )
 
     int imisses = 0;
     int rmisses = 0;
+    int count = 0;
 
-    for ( int i = 0 ; three_c_tests[i].n1 != 0 ; ++i ) {
+    for ( int i = 0 ; three_c_tests[i].n1 != 0 ; ++i , ++count) {
 
         struct three_c_tests_t &ti = three_c_tests[i];
 
@@ -66,6 +67,7 @@ TEST_CASE( "attraction integrals", "[three-center]" )
     }
     CHECK(rmisses==0);
     CHECK(imisses==0);
+    printf("Count %d\n", count);
     delete engine;
 
 }

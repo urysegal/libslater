@@ -144,7 +144,7 @@ public:
         //ordc = lambda+mu-nu+1
         //z**ordc
         //use eq 55 to rewrite (sqrt(z))^(nx+lambda-ngamma+1) term
-        double powerz = pow(state->z, state->r + state->lambda - state->nu + state->mu + 3.0 );
+        double powerz = pow(state->z, state->r + state->lambda - state->nu + state->mu + (3.0/2.0) );
         //beta**lambda
         double powerv = pow(state->beta, state->lambda + 1.0);
         double numerator =
@@ -317,7 +317,7 @@ complex do_semi_infinite_3c_integral(Integral_State *state)
 {
 
     complex I;
-    std::cout << "r = " << state->r << std::endl;
+
     if (state->r==-1){
         //Use Levin Transformation
 
