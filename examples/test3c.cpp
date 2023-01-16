@@ -53,10 +53,17 @@ main(int argc, const char *argv[])
     bool miss = rmiss >= epsilon or imiss >= epsilon;
 
     if ( miss ) {
-        printf("Fortran: %10.15f + %10.15f i   C++:  %10.15f + %10.15f i\trmiss: %10.15f imiss %10.15f\n",
-               ti.result.real, ti.result.imag,
-               result.real(), result.imag(),
-               rmiss, imiss);
+
+        double absmiss = fabs(result.real()) - fabs(ti.result.real) ;
+
+
+            printf("Fortran: %10.15f + %10.15f i   C++:  %10.15f + %10.15f i\trmiss: %10.15f imiss %10.15f\n",
+                   ti.result.real, ti.result.imag,
+                   result.real(), result.imag(),
+                   rmiss, imiss);
+        if ( absmiss < epsilon ) {
+            printf("But Got the numerical part (up to epsilon %f)\n", epsilon);
+        }
     } else {
         printf("Got it (up to epsilon %f)\n", epsilon);
     }

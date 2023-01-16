@@ -268,12 +268,12 @@ complex levin_estimate(Integral_State *state){
     for (int m=0; m<=MAX_SUM; m++){
         //compute ak
         a_k = sum_kth_term(state,m);
-        std::cout << m << a_k << "  ";
+        //std::cout << m << a_k << "  ";
         //compute sk
         s_k = s_k + a_k;
         //call glevin to get estimate
         sum_cur = glevin(s_k, a_k, 1.0, m, num_array, den_array);
-        std::cout << sum_cur << " ";
+        //std::cout << sum_cur << " ";
 
         err_cur = abs(sum_cur - sum_pre);
         //Do at least 10 iterations before breaking
@@ -287,7 +287,7 @@ complex levin_estimate(Integral_State *state){
         err_pre = err_cur;
         sum_pre = sum_cur;
     }
-    std::cout << sum_pre << std::endl;
+    //std::cout << sum_pre << std::endl;
 
     return sum_pre;
 }
@@ -335,7 +335,7 @@ complex do_semi_infinite_3c_integral(Integral_State *state)
         auto R2S = state->alpha  ;
         double denominator = pow(R2S * R2S + state->beta* state->beta, ordc/2.0);
         I = fac1*fac2*sum/denominator;
-        std::cout << "levin sum " << I << std::endl;
+        //std::cout << "levin sum " << I << std::endl;
 
     }
     else{

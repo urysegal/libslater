@@ -69,7 +69,6 @@ namespace slater {
             Spherical_Coordinates v_vec_spherical{v};
             auto theta = v_vec_spherical.theta;
             auto phi = v_vec_spherical.phi;
-
             return eval_spherical_harmonics(quantumNumbers, theta, phi);
         }
 
@@ -81,9 +80,11 @@ namespace slater {
             complex power1 = pow(s, state->n2 + state->l2 + state->l1 - state->l1_tag);
             complex power2 = pow(1 - s, state->n1 + state->l1 + state->l2 - state->l2_tag);
             complex ylm = calculate_Ylm(s, state);
+
             complex prefactor = power1 * power2 * ylm;
             complex semi_inf = calculate_semi_infinite_integral(s, state);
             result = prefactor * semi_inf;
+            printf("Add %10.10f %10.10f %10.10f\n",state->s,  ylm.real(), semi_inf.real());
             return result;
         }
 
@@ -99,11 +100,11 @@ namespace slater {
             auto f = [&](const double &s) { return calculate_gaussian_point(s, state); };
             state->quad_points.clear();
             complex Q = boost::math::quadrature::gauss<double, 30>::integrate(f, 0, 1);
-            std::cout << "-----" << std::endl;
-            for ( auto p : state->quad_points) {
-                std::cout << p << std::endl;
-            }
-            std::cout << "-----" << std::endl;
+            //std::cout << "-----" << std::endl;
+            //for ( auto p : state->quad_points) {
+              //  std::cout << p << std::endl;
+            //}
+            //std::cout << "-----" << std::endl;
             return Q;
         }
 
