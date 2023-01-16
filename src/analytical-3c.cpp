@@ -255,7 +255,7 @@ namespace slater {
 
         static complex calculate_expression(Sum_State *s) {
             auto coeff = pow(-1.0, s->l2_tag);
-            auto g = calculate_gaunt_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) * pow(-1, s->l2_tag);
+            auto g = calculate_gaunt_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) ;
             return coeff * g ;
         }
 
