@@ -53,7 +53,7 @@ public:
         auto R2S = state->alpha;
         double m_power = pow(R2S * R2S * state->z/2.0 , state->m_semi_inf);
         //Poch2(mu-m)
-        double poch = pochhammer(state->nu - state->mu, state->nu - state->m_semi_inf);
+        double poch = pochhammer(state->nu - state->mu, state->mu - state->m_semi_inf);
         //ordc = lambda+r+mu-nu+1
         //ordbk = max(ordc+r+mu,nu-lambda-r-mu-1) -- WHY?
         //BK(ordbk)
