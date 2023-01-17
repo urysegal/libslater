@@ -242,7 +242,7 @@ complex sum_kth_term(Integral_State *state,int p)
         //Cnp(mu*(mu+1)/2+m)
         auto binomial = bm::binomial_coefficient<double>(state->mu,m);
         //temptaz**m
-        auto m_power = pow((R2S * state->z) / 2.0, m);
+        auto m_power = pow((R2S * R2S * state->z) / 2.0, m);
         //Poch2(mu-m)
         double poch = pochhammer(state->nu - state->mu, state->mu - m);
         //ordbk = max(ordc+r+mu,nu-lambda-r-mu-1)
