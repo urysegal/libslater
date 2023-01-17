@@ -82,9 +82,16 @@ namespace slater {
             complex ylm = calculate_Ylm(s, state);
 
             complex prefactor = power1 * power2 * ylm;
+
+            if ( int(s*1000) == 1 ) {
+                if ( int(ylm.real()*1000) == 282 ) {
+                    printf("Stop Here\n");
+                }
+            }
+
             complex semi_inf = calculate_semi_infinite_integral(s, state);
             result = prefactor * semi_inf;
-            printf("Add %10.10f %10.10f %10.10f\n",state->s,  ylm.real(), semi_inf.real());
+            printf("Add %16.16f %16.16f %16.16f\n",state->s*1000.0,  ylm.real(), semi_inf.real());
             return result;
         }
 

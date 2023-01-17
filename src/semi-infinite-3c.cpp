@@ -277,7 +277,7 @@ complex levin_estimate(Integral_State *state){
 
         err_cur = abs(sum_cur - sum_pre);
         //Do at least 10 iterations before breaking
-        if( m > 10 ) {
+        if( m >= 10 ) {
             //check if a_k is too small, or levin's estimate converged/diverged
             if ( abs(a_k) < 1.e-16 || err_cur < 1e-16 || err_cur > err_pre) {
                 break;
