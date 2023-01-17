@@ -104,7 +104,7 @@ public:
         auto power = pow((state->beta * state->beta * state->z) / 2.0, state->sigma);
         //Poch1(r-s)
         //rewrite first argument of pochhammer using eq 55
-        auto poch = pochhammer(-state->r - state->lambda , state->r - state->sigma);
+        auto poch = pochhammer(-state->r - state->lambda - 0.5, state->r - state->sigma);
 
         //tempab**(s/2D0)
         auto R2S = state->alpha;
