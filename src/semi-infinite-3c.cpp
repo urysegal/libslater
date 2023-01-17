@@ -138,6 +138,7 @@ public:
     /// We calculate the expression as public and  static so we can call it directly
     /// from the test suites.
     static complex calculate_expression(Integral_State *state) {
+#if 0
         // compute line 1 expression here
         //(-2)**r
         double power2 = pow(-2.0, state->r);
@@ -163,6 +164,23 @@ public:
         //     $	     *z**ordc*beta**lambda
         //     $	     /tempab**((ordc)/2D0)
         return numerator / (denominator1*denominator2);
+#else
+    /* (-2)**r*2**mu
+     $	     *z**ordc*beta**lambda
+     $	     /tempab**((ordc)/2D0)
+     */
+        double power_r =  pow(-2.0, state->r);
+        double power2 = pow(2.0, state->mu);
+        double ordc = state->lambda + state->mu - state->nu + 0.5 + 1;
+        double z_power = pow(state->z, ordc);
+        double beta_power = pow(state->beta, state->lambda);
+        double tempab = pow(state->alpha, 2) + pow(state->beta, 2);
+        double denom_power = pow(tempab, ordc/2.0);
+        auto res = ( power_r * power2 * z_power * beta_power ) / denom_power ;
+        return res;
+
+
+#endif
     }
 };
 
