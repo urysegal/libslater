@@ -1,4 +1,4 @@
- struct three_c_tests_t three_c_tests[] = {
+ struct three_c_tests_t three_c_tests[] = { 
 { 
   1,   0,   0, 0.100000000000000E+01, 
   1,   0,   0, 0.100000000000000E+01, 

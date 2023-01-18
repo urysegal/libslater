@@ -56,7 +56,7 @@ protected:
     indexing_t step = 1; /// How much the index is incremented by
     Summation_State<indexing_t, T> *state = nullptr; /// Point to the state of the whole nested summation so far
 
-    double accuracy_threshold = 1E-9; /// If the coefficient is smaller than that, do not calculate inner sum. override in subclass if desired. Set to 0 to avoid that check.
+    double accuracy_threshold = 0; /// If the coefficient is smaller than that, do not calculate inner sum. override in subclass if desired. Set to 0 to avoid that check.
 
     virtual indexing_t & get_index_variable() { return state->_dummy; }
     virtual const char *get_index_variable_name() { return "dummy"; }

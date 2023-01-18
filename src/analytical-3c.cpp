@@ -69,7 +69,6 @@ namespace slater {
             Spherical_Coordinates v_vec_spherical{v};
             auto theta = v_vec_spherical.theta;
             auto phi = v_vec_spherical.phi;
-
             return eval_spherical_harmonics(quantumNumbers, theta, phi);
         }
 
@@ -81,9 +80,23 @@ namespace slater {
             complex power1 = pow(s, state->n2 + state->l2 + state->l1 - state->l1_tag);
             complex power2 = pow(1 - s, state->n1 + state->l1 + state->l2 - state->l2_tag);
             complex ylm = calculate_Ylm(s, state);
+
             complex prefactor = power1 * power2 * ylm;
+
+            int imu = (2.0*state->niu() - state->n_gamma())/2.0;
+            int inu = state->niu();
+
+            if ( int(s*1000) == 1 ) {
+                if ( int(ylm.real()*1000) == 282  and imu == 0 and inu == 6 and state->l1_tag == 0) {
+                    printf("Stop Here\n");
+                }
+            }
+
             complex semi_inf = calculate_semi_infinite_integral(s, state);
             result = prefactor * semi_inf;
+
+            printf("Add %d %d %d %16.16f %16.16f %16.16f\n", state->l1_tag, imu, inu,  state->s*1000.0,
+                   ylm.real(), semi_inf.real());
             return result;
         }
 
@@ -99,11 +112,11 @@ namespace slater {
             auto f = [&](const double &s) { return calculate_gaussian_point(s, state); };
             state->quad_points.clear();
             complex Q = boost::math::quadrature::gauss<double, 30>::integrate(f, 0, 1);
-            std::cout << "-----" << std::endl;
-            for ( auto p : state->quad_points) {
-                std::cout << p << std::endl;
-            }
-            std::cout << "-----" << std::endl;
+            //std::cout << "-----" << std::endl;
+            //for ( auto p : state->quad_points) {
+              //  std::cout << p << std::endl;
+            //}
+            //std::cout << "-----" << std::endl;
             return Q;
         }
 
@@ -254,7 +267,7 @@ namespace slater {
 
         static complex calculate_expression(Sum_State *s) {
             auto coeff = pow(-1.0, s->l2_tag);
-            auto g = calculate_gaunt_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) * pow(-1, s->l2_tag);
+            auto g = calculate_gaunt_fraction(s->l2, s->l2_tag, s->m2, s->m2_tag) ;
             return coeff * g ;
         }
 

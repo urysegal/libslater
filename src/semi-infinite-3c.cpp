@@ -53,7 +53,7 @@ public:
         auto R2S = state->alpha;
         double m_power = pow(R2S * R2S * state->z/2.0 , state->m_semi_inf);
         //Poch2(mu-m)
-        double poch = pochhammer(state->nu - state->mu, state->nu - state->m_semi_inf);
+        double poch = pochhammer(state->nu - state->mu, state->mu - state->m_semi_inf);
         //ordc = lambda+r+mu-nu+1
         //ordbk = max(ordc+r+mu,nu-lambda-r-mu-1) -- WHY?
         //BK(ordbk)
@@ -104,7 +104,7 @@ public:
         auto power = pow((state->beta * state->beta * state->z) / 2.0, state->sigma);
         //Poch1(r-s)
         //rewrite first argument of pochhammer using eq 55
-        auto poch = pochhammer(-state->r - state->lambda , state->r - state->sigma);
+        auto poch = pochhammer(-state->r - state->lambda - 0.5, state->r - state->sigma);
 
         //tempab**(s/2D0)
         auto R2S = state->alpha;
@@ -138,6 +138,7 @@ public:
     /// We calculate the expression as public and  static so we can call it directly
     /// from the test suites.
     static complex calculate_expression(Integral_State *state) {
+#if 0
         // compute line 1 expression here
         //(-2)**r
         double power2 = pow(-2.0, state->r);
@@ -163,6 +164,23 @@ public:
         //     $	     *z**ordc*beta**lambda
         //     $	     /tempab**((ordc)/2D0)
         return numerator / (denominator1*denominator2);
+#else
+    /* (-2)**r*2**mu
+     $	     *z**ordc*beta**lambda
+     $	     /tempab**((ordc)/2D0)
+     */
+        double power_r =  pow(-2.0, state->r);
+        double power2 = pow(2.0, state->mu);
+        double ordc = state->lambda + state->mu - state->nu + 0.5 + 1;
+        double z_power = pow(state->z, ordc);
+        double beta_power = pow(state->beta, state->lambda);
+        double tempab = pow(state->alpha, 2) + pow(state->beta, 2);
+        double denom_power = pow(tempab, ordc/2.0);
+        auto res = ( power_r * power2 * z_power * beta_power ) / denom_power ;
+        return res;
+
+
+#endif
     }
 };
 
@@ -224,7 +242,7 @@ complex sum_kth_term(Integral_State *state,int p)
         //Cnp(mu*(mu+1)/2+m)
         auto binomial = bm::binomial_coefficient<double>(state->mu,m);
         //temptaz**m
-        auto m_power = pow((R2S * state->z) / 2.0, m);
+        auto m_power = pow((R2S * R2S * state->z) / 2.0, m);
         //Poch2(mu-m)
         double poch = pochhammer(state->nu - state->mu, state->mu - m);
         //ordbk = max(ordc+r+mu,nu-lambda-r-mu-1)
@@ -252,6 +270,7 @@ complex sum_kth_term(Integral_State *state,int p)
 complex levin_estimate(Integral_State *state){
     //Initialize variables
     complex s_k = 0;
+    complex sum_pre_pre = 0;
     complex sum_pre = 0;
     complex sum_cur = 0;
     complex a_k;
@@ -268,16 +287,16 @@ complex levin_estimate(Integral_State *state){
     for (int m=0; m<=MAX_SUM; m++){
         //compute ak
         a_k = sum_kth_term(state,m);
-        std::cout << m << a_k << "  ";
+        //std::cout << m << a_k << "  ";
         //compute sk
         s_k = s_k + a_k;
         //call glevin to get estimate
         sum_cur = glevin(s_k, a_k, 1.0, m, num_array, den_array);
-        std::cout << sum_cur << " ";
+        //std::cout << sum_cur << " ";
 
         err_cur = abs(sum_cur - sum_pre);
         //Do at least 10 iterations before breaking
-        if( m > 10 ) {
+        if( m >= 10 ) {
             //check if a_k is too small, or levin's estimate converged/diverged
             if ( abs(a_k) < 1.e-16 || err_cur < 1e-16 || err_cur > err_pre) {
                 break;
@@ -285,9 +304,13 @@ complex levin_estimate(Integral_State *state){
         }
         // update previous terms to current terms
         err_pre = err_cur;
+        sum_pre_pre = sum_pre;
         sum_pre = sum_cur;
     }
-    std::cout << sum_pre << std::endl;
+    //if (err_cur >= err_pre) {
+      //  sum_pre = sum_pre_pre;
+    //}
+    //std::cout << sum_pre << std::endl;
 
     return sum_pre;
 }
@@ -335,7 +358,7 @@ complex do_semi_infinite_3c_integral(Integral_State *state)
         auto R2S = state->alpha  ;
         double denominator = pow(R2S * R2S + state->beta* state->beta, ordc/2.0);
         I = fac1*fac2*sum/denominator;
-        std::cout << "levin sum " << I << std::endl;
+        //std::cout << "levin sum " << I << std::endl;
 
     }
     else{

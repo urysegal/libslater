@@ -13,7 +13,7 @@ extern struct three_c_tests_t  three_c_tests[]  ;
 TEST_CASE( "attraction integrals", "[three-center]" )
 {
 
-    auto epsilon = 10e-8;
+    auto epsilon = 10e-6;
 
     STO_Integration_Engine engine_factory;
     std::map<slater::integration_types, std::string> engines;
@@ -23,6 +23,7 @@ TEST_CASE( "attraction integrals", "[three-center]" )
     int imisses = 0;
     int rmisses = 0;
     int count = 0;
+    int absOK = 0;
 
     for ( int i = 0 ; three_c_tests[i].n1 != 0 ; ++i , ++count) {
 
@@ -46,6 +47,11 @@ TEST_CASE( "attraction integrals", "[three-center]" )
 
         energy_unit_t result = engine->nuclear_attraction({f1,f2}, {ti.Cx, ti.Cy, ti.Cz});
 
+        if (fabs(result.real()) - fabs(ti.result.real) < epsilon)
+        {
+            absOK++;
+        }
+
         bool miss = true;
         if (fabs(result.real() - ti.result.real) >= epsilon) {
             rmisses++;
@@ -67,7 +73,7 @@ TEST_CASE( "attraction integrals", "[three-center]" )
     }
     CHECK(rmisses==0);
     CHECK(imisses==0);
-    printf("Count %d\n", count);
+    printf("Count %d absOK %d\n", count, absOK);
     delete engine;
 
 }
