@@ -270,6 +270,7 @@ complex sum_kth_term(Integral_State *state,int p)
 complex levin_estimate(Integral_State *state){
     //Initialize variables
     complex s_k = 0;
+    complex sum_pre_pre = 0;
     complex sum_pre = 0;
     complex sum_cur = 0;
     complex a_k;
@@ -303,8 +304,12 @@ complex levin_estimate(Integral_State *state){
         }
         // update previous terms to current terms
         err_pre = err_cur;
+        sum_pre_pre = sum_pre;
         sum_pre = sum_cur;
     }
+    //if (err_cur >= err_pre) {
+      //  sum_pre = sum_pre_pre;
+    //}
     //std::cout << sum_pre << std::endl;
 
     return sum_pre;
