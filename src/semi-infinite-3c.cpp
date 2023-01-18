@@ -202,8 +202,6 @@ complex sum_kth_term(Integral_State *state,int p)
     // Poch1dp
     auto pochfrac = 1.0 / pochhammer(state->lambda + 0.5,p+1);
 
-    //denominator factor pulled out of the inner sum
-    //tempab**(s/2D0)
     double denominator = pow(R2S * R2S + state->beta * state->beta, p/2.0); //outside
 
     return power * pochfrac * sum/ denominator;
