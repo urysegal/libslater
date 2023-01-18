@@ -84,10 +84,10 @@ namespace slater {
             complex prefactor = power1 * power2 * ylm;
 
             int imu = (2.0*state->niu() - state->n_gamma())/2.0;
-            int inu = state->niu();
+            state->inu = state->niu();
 
             if ( int(s*1000) == 1 ) {
-                if ( int(ylm.real()*1000) == 282  and imu == 0 and inu == 6 and state->l1_tag == 0) {
+                if ( int(ylm.real()*1000) == 282  and imu == 0 and state->inu == 6 and state->l1_tag == 0) {
                     printf("Stop Here\n");
                 }
             }
@@ -95,7 +95,7 @@ namespace slater {
             complex semi_inf = calculate_semi_infinite_integral(s, state);
             result = prefactor * semi_inf;
 
-            printf("Add %d %d %d %16.16f %16.16f %16.16f\n", state->l1_tag, imu, inu,  state->s*1000.0,
+            printf("Add %d %d %d %16.16f %16.16f %16.16f\n", state->l1_tag, imu, state->inu,  state->s*1000.0,
                    ylm.real(), semi_inf.real());
             return result;
         }

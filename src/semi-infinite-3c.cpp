@@ -171,7 +171,7 @@ public:
      */
         double power_r =  pow(-2.0, state->r);
         double power2 = pow(2.0, state->mu);
-        double ordc = state->lambda + state->mu - state->nu + 0.5 + 1;
+        double ordc = state->lambda + state->r + state->mu - state->inu + 1;
         double z_power = pow(state->z, ordc);
         double beta_power = pow(state->beta, state->lambda);
         double tempab = pow(state->alpha, 2) + pow(state->beta, 2);
@@ -333,6 +333,7 @@ void setup_integral_state(Sum_State *state, Integral_State *i_state) {
     i_state->alpha = state->R2*sqrt(state->b());
     i_state->beta = state->v();
     i_state->z = sqrt(state->a()/state->b());
+    i_state->inu = state->niu();
 }
 
 

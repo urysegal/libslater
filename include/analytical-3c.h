@@ -106,6 +106,8 @@ struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
         return (n_x()-lambda)/2.0 -1;
     }
 
+    int inu ; // integer representation of niu
+
     // for debugging only
     std::set<double> quad_points;
 
@@ -120,9 +122,12 @@ struct Integral_State : public Summation_State<indexer_t, std::complex<double> >
     double beta;
     double z;
 
+    int inu; // integer rep of niu
+
     ///Nested iteration variables for semi-infinite integral, see [1] eqn. 56
     int sigma;
     int m_semi_inf;
+
 
     };
 
