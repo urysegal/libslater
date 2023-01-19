@@ -1,7 +1,7 @@
 #pragma once
 
 #include "libslater.h"
-#define SUMMATION_DEBUG 1
+//#define SUMMATION_DEBUG 1
 
 #ifdef SUMMATION_DEBUG
 #include "nested_summation_debug.h"
@@ -37,6 +37,7 @@ struct Summation_State
 
 #endif
 
+    virtual ~Summation_State() = default;
 };
 
 /// One step in a nested summation. Each step is assumed to have some expression, returned by expression(),
@@ -56,7 +57,7 @@ protected:
     indexing_t step = 1; /// How much the index is incremented by
     Summation_State<indexing_t, T> *state = nullptr; /// Point to the state of the whole nested summation so far
 
-    double accuracy_threshold = 1E-9; /// If the coefficient is smaller than that, do not calculate inner sum. override in subclass if desired. Set to 0 to avoid that check.
+    double accuracy_threshold = 0; /// If the coefficient is smaller than that, do not calculate inner sum. override in subclass if desired. Set to 0 to avoid that check.
 
     virtual indexing_t & get_index_variable() { return state->_dummy; }
     virtual const char *get_index_variable_name() { return "dummy"; }
@@ -140,7 +141,7 @@ public:
 template<typename indexing_t, class T>
 class Last_Nested_Summation {
 public:
-    Last_Nested_Summation(indexing_t from_, indexing_t to_, Summation_State<indexing_t, T> *state_, indexing_t step_)
+    Last_Nested_Summation(indexing_t , indexing_t , Summation_State<indexing_t, T> *, indexing_t )
     { }
 
     T get_value() { return 1;}

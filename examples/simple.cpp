@@ -55,11 +55,11 @@ main()
             STO_Basis_Function_Info f1_info(1, q1);
             STO_Basis_Function_Info f2_info(1, q2);
 
-            STO_Basis_Function f1(f1_info, {0, 0, 0.0});
-            STO_Basis_Function f2(f2_info, {0, 0, 2.5});
+            STO_Basis_Function f1(f1_info, {0, 0, 0});
+            STO_Basis_Function f2(f2_info, {3, 0, 0});
 
 
-            result = engine->nuclear_attraction({f1,f2}, {0, 0, 3});
+            result = engine->nuclear_attraction({f1,f2}, {2.5, 0, 0});
             std::cout << "Nuclear Attraction: " << result << std::endl;
         }
         delete engine;

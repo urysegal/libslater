@@ -17,10 +17,11 @@ typedef int indexer_t; /// For this algorithm, the indices are integers (negativ
 
 //
 struct Sum_State;
+struct Integral_State;
 
 /// Semi-Infinite Integral eqn 31 & 56 in [1] ( see the implementation code file and Readme )
-/// \param state
-/// \return
+/// \param state state of the nested summation
+/// \return value of the semi infinite integral in [1]
 std::complex<double> semi_infinite_3c_integral(Sum_State *state);
 
 /// Glevin function adapted from FORTRAN 77 SUBROUTINE GLEVIN in NONLINEAR SEQUENCE TRANSFORMATIONS ..., Weniger et al.
@@ -90,22 +91,40 @@ struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
     ///Integration variable for semi-infinite integral, see[1] eqn. 28, lines 7-8
     double s;
 
-    ///Nested iteration variables for semi-infinite integral, see [1] eqn. 56
-    int sigma;
-    int m_semi_inf;
 
     /// These are parameters for semi-infinite integral that change every iteration, see [1] eqn. 55
-    double z() const{
-        return sqrt( ( (1-s)*zeta1*zeta1 + s*zeta2*zeta2 )/(s*(1-s)));
+
+    double a() const{
+        return  (1.0-s)*zeta1*zeta1 + s*zeta2*zeta2 ;
+    }
+    double b() const{
+        return s*(1.0-s);
     }
     double r() const{
         return (n_x()-lambda)/2.0 -1;
     }
-
-
+public:
+    ~Sum_State() override = default;
 
 };
 
+struct Integral_State : public Summation_State<indexer_t, std::complex<double> > {
+    double mu;
+    double nu;
+    indexer_t lambda;
+    double r;
+    double alpha;
+    double beta;
+    double z;
+
+    int inu; // integer rep of niu
+
+    ///Nested iteration variables for semi-infinite integral, see [1] eqn. 56
+    int sigma;
+    int m_semi_inf;
+
+
+    };
 
 class Analytical_3C_evaluator : public STO_Integrator {
 
@@ -118,16 +137,16 @@ public:
     Analytical_3C_evaluator(const std::string &name) : STO_Integrator(name) {}
 
     /// Release any memory used by the integrator
-    virtual ~Analytical_3C_evaluator() = default;
+    ~Analytical_3C_evaluator() override = default;
 
-    virtual STO_Integrator *clone() const override;
+    STO_Integrator *clone() const override;
 
 
     /// Initialize the Homeier integrator with a set of options
     /// \param params set of options for the integrator
-    virtual void init(const STO_Integration_Options &params) override;
+    void init(const STO_Integration_Options &params) override;
 
-    virtual energy_unit_t integrate(
+    energy_unit_t integrate(
             const std::vector<STO_Basis_Function> &functions,
             const std::vector<center_t> &centers
     ) override;
@@ -143,8 +162,8 @@ private:
 
     Quantum_Numbers q1;
     Quantum_Numbers q2;
-    sto_exponent_t zeta1;
-    sto_exponent_t zeta2;
+    sto_exponent_t zeta1 = 0;
+    sto_exponent_t zeta2 = 0;
     center_t A = {};
     center_t B = {};
     center_t C = {};
