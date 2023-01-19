@@ -2,8 +2,6 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/special_functions/factorials.hpp>
 #include <boost/math/quadrature/gauss.hpp>
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/geometries.hpp>
 #include <boost/math/special_functions.hpp>
 #include "libslater.h"
 #include "nested_summation.h"
@@ -83,40 +81,22 @@ namespace slater {
 
             complex prefactor = power1 * power2 * ylm;
 
-            int imu = (2.0*state->niu() - state->n_gamma())/2.0;
-            int inu = state->niu();
-
-            if ( int(s*1000) == 1 ) {
-                if ( int(ylm.real()*1000) == 282  and imu == 0 and inu == 6 and state->l1_tag == 0) {
-                    printf("Stop Here\n");
-                }
-            }
-
             complex semi_inf = calculate_semi_infinite_integral(s, state);
             result = prefactor * semi_inf;
 
-            printf("Add %d %d %d %16.16f %16.16f %16.16f\n", state->l1_tag, imu, inu,  state->s*1000.0,
-                   ylm.real(), semi_inf.real());
             return result;
         }
 
         // eqn. 31 in [1]
         static complex calculate_semi_infinite_integral(const double &s, Sum_State *state) {
             state->s = s; //update value of s in State
-            state->quad_points.emplace(s);
             complex integral = semi_infinite_3c_integral(state);
             return integral;
         }
 
         static complex calculate_integral(Sum_State *state) {
-            auto f = [&](const double &s) { return calculate_gaussian_point(s, state); };
-            state->quad_points.clear();
+            auto f = [state](const double &s) { return calculate_gaussian_point(s, state); };
             complex Q = boost::math::quadrature::gauss<double, 30>::integrate(f, 0, 1);
-            //std::cout << "-----" << std::endl;
-            //for ( auto p : state->quad_points) {
-              //  std::cout << p << std::endl;
-            //}
-            //std::cout << "-----" << std::endl;
             return Q;
         }
 
@@ -188,7 +168,7 @@ namespace slater {
     class Sum_6 : public Nested_Summation<indexer_t, complex, Sum_7> {
 
     protected:
-        virtual complex expression() override {
+        complex expression() override {
             auto s = STATE;
             return calculate_expression(s);
         }
@@ -246,7 +226,7 @@ namespace slater {
     class Sum_5 : public Nested_Summation<indexer_t, complex, Sum_6> {
 
     protected:
-        virtual complex expression() override {
+        complex expression() override {
             auto s = STATE;
             return calculate_expression(s);
         }
@@ -274,7 +254,7 @@ namespace slater {
         static complex calculate_gaunt_fraction(indexer_t l, indexer_t l_tag, indexer_t m, indexer_t m_tag) {
             /// Ref [1] eqn. 28 second line
             complex factor = pow(complex(0, 1), l + l_tag);
-            //printf("gaunt(%d, %d, %d, %d, %d, %d)\n",l,l_tag,l-l_tag,m,m_tag,m-m_tag);
+
             complex enumerator = Gaunt_Coefficient_Engine::get()->calculate({l, m, l_tag, m_tag, l - l_tag, m - m_tag});
 
             complex denominator = bm::double_factorial<double>(2 * l_tag + 1) *
@@ -360,7 +340,7 @@ namespace slater {
         }
 
     public:
-        Sum_1(Summation_State<indexer_t, complex> *s) : Nested_Summation(1, 1, s) {}
+        explicit Sum_1(Summation_State<indexer_t, complex> *s) : Nested_Summation(1, 1, s) {}
 
         /// We calculate the expression as public and  static so we can call it directly
         /// from the test suites.
@@ -446,7 +426,4 @@ complex Analytical_3C_evaluator::integrate_using_b_functions(const B_function_de
     STO_Integrator *Analytical_3C_evaluator::clone() const {
         return new Analytical_3C_evaluator();
     }
-
-
-
 }

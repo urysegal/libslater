@@ -13,7 +13,7 @@ extern struct three_c_tests_t  three_c_tests[]  ;
 TEST_CASE( "attraction integrals", "[three-center]" )
 {
 
-    auto epsilon = 10e-6;
+    auto epsilon = 10e-7;
 
     STO_Integration_Engine engine_factory;
     std::map<slater::integration_types, std::string> engines;

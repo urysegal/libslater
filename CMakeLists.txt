@@ -10,19 +10,15 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-#option(COVERAGE "Coverage" ON)
-set(COMPILE_FLAGS -Wall -Werror -fno-omit-frame-pointer -pthread)
+option(COVERAGE "Coverage" ON)
+#set(COMPILE_FLAGS -Wall -Werror -fno-omit-frame-pointer -pthread)
 
-#set(COMPILE_FLAGS -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread)
-#set(LINK_FLAGS -fsanitize=address)
+set(COMPILE_FLAGS -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread)
+set(LINK_FLAGS -fsanitize=address)
 
 
 find_package(Boost 1.71 REQUIRED )
 
-
-#SET(GCC_WERR_COMPILE_FLAGS "-Wall -Werror")
-#SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} ${GCC_WERR_COMPILE_FLAGS} -fsanitize=address")
-#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
 
 find_package(PkgConfig)
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)

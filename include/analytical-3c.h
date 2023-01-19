@@ -93,9 +93,7 @@ struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
 
 
     /// These are parameters for semi-infinite integral that change every iteration, see [1] eqn. 55
-    //double z() const{
-    //    return sqrt( ( (1-s)*zeta1*zeta1 + s*zeta2*zeta2 )/(s*(1-s)));
-    //}
+
     double a() const{
         return  (1.0-s)*zeta1*zeta1 + s*zeta2*zeta2 ;
     }
@@ -105,12 +103,11 @@ struct Sum_State : public Summation_State<indexer_t, std::complex<double> > {
     double r() const{
         return (n_x()-lambda)/2.0 -1;
     }
-
-    // for debugging only
-    std::set<double> quad_points;
-
+public:
+    ~Sum_State() override = default;
 
 };
+
 struct Integral_State : public Summation_State<indexer_t, std::complex<double> > {
     double mu;
     double nu;
@@ -120,9 +117,12 @@ struct Integral_State : public Summation_State<indexer_t, std::complex<double> >
     double beta;
     double z;
 
+    int inu; // integer rep of niu
+
     ///Nested iteration variables for semi-infinite integral, see [1] eqn. 56
     int sigma;
     int m_semi_inf;
+
 
     };
 
@@ -137,16 +137,16 @@ public:
     Analytical_3C_evaluator(const std::string &name) : STO_Integrator(name) {}
 
     /// Release any memory used by the integrator
-    virtual ~Analytical_3C_evaluator() = default;
+    ~Analytical_3C_evaluator() override = default;
 
-    virtual STO_Integrator *clone() const override;
+    STO_Integrator *clone() const override;
 
 
     /// Initialize the Homeier integrator with a set of options
     /// \param params set of options for the integrator
-    virtual void init(const STO_Integration_Options &params) override;
+    void init(const STO_Integration_Options &params) override;
 
-    virtual energy_unit_t integrate(
+    energy_unit_t integrate(
             const std::vector<STO_Basis_Function> &functions,
             const std::vector<center_t> &centers
     ) override;
@@ -162,8 +162,8 @@ private:
 
     Quantum_Numbers q1;
     Quantum_Numbers q2;
-    sto_exponent_t zeta1;
-    sto_exponent_t zeta2;
+    sto_exponent_t zeta1 = 0;
+    sto_exponent_t zeta2 = 0;
     center_t A = {};
     center_t B = {};
     center_t C = {};
