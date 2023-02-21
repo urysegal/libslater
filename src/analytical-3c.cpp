@@ -361,20 +361,20 @@ namespace slater {
     };
 
 
-    complex Analytical_3C_evaluator::integrate(const std::vector<STO_Basis_Function> &functions,
-                                               const std::vector<center_t> &centers)
-   {
-        C = centers[0];
+complex Analytical_3C_evaluator::integrate(const std::vector<STO_Basis_Function> &functions,
+                                           const std::vector<center_t> &centers)
+{
+    C = centers[0];
 
-        B_functions_representation_of_STO f1(functions[0], functions[0].get_center());
-        B_functions_representation_of_STO f2(functions[1], functions[1].get_center());
+    B_functions_representation_of_STO f1(functions[0], functions[0].get_center());
+    B_functions_representation_of_STO f2(functions[1], functions[1].get_center());
 
-        energy_unit_t final_result = do_integrate(f1, f2);
+    energy_unit_t final_result = do_integrate(f1, f2);
 
-        final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient();
+    final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient();
 
-        return final_result;
-    }
+    return final_result;
+}
 
 complex Analytical_3C_evaluator::integrate_using_b_functions(const B_function_details &f1, const B_function_details &f2)
 {
@@ -417,13 +417,14 @@ complex Analytical_3C_evaluator::integrate_using_b_functions(const B_function_de
     }
 
 
-    Analytical_3C_evaluator::Analytical_3C_evaluator() : STO_Integrator(3, 1, 1) {}
+Analytical_3C_evaluator::Analytical_3C_evaluator() : STO_Integrator(3, 1, 1) {}
 
-    void Analytical_3C_evaluator::init(const slater::STO_Integration_Options &params) {
-        params.get(Number_of_quadrature_points_Parameter_Name, number_of_quadrature_points);
-    }
+void Analytical_3C_evaluator::init(const slater::STO_Integration_Options &params) {
+    params.get(Number_of_quadrature_points_Parameter_Name, number_of_quadrature_points);
+}
 
-    STO_Integrator *Analytical_3C_evaluator::clone() const {
-        return new Analytical_3C_evaluator();
-    }
+STO_Integrator *Analytical_3C_evaluator::clone() const {
+    return new Analytical_3C_evaluator();
+}
+
 }

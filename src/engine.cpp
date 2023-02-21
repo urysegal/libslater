@@ -1,6 +1,7 @@
 #include "libslater.h"
 #include "homeier.h"
 #include "analytical-3c.h"
+#include "safouhi-4c.h"
 #include "logger.h"
 
 namespace slater {
@@ -11,7 +12,8 @@ const std::map<integration_types, std::string > default_engines =
         {
                 {integration_types::OVERLAP, overlap_homeier_imp_name},
                 {integration_types::KINETIC, kinetic_homeier_imp_name},
-                {integration_types::NUCLEAR_ATTRACTION, analytical_3c_name }
+                {integration_types::NUCLEAR_ATTRACTION, analytical_3c_name },
+                {integration_types::ELECTRON_REPULSION, safouhi_4c_name }
         };
 
 STO_Integrator *STO_Integrator::create(const std::string &name)

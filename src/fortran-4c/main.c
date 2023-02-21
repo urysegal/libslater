@@ -51,7 +51,7 @@ static doublereal c_b104 = -2.;
 /* CC   - S\overline{D} approach                                       CCC */
 /* CC                                                                  CCC */
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
-/* Main program */ int fortran_fourc(    integer np1, integer l1, integer m1, doublereal zeta1,
+int fortran_fourc(    integer np1, integer l1, integer m1, doublereal zeta1,
                                   integer np2, integer l2, integer m2, doublereal zeta2,
                                   integer np3, integer l3, integer m3, doublereal zeta3,
                                   integer np4, integer l4, integer m4, doublereal zeta4,
@@ -60,7 +60,6 @@ static doublereal c_b104 = -2.;
                                   doublereal xc, doublereal yc, doublereal zc,
                                   doublereal xd, doublereal yd, doublereal zd,
                                   doublereal *sdbar_res, doublereal *wgrep_res /* out vars */
-
 )
 {
     /* Initialized data */

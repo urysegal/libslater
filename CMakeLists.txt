@@ -72,7 +72,7 @@ add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp s
         src/fortran-4c/vharmonique.c
         src/fortran-4c/zero_bsj.c
 
-        )
+        include/safouhi-4c.h src/safouhi-4c.cpp)
 
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})
