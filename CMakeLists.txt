@@ -98,6 +98,14 @@ target_compile_options(test3c PUBLIC ${COMPILE_FLAGS})
 target_link_options(test3c PUBLIC ${LINK_FLAGS})
 target_link_libraries(test3c libslater)
 
+add_executable(test4c examples/test4c.cpp)
+add_dependencies(test4c libslater)
+target_include_directories(test4c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(test4c PUBLIC ${COMPILE_FLAGS})
+target_link_options(test4c PUBLIC ${LINK_FLAGS})
+target_link_libraries(test4c libslater)
+
+
 
 if(COVERAGE)
     message(STATUS "Enabling coverage")
