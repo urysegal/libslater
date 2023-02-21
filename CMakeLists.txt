@@ -29,7 +29,50 @@ add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp s
         include/homeier.h src/homeier.cpp src/parameters.cpp include/bfunctions.h src/bfunctions.cpp include/gaunt.h
         src/gaunt.cpp include/nested_summation.h src/nested_summation.cpp src/analytical-3c.cpp include/coordinates.h
         include/integrators.h include/analytical-3c.h precalculate/gaunt-table.h precalculate/gaunt-table.cpp
-        include/slater-utils.h src/utils.cpp src/semi-infinite-3c.cpp include/nested_summation_debug.h)
+        include/slater-utils.h src/utils.cpp src/semi-infinite-3c.cpp include/nested_summation_debug.h
+
+        src/fortran-4c/bessel_reduite.c
+        src/fortran-4c/binom.c
+        src/fortran-4c/calf42.c
+        src/fortran-4c/cartco.c
+        src/fortran-4c/cnp.c
+        src/fortran-4c/coeffbons.c
+        src/fortran-4c/constlmp.c
+        src/fortran-4c/Dbsj.c
+        src/fortran-4c/dfactorial.c
+        src/fortran-4c/DFj42.c
+        src/fortran-4c/DG.c
+        src/fortran-4c/dobin.c
+        src/fortran-4c/Dtk.c
+        src/fortran-4c/DX.c
+        src/fortran-4c/fa42.c
+        src/fortran-4c/factorial.c
+        src/fortran-4c/Fj42.c
+        src/fortran-4c/FSCj.c
+        src/fortran-4c/gaunt1.c
+        src/fortran-4c/gaunt.c
+        src/fortran-4c/GaussLag.c
+        src/fortran-4c/GaussLeg.c
+        src/fortran-4c/g.c
+        src/fortran-4c/GREP-WD42.c
+        src/fortran-4c/harmonique.c
+        src/fortran-4c/hatk.c
+        src/fortran-4c/HFa42.c
+        src/fortran-4c/HFj42.c
+        src/fortran-4c/legendre.c
+        src/fortran-4c/LU.c
+        src/fortran-4c/main.c
+        src/fortran-4c/miscfunc.c
+        src/fortran-4c/msphj.c
+        src/fortran-4c/power_x.c
+        src/fortran-4c/racdi.c
+        src/fortran-4c/sdbar42_lrzv.c
+        src/fortran-4c/sinf42.c
+        src/fortran-4c/vcoord.c
+        src/fortran-4c/vharmonique.c
+        src/fortran-4c/zero_bsj.c
+
+        )
 
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})
@@ -38,6 +81,7 @@ find_package(spdlog REQUIRED)
 target_link_libraries(libslater PUBLIC spdlog::spdlog)
 target_link_libraries (libslater PUBLIC Eigen3::Eigen)
 target_link_libraries (libslater PUBLIC ${Boost_LIBRARIES})
+target_link_libraries (libslater PUBLIC f2c m)
 
 
 add_executable(simple examples/simple.cpp)
