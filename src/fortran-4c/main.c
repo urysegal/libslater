@@ -272,7 +272,7 @@ i */
     gaussleg_(&c__48, xbar3, xh3);
     gausslag_(&c__96, rlag, wlag);
     zero_bsj__(&c__30, &c__10000, xrac);
-    e_rsle();
+
     i__1 = 1;
 
     for (iii = 1; iii <= i__1; ++iii) {

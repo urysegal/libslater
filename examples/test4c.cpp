@@ -52,17 +52,15 @@ main(int argc, const char *argv[])
     energy_unit_t result = engine->electron_repulsion({f1,f2, f3, f4});
 
 
-    double rmiss = fabs(result.real() - ti.result.real) ;
-    double imiss = fabs(result.imag() - ti.result.imag) ;
-    bool miss = rmiss >= epsilon or imiss >= epsilon;
+    double miss = fabs(result.real() - ti.dbar_res) ;
 
-    if ( miss ) {
-        printf("Fortran: %10.15f + %10.15f i   C++:  %10.15f + %10.15f i\trmiss: %10.15f imiss %10.15f\n",
-               ti.result.real, ti.result.imag,
-               result.real(), result.imag(),
-               rmiss, imiss);
+    if ( miss >= epsilon ) {
+        printf("Fortran: %10.15f    C++:  %10.15f \tmiss: %10.15f \n",
+               ti.dbar_res,
+               result.real(),
+               miss);
     } else {
-        printf("Got it (up to epsilon %f) : %10.15f + %10.15f i \n", epsilon, ti.result.real, ti.result.imag);
+        printf("Got it (up to epsilon %f) : %10.15f  \n", epsilon, ti.dbar_res);
     }
 
     delete engine;

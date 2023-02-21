@@ -23,12 +23,65 @@ static Safouhi_4C_evaluator dummy_3c(safouhi_4c_name);
 
 Safouhi_4C_evaluator::Safouhi_4C_evaluator() : STO_Integrator(4, 2, 0) {}
 
+energy_unit_t
+Safouhi_4C_evaluator::integrate(const std::vector<STO_Basis_Function> &functions, const std::vector<center_t> &centers)
+{
+    doublereal sdbar_res = 0;
+    doublereal wgrep_res = 0;
+
+    fortran_fourc(
+        functions[0].get_quantum_numbers().n,
+        functions[0].get_quantum_numbers().l,
+        functions[0].get_quantum_numbers().m,
+        functions[0].get_exponent(),
+
+        functions[1].get_quantum_numbers().n,
+        functions[1].get_quantum_numbers().l,
+        functions[1].get_quantum_numbers().m,
+        functions[1].get_exponent(),
+
+        functions[2].get_quantum_numbers().n,
+        functions[2].get_quantum_numbers().l,
+        functions[2].get_quantum_numbers().m,
+        functions[2].get_exponent(),
+
+        functions[3].get_quantum_numbers().n,
+        functions[3].get_quantum_numbers().l,
+        functions[3].get_quantum_numbers().m,
+        functions[3].get_exponent(),
+
+
+        functions[0].get_center()[0],
+        functions[0].get_center()[1],
+        functions[0].get_center()[2],
+
+        functions[1].get_center()[0],
+        functions[1].get_center()[1],
+        functions[1].get_center()[2],
+
+        functions[2].get_center()[0],
+        functions[2].get_center()[1],
+        functions[2].get_center()[2],
+
+        functions[3].get_center()[0],
+        functions[3].get_center()[1],
+        functions[3].get_center()[2],
+
+        &sdbar_res, &wgrep_res /* out vars */
+    );
+    if ( this->use_sdbar ) {
+        return sdbar_res;
+    }
+    return wgrep_res;
+}
+
+
 void Safouhi_4C_evaluator::init(const slater::STO_Integration_Options &params)
 {
     std::string alg_name;
     params.get(Quadrature_4C_algorithm_Parameter_Name, alg_name);
 
-    if ( alg_name == "GREPW") {
+    if ( alg_name == "WGREP") {
         this->use_sdbar = false;
     }
 

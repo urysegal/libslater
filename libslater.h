@@ -210,7 +210,7 @@ public:
     /// \param functions The functions whose repulsion is to be calculated
     /// \return Two possible values for the integrals - first with SDBar method and the second with WGREP. See the
     /// reference paper [3] for details
-    energy_unit_t electron_repulsion(const std::array<STO_Basis_Function, 2> &functions);
+    energy_unit_t electron_repulsion(const std::array<STO_Basis_Function, 4> &functions);
 private:
 
     std::map<integration_types, STO_Integrator * > integrators;
