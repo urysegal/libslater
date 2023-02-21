@@ -25,6 +25,13 @@ Safouhi_4C_evaluator::Safouhi_4C_evaluator() : STO_Integrator(4, 2, 0) {}
 
 void Safouhi_4C_evaluator::init(const slater::STO_Integration_Options &params)
 {
+    std::string alg_name;
+    params.get(Quadrature_4C_algorithm_Parameter_Name, alg_name);
+
+    if ( alg_name == "GREPW") {
+        this->use_sdbar = false;
+    }
+
 }
 
 STO_Integrator *Safouhi_4C_evaluator::clone() const {

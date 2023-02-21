@@ -158,7 +158,7 @@ energy_unit_t STO_Integrations::nuclear_attraction(const std::array<STO_Basis_Fu
     return two_functions_integral(functions, nuclei,integration_types::NUCLEAR_ATTRACTION);
 }
 
-std::pair<energy_unit_t , energy_unit_t> STO_Integrations::electron_repulsion(const std::array<STO_Basis_Function, 2> &functions)
+energy_unit_t STO_Integrations::electron_repulsion(const std::array<STO_Basis_Function, 2> &functions)
 {
     for ( auto i = 0U ; i < 4 ; ++i ) {
         functions[i].get_quantum_numbers().validate();
@@ -167,7 +167,7 @@ std::pair<energy_unit_t , energy_unit_t> STO_Integrations::electron_repulsion(co
 
     auto it = this->integrators.find(integration_types::ELECTRON_REPULSION);
     if ( it != this->integrators.end() ) {
-        auto res = it->second->integrate({functions[0], functions[1], functions[3], functions[4]}, {});
+        return it->second->integrate({functions[0], functions[1], functions[3], functions[4]}, {});
     } else {
         throw std::runtime_error("Cannot find integral implementation"); // LCOV_EXCL_LINE
     }

@@ -13,7 +13,8 @@ namespace slater {
 static constexpr const char *Use_Normalized_B_Functions_Parameter_Name = "use_normalized_b_functions" ;
 /// Parameter to specify number of quadrature points
 static constexpr const char *Number_of_quadrature_points_Parameter_Name = "number_of_quadrature_points" ;
-
+/// Parameter to specify the with Algorithm we use for Safouhi 4C quadratures
+static constexpr const char *Quadrature_4C_algorithm_Parameter_Name = "four_C_quadrature_algo" ;
 
 /// Initialize the library
 void libslater_global_init();
@@ -209,7 +210,7 @@ public:
     /// \param functions The functions whose repulsion is to be calculated
     /// \return Two possible values for the integrals - first with SDBar method and the second with WGREP. See the
     /// reference paper [3] for details
-    std::pair<energy_unit_t , energy_unit_t> electron_repulsion(const std::array<STO_Basis_Function, 2> &functions);
+    energy_unit_t electron_repulsion(const std::array<STO_Basis_Function, 2> &functions);
 private:
 
     std::map<integration_types, STO_Integrator * > integrators;

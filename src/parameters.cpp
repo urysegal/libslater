@@ -68,6 +68,8 @@ template bool STO_Integration_Options::get<int>(const std::string &name, int &va
 template void STO_Integration_Options::set<int>(const std::string &name, const int &value) ;
 template bool STO_Integration_Options::get<double>(const std::string &name, double &value) const;
 template void STO_Integration_Options::set<double>(const std::string &name, const double &value) ;
+template bool STO_Integration_Options::get<std::string>(const std::string &name, std::string &value) const;
+template void STO_Integration_Options::set<std::string>(const std::string &name, const std::string &value) ;
 
 
 }
