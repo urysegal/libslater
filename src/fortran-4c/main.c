@@ -29,6 +29,38 @@ static doublereal c_b91 = 2.;
 static doublereal c_b101 = -1.;
 static doublereal c_b104 = -2.;
 
+static doublereal cnp[20302];
+static doublereal fact[101],  rlag[256], xrac[3000000];
+static doublereal dfact[101], xbar[64];
+static doublereal xh2[64], xh3[64], wlag[256];
+static doublereal  xh[64], xbar2[64], xbar3[64];
+
+void
+initarrays()
+{
+    static int done = 0;
+    extern /* Subroutine */ int combinatorial_(integer *, doublereal *);
+    extern /* Subroutine */ int factorial_(integer *, doublereal *);
+    extern /* Subroutine */ int dfactorial_(integer *, doublereal *);
+    extern /* Subroutine */ int gaussleg_(integer *, doublereal *, doublereal
+    *), zero_bsj__(integer *, integer *, doublereal *);
+    extern /* Subroutine */ int  gausslag_(integer *, doublereal *, doublereal *);
+
+
+    if ( !done ) {
+        combinatorial_(&c__200, cnp);
+        factorial_(&c__100, fact);
+        dfactorial_(&c__100, dfact);
+        gaussleg_(&c__48, xbar, xh);
+        gaussleg_(&c__20, xbar2, xh2);
+        gaussleg_(&c__48, xbar3, xh3);
+        gausslag_(&c__96, rlag, wlag);
+        zero_bsj__(&c__30, &c__10000, xrac);
+        done = 1;
+    }
+}
+
+
 /*     Last change:  H     2 Mar 2009    2:35 pm */
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
 /* CC    Programmer: Hassan Safouhi                                    CCC */
@@ -102,7 +134,7 @@ int fortran_fourc(    integer np1, integer l1, integer m1, doublereal zeta1,
 	    *), zero_bsj__(integer *, integer *, doublereal *), constlmp_(
 	    integer *, integer *, doublereal *, doublereal *, doublereal *);
     static integer k, l, m;
-    static doublereal s, t, v[4096];
+    doublereal s, t, v[4096];
     extern /* Subroutine */ int factorial_(integer *, doublereal *), 
 	    coeffbons_(integer *, integer *, integer *, integer *, doublereal 
 	    *, doublereal *, doublereal *);
@@ -111,12 +143,11 @@ int fortran_fourc(    integer np1, integer l1, integer m1, doublereal zeta1,
     static integer j12, jc, l12, m12;
     static doublereal dk;
     static integer j34, l34, m34, ni;
-    static doublereal  xh[64];
     static integer mp, lambda_min__, lambda_max__, mu, lp, nx, ns, nt;
     extern /* Subroutine */ int dfactorial_(integer *, doublereal *);
-    static doublereal ap1[22], ap2[22], ap3[22], ap4[22];
+    doublereal ap1[22], ap2[22], ap3[22], ap4[22];
     static integer lp1, mp1;
-    static doublereal xh2[64], xh3[64];
+
     extern /* Subroutine */ int harmonique_(doublereal *, integer *,
 	    doublereal *);
     static integer lp2, mp2, lp3;
@@ -124,7 +155,6 @@ int fortran_fourc(    integer np1, integer l1, integer m1, doublereal zeta1,
     static integer mp3, lp4, mp4;
     static doublereal rac[100001];
     static integer ng12, iii, ng34;
-    static doublereal cnp[20302];
     static integer nu12, nsd, nwd, nu34;
     static doublereal tsd, twd;
     static integer nst;
@@ -136,19 +166,18 @@ int fortran_fourc(    integer np1, integer l1, integer m1, doublereal zeta1,
 	    doublereal *, integer *, integer *, doublereal *, doublereal *, 
 	    integer *, doublereal *, doublereal *, doublereal *, doublereal *,
 	     integer *, doublereal *);
-    static doublereal fact[101], rlag[256], wlag[256], xbar[64], xrac[3000000]
-	    , cste;
+    static doublereal cste;
     static integer lmin;
     static doublereal cosi;
     static integer lmax;
-    static doublereal sine, phiv[4096], ttsd;
+    doublereal sine, phiv[4096], ttsd;
     extern /* Subroutine */ int vharmonique2_(integer *, integer *, 
 	    doublereal *, doublereal *);
-    static doublereal pmun, ttwd, ylmv[26873857], xbar2[64], xbar3[64], 
-	    tfinishtcode, dfact[101], phiab,
+    static doublereal pmun, ttwd, ylmv[26873857],
+	    tfinishtcode,  phiab,
 	    phiad, phicd, facts, ylmab[6561];
     static integer l12min, l12max;
-    static doublereal ylmcd[6561];
+    doublereal ylmcd[6561];
     static integer l34min, l34max;
     static doublereal valsd;
     extern /* Subroutine */ int gaunt_(integer *, integer *, integer *, 
@@ -157,27 +186,26 @@ int fortran_fourc(    integer np1, integer l1, integer m1, doublereal zeta1,
     static integer lpmin, lpmax;
     static doublereal valwd, const__;
     static integer nylmv;
-    extern /* Subroutine */ int combinatorial_(integer *, doublereal *);
-    static doublereal coulbstf42_isd__, coulbstf42_iwd__, argnt1[41], argnt2[
+    doublereal coulbstf42_isd__, coulbstf42_iwd__, argnt1[41], argnt2[
 	    41], argnt3[41], argnt4[41], argnt5[81], cnorm1;
-    static integer np1min, np2min, np1max, np2max, np3min, np3max, np4min, 
+    integer np1min, np2min, np1max, np2max, np3min, np3max, np4min,
 	    np4max;
-    static doublereal cnorm2, cnorm3, cnorm4, cstmp1, cstmp2, cstmp3, cstmp4;
-    static integer lambda;
-    static doublereal coulbstf42_rsd__, coulbstf42_rwd__, coulbstf42_rss__, 
-	    coulbstf42_iss__, thetab, thetad;
+    doublereal cnorm2, cnorm3, cnorm4, cstmp1, cstmp2, cstmp3, cstmp4;
+    integer lambda;
+    doublereal coulbstf42_rsd__=0, coulbstf42_rwd__=0, coulbstf42_rss__=0,
+	    coulbstf42_iss__=0, thetab, thetad;
     extern /* Subroutine */ int cartco_(doublereal *, doublereal *, 
 	    doublereal *, doublereal *, doublereal *, doublereal *, 
 	    doublereal *, doublereal *, doublereal *);
     static doublereal thetcd;
     static doublereal cste_j__;
     static integer nylmab, nylmcd;
-    static doublereal thetav[4096], cnormp;
+    doublereal thetav[4096], cnormp;
     extern /* Subroutine */ int vcoord3_(doublereal *, doublereal *, 
 	    doublereal *, doublereal *, doublereal *, doublereal *, 
 	    doublereal *, doublereal *, doublereal *, integer *, doublereal *,
 	     doublereal *, doublereal *, doublereal *);
-    static doublereal cstlmp1[442], cstlmp2[442], cstlmp3[442], cstlmp4[442], 
+    doublereal cstlmp1[442], cstlmp2[442], cstlmp3[442], cstlmp4[442],
 	    cste_lb__, cste_ap__, err_isd__, err_iwd__;
     extern /* Subroutine */ int grepwd42_(integer *, integer *, doublereal *, 
 	    integer *, integer *, doublereal *, doublereal *, doublereal *, 
@@ -264,14 +292,7 @@ i */
 /*      data MAX_ITER / 2000/ */
     cpu_time__(&tstartcode);
 /* .....initialization of arrays Cnp, Fact, Dfact, zero_bsj */
-    combinatorial_(&c__200, cnp);
-    factorial_(&c__100, fact);
-    dfactorial_(&c__100, dfact);
-    gaussleg_(&c__48, xbar, xh);
-    gaussleg_(&c__20, xbar2, xh2);
-    gaussleg_(&c__48, xbar3, xh3);
-    gausslag_(&c__96, rlag, wlag);
-    zero_bsj__(&c__30, &c__10000, xrac);
+    initarrays();
 
     i__1 = 1;
 
