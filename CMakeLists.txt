@@ -10,10 +10,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-option(COVERAGE "Coverage" ON)
-#set(COMPILE_FLAGS -Wall -Werror -fno-omit-frame-pointer -pthread)
+#option(COVERAGE "Coverage" ON)
+#set(COMPILE_FLAGS -g -Wall -Werror -fno-omit-frame-pointer -pthread)
 
-set(COMPILE_FLAGS -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread)
+set(COMPILE_FLAGS -g -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread)
 set(LINK_FLAGS -fsanitize=address)
 
 
