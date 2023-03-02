@@ -33,7 +33,6 @@ main()
     if (engine) {
 
         STO_Integration_Options options;
-        options.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(options);
         auto result = engine->overlap({basis_set[0], basis_set[1]});
@@ -43,8 +42,8 @@ main()
 
         std::cout << "Overlap: " << result << std::endl;
 
-        //result = engine->kinetic({basis_set[0], basis_set[1]});
-        //std::cout << "Kinetic: " << result << std::endl;
+        result = engine->kinetic({basis_set[0], basis_set[1]});
+        std::cout << "Kinetic: " << result << std::endl;
 
 
         {

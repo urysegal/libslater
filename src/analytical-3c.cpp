@@ -364,6 +364,9 @@ namespace slater {
 complex Analytical_3C_evaluator::integrate(const std::vector<STO_Basis_Function> &functions,
                                            const std::vector<center_t> &centers)
 {
+    functions[0].get_quantum_numbers().validate();
+    functions[1].get_quantum_numbers().validate();
+
     C = centers[0];
 
     B_functions_representation_of_STO f1(functions[0], functions[0].get_center());
@@ -420,7 +423,6 @@ complex Analytical_3C_evaluator::integrate_using_b_functions(const B_function_de
 Analytical_3C_evaluator::Analytical_3C_evaluator() : STO_Integrator(3, 1, 1) {}
 
 void Analytical_3C_evaluator::init(const slater::STO_Integration_Options &params) {
-    params.get(Number_of_quadrature_points_Parameter_Name, number_of_quadrature_points);
 }
 
 STO_Integrator *Analytical_3C_evaluator::clone() const {

@@ -39,8 +39,6 @@ energy_unit_t Homeier_Integrator::integrate( const std::vector<STO_Basis_Functio
 
 void Homeier_Integrator::init(const STO_Integration_Options &params)
 {
-    params.get(Use_Normalized_B_Functions_Parameter_Name, use_normalized_b_functions);
-    params.get(Number_of_quadrature_points_Parameter_Name, number_of_quadrature_points);
 }
 
 
@@ -56,8 +54,7 @@ void shift_first_center_to_origin(const center_t &c1, center_t c2, center_t *new
     new_centers[0] = {0,0,0};
 }
 
-
-energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2> &functions)
+energy_unit_t Homeier_Integrator::non_normalized_overlap(const std::array<STO_Basis_Function, 2> &functions)
 {
     center_t new_centers[2];
 
@@ -68,6 +65,16 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
 
     energy_unit_t final_result = do_integrate(f1, f2);
 
+    return final_result;
+}
+
+
+energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2> &functions)
+{
+    functions[0].get_quantum_numbers().validate();
+    functions[1].get_quantum_numbers().validate();
+
+    energy_unit_t final_result = non_normalized_overlap(functions);
     final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
 
     return final_result;
@@ -221,7 +228,7 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
 energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2> & functions)
 {
     //S_{n1,l1,m1}^{n2,l2,m2}
-    auto S1 = overlap(functions);
+    auto S1 = non_normalized_overlap(functions);
     auto q1 = functions[0].get_quantum_numbers();
     auto q2 = functions[1].get_quantum_numbers();
 
@@ -238,7 +245,7 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
         STO_Basis_Function_Info info(functions[1].get_exponent(), temp_q);
         STO_Basis_Function temp_function(info,functions[1].get_center());
 
-        S2 = overlap({functions[0],temp_function});
+        S2 = non_normalized_overlap({functions[0],temp_function});
         coeff = functions[1].get_exponent(); //beta
     }
     else if (q2.n-1==0 && q1.n > 0 && q1.n-1 > q1.l ){
@@ -249,7 +256,7 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
         STO_Basis_Function_Info info(functions[0].get_exponent(), temp_q);
         STO_Basis_Function temp_function(info,functions[0].get_center());
 
-        S2 = overlap({temp_function,functions[1]});
+        S2 = non_normalized_overlap({temp_function,functions[1]});
         coeff = functions[0].get_exponent(); //alpha
     }
     else{
@@ -267,7 +274,7 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
         energy_unit_t Q;
         if(engine) {
             STO_Integration_Options options;
-            options.set(Use_Normalized_B_Functions_Parameter_Name, true);
+
             engine->init(options);
 
             Q = engine->nuclear_attraction({functions[0], recentered_function} ,{} );

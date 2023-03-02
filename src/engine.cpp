@@ -127,8 +127,6 @@ energy_unit_t STO_Integrations::two_functions_integral(const std::array<STO_Basi
     assert(functions[0].get_quantum_numbers().l + functions[1].get_quantum_numbers().l
            <= Gaunt_Coefficient_Engine::get_maximal_gaunt_l());
 
-    functions[0].get_quantum_numbers().validate();
-    functions[1].get_quantum_numbers().validate();
 
 
     auto it = this->integrators.find(which_type);

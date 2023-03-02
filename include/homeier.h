@@ -58,14 +58,16 @@ private:
 
     integration_types which_type = integration_types::OVERLAP;
 
-    bool use_normalized_b_functions = false; /// Should we calculate with normalized B functions?
-    int number_of_quadrature_points = 30; /// How many quadrature points we should calculate
-
     static B_function_Engine B_function_engine; /// B-functions evaluator
 
     /// Calculate the Overlap integral between the two given STO basis functions
     /// \return the resulting energy quantity
     virtual energy_unit_t overlap(const std::array<STO_Basis_Function, 2> &) ;
+
+    /// Calculate the non-normalized Overlap integral between the two given STO basis functions
+    /// \return the resulting energy quantity
+    virtual energy_unit_t non_normalized_overlap(const std::array<STO_Basis_Function, 2> &) ;
+
 
     /// Calculate the Overlap integral between the two given STO basis functions
     /// \return the resulting energy quantity
