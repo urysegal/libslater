@@ -1,6 +1,7 @@
 #include "libslater.h"
 #include "homeier.h"
 #include "analytical-3c.h"
+#include "safouhi-4c.h"
 #include "logger.h"
 
 namespace slater {
@@ -11,7 +12,8 @@ const std::map<integration_types, std::string > default_engines =
         {
                 {integration_types::OVERLAP, overlap_homeier_imp_name},
                 {integration_types::KINETIC, kinetic_homeier_imp_name},
-                {integration_types::NUCLEAR_ATTRACTION, analytical_3c_name }
+                {integration_types::NUCLEAR_ATTRACTION, analytical_3c_name },
+                {integration_types::ELECTRON_REPULSION, safouhi_4c_name }
         };
 
 STO_Integrator *STO_Integrator::create(const std::string &name)
@@ -154,6 +156,19 @@ energy_unit_t STO_Integrations::nuclear_attraction(const std::array<STO_Basis_Fu
                                                    const center_t &nuclei)
 {
     return two_functions_integral(functions, nuclei,integration_types::NUCLEAR_ATTRACTION);
+}
+
+energy_unit_t STO_Integrations::electron_repulsion(const std::array<STO_Basis_Function, 4> &functions)
+{
+    std::for_each(functions.begin(), functions.end(), [] (const STO_Basis_Function &f) {f.get_quantum_numbers().validate();});
+
+    auto it = this->integrators.find(integration_types::ELECTRON_REPULSION);
+    if ( it != this->integrators.end() ) {
+        return it->second->integrate({functions[0], functions[1], functions[2], functions[3]}, {});
+    } else {
+        throw std::runtime_error("Cannot find integral implementation"); // LCOV_EXCL_LINE
+    }
+
 }
 
 

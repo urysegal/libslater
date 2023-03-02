@@ -13,7 +13,8 @@ namespace slater {
 static constexpr const char *Use_Normalized_B_Functions_Parameter_Name = "use_normalized_b_functions" ;
 /// Parameter to specify number of quadrature points
 static constexpr const char *Number_of_quadrature_points_Parameter_Name = "number_of_quadrature_points" ;
-
+/// Parameter to specify the with Algorithm we use for Safouhi 4C quadratures
+static constexpr const char *Quadrature_4C_algorithm_Parameter_Name = "four_C_quadrature_algo" ;
 
 /// Initialize the library
 void libslater_global_init();
@@ -45,7 +46,8 @@ enum class spin_quantum_number_t  { UNDEFINED, UP, DOWN } ;
 enum class integration_types : int {
     OVERLAP,
     KINETIC,
-    NUCLEAR_ATTRACTION
+    NUCLEAR_ATTRACTION,
+    ELECTRON_REPULSION
 };
 
 
@@ -199,11 +201,16 @@ public:
     energy_unit_t kinetic(const std::array<STO_Basis_Function, 2> &functions) ;
 
     /// Calculate the nuclear attraction integral <f|1/R|g> over the given two STO basis functions and the one nuclei
-    /// \param functions The two function whose overlap is to be calculated
+    /// \param functions The two functions
     /// \param nuclei the position of the nuclei
     /// \return The value of the nuclear attraction integral
     energy_unit_t nuclear_attraction(const std::array<STO_Basis_Function, 2> &functions, const center_t &nuclei) ;
 
+    /// Calculate the electron repulsion integral <ij|1/r12|kl> over the given four STO basis functions
+    /// \param functions The functions whose repulsion is to be calculated
+    /// \return Two possible values for the integrals - first with SDBar method and the second with WGREP. See the
+    /// reference paper [3] for details
+    energy_unit_t electron_repulsion(const std::array<STO_Basis_Function, 4> &functions);
 private:
 
     std::map<integration_types, STO_Integrator * > integrators;
