@@ -13,7 +13,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 option(COVERAGE "Coverage" ON)
 #set(COMPILE_FLAGS -Wall -Werror -fno-omit-frame-pointer -pthread)
 
-set(COMPILE_FLAGS -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread)
+set(COMPILE_FLAGS -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread -ggdb)
 set(LINK_FLAGS -fsanitize=address)
 
 
@@ -46,6 +46,13 @@ target_include_directories(simple PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(simple PUBLIC ${COMPILE_FLAGS})
 target_link_options(simple PUBLIC ${LINK_FLAGS})
 target_link_libraries(simple libslater)
+
+add_executable(simple_kinetic examples/simple_kinetic.cpp)
+add_dependencies(simple_kinetic libslater)
+target_include_directories(simple_kinetic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(simple_kinetic PUBLIC ${COMPILE_FLAGS})
+target_link_options(simple_kinetic PUBLIC ${LINK_FLAGS})
+target_link_libraries(simple_kinetic libslater)
 
 add_executable(test3c examples/test3c.cpp)
 add_dependencies(test3c libslater)

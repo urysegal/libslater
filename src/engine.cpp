@@ -72,7 +72,6 @@ complex STO_Integrator::do_integrate( const B_functions_representation_of_STO &f
         result += pr;
 
     result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient();
-
     return result;
 
 }

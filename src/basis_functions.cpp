@@ -11,7 +11,7 @@ namespace slater {
 
 void Quantum_Numbers::validate() const
 {
-    assert(l < n);
+    assert(l <= n);
     assert(l >= 0);
     assert(abs(m) <= l );
 }

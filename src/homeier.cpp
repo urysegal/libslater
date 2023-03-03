@@ -68,8 +68,11 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
 
     energy_unit_t final_result = do_integrate(f1, f2);
 
-    final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
 
+    std::cout << "Normalize?" << use_normalized_b_functions << std::endl;
+    if(use_normalized_b_functions){
+        final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient();
+    }
     return final_result;
 }
 
@@ -222,6 +225,7 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
 {
     //S_{n1,l1,m1}^{n2,l2,m2}
     auto S1 = overlap(functions);
+    std::cout << "First overlap (match with S) = " << S1 << std::endl;
     auto q1 = functions[0].get_quantum_numbers();
     auto q2 = functions[1].get_quantum_numbers();
 
@@ -232,6 +236,7 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
     if(q1.n-1==0 && q2.n > 0 && q2.n-1 > q2.l ){
         //S_{n1,l1,m1}^{n2-1,l2,m2} in eqn 29b
         //create new STO function from second function for overlap with n2 = n2-1
+        std::cout << "n2-1 case" << std::endl;
         Quantum_Numbers temp_q = {q2.n-1,q2.l,q2.m};
         temp_q.validate();
 
@@ -244,6 +249,7 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
     else if (q2.n-1==0 && q1.n > 0 && q1.n-1 > q1.l ){
         //S_{n1-1,l1,m1}^{n2,l2,m2} in eqn 29a
         //create new STO function from first function for overlap with n1 = n1-1
+        std::cout << "n1-1 case" << std::endl;
         Quantum_Numbers temp_q = {q1.n-1,q1.l,q1.m};
         temp_q.validate();
         STO_Basis_Function_Info info(functions[0].get_exponent(), temp_q);
@@ -256,12 +262,9 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
 
         //Check case 31a or 31b
 
-        //recenter to 0 needed?
-        //create new STO function from second function for nuclear interaction with same center as first STO
-        STO_Basis_Function_Info info(functions[1].get_exponent(), {q2.n,q2.l,q2.m});
-        STO_Basis_Function recentered_function(info,functions[0].get_center());
-
         //Gautam & Ury -- Add a call to nuclear attraction integral here
+        std::cout << "nuclear attraction called" << std::endl;
+
         std::map<slater::integration_types, std::string> engines;
         auto engine = STO_Integration_Engine().create(engines);
         energy_unit_t Q;
@@ -269,12 +272,20 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
             STO_Integration_Options options;
             options.set(Use_Normalized_B_Functions_Parameter_Name, true);
             engine->init(options);
-
-            Q = engine->nuclear_attraction({functions[0], recentered_function} ,{} );
+            Quantum_Numbers temp_q = {q1.n-1,q1.l,q1.m};
+            temp_q.validate();
+            STO_Basis_Function_Info info(functions[0].get_exponent(),temp_q);
+            STO_Basis_Function temp_function(info,functions[0].get_center());
+            Q = engine->nuclear_attraction({functions[0], functions[1]} ,
+                                           functions[0].get_center());
+           Q=overlap({temp_function, functions[1]});
+          std::cout << "Overlap 2=" << Q;
         }
         delete engine;
-        S2 = Q; //GAUTAM & URY -- THIS IS WRONG
         coeff = functions[0].get_exponent(); //alpha
+        S2 = Q;
+        std::cout << "Second Result (match with AUXRES) =" << S2 << std::endl;
+
     }
 
 
