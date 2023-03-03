@@ -38,8 +38,6 @@ TEST_CASE( "attraction integrals", "[three-center]" )
         STO_Basis_Function f1(fi1, {ti.Ax, ti.Ay, ti.Az});
         STO_Basis_Function f2(fi2, {ti.Bx, ti.By, ti.Bz});
 
-
-
         STO_Integration_Options parameters;
 
         engine->init(parameters);

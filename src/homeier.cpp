@@ -265,23 +265,14 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
 
         //recenter to 0 needed?
         //create new STO function from second function for nuclear interaction with same center as first STO
-        STO_Basis_Function_Info info(functions[1].get_exponent(), {q2.n,q2.l,q2.m});
-        STO_Basis_Function recentered_function(info,functions[0].get_center());
-
         //Gautam & Ury -- Add a call to nuclear attraction integral here
-        std::map<slater::integration_types, std::string> engines;
-        auto engine = STO_Integration_Engine().create(engines);
-        energy_unit_t Q;
-        if(engine) {
-            STO_Integration_Options options;
-
-            engine->init(options);
-
-            Q = engine->nuclear_attraction({functions[0], recentered_function} ,{} );
-        }
-        delete engine;
-        S2 = Q; //GAUTAM & URY -- THIS IS WRONG
+        Quantum_Numbers temp_q = {q1.n-1, q1.l,q1.m};
+        STO_Basis_Function_Info info(functions[0].get_exponent(),temp_q);
+        STO_Basis_Function temp_function{info, functions[0].get_center()};
+        S2 = non_normalized_overlap({temp_function, functions[1]} );
         coeff = functions[0].get_exponent(); //alpha
+        std::cout << "S1 " << S1 << " S2 " << S2 << " coeff " << coeff << std::endl;
+
     }
 
 
