@@ -67,4 +67,81 @@ TEST_CASE( "overlap integrals", "[homier]" )
 
     }
 
+TEST_CASE( "kinetic energy", "[homier]" )
+{
+
+    auto epsilon = 10e-8;
+
+    STO_Integration_Engine engine_factory;
+    std::map<slater::integration_types, std::string> engines;
+    auto engine = engine_factory.create(engines);
+    CHECK(engine != nullptr);
+    {
+        Quantum_Numbers quantum_numbers1 = {1, 0, 0};
+        Quantum_Numbers quantum_numbers2 = {1, 0, 0};
+
+        STO_Basis_Function_Info fi1(1, quantum_numbers1);
+        STO_Basis_Function_Info fi2(2, quantum_numbers2);
+
+        STO_Basis_Function f1(fi1, {2, 0, 0});
+        STO_Basis_Function f2(fi2, {0, 0, 1});
+
+
+        STO_Integration_Options parameters;
+
+        engine->init(parameters);
+
+        energy_unit_t result = engine->kinetic({f1, f2});
+        CHECK(fabs(result.imag() - 0) < epsilon);
+        CHECK(fabs(result.real() - 3.16086324190255619e-2) < epsilon);
+    }
+
+    {
+
+        Quantum_Numbers quantum_numbers1 = {1,0,0};
+        Quantum_Numbers quantum_numbers2 ={1,0,0};
+
+
+        STO_Basis_Function_Info fi1( 3, quantum_numbers1);
+        STO_Basis_Function_Info fi2(2, quantum_numbers2);
+
+        STO_Basis_Function f1(fi1, {2, 0, 1});
+        STO_Basis_Function f2(fi2, {0, 0, 1});
+
+
+        STO_Integration_Options parameters;
+
+        engine->init(parameters);
+
+        energy_unit_t result = engine->kinetic({f1, f2});
+        CHECK(fabs(result.imag() - 0) < epsilon);
+        CHECK(fabs(result.real() - (-4.07981676840826202e-2)) < epsilon);
+    }
+
+    {
+
+        Quantum_Numbers quantum_numbers1 = {1,0,0};
+        Quantum_Numbers quantum_numbers2 ={1,0,0};
+
+
+        STO_Basis_Function_Info fi1( 1, quantum_numbers1);
+        STO_Basis_Function_Info fi2(1, quantum_numbers2);
+
+        STO_Basis_Function f1(fi1, {2, 0, 1});
+        STO_Basis_Function f2(fi2, {0, 0, 1});
+
+
+        STO_Integration_Options parameters;
+
+        engine->init(parameters);
+
+        energy_unit_t result = engine->kinetic({f1, f2});
+        CHECK(fabs(result.imag() - 0) < epsilon);
+        CHECK(fabs(result.real() - 0.11277940269717723) < epsilon);
+    }
+ 
+    delete engine;
+
+}
+
 #include "homeier-test-data.h"

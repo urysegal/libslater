@@ -4,6 +4,7 @@
 #include "homeier.h"
 #include "bfunctions.h"
 #include "logger.h"
+#include "slater-utils.h"
 
 /// This implements details from two papers:
 /// [1] On the Evaluation of Overlap Integrals with Exponential-Type Basis FunctionsHERBERT H. H. HOMEIER
@@ -56,14 +57,23 @@ void shift_first_center_to_origin(const center_t &c1, center_t c2, center_t *new
 
 energy_unit_t Homeier_Integrator::non_normalized_overlap(const std::array<STO_Basis_Function, 2> &functions)
 {
+    // Compute Unnormalized Bfunctions
+    //    Do the S
     center_t new_centers[2];
-
     shift_first_center_to_origin(functions[0].get_center(), functions[1].get_center(), new_centers);
-
     B_functions_representation_of_STO f1(functions[0] , new_centers[0]);
     B_functions_representation_of_STO f2(functions[1], new_centers[1]);
-
     energy_unit_t final_result = do_integrate(f1, f2);
+    Quantum_Numbers q1 =functions[0].get_quantum_numbers();
+    auto alph1 = functions[0].get_exponent();
+    final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
+
+    //HACKY: Denormalize the normalized overlap according to FORTRAN code
+    Quantum_Numbers q2 =functions[1].get_quantum_numbers();
+    auto alph2 = functions[1].get_exponent();
+    auto bsq1 = pochhammer(0.5,q1.l+1 ) * pochhammer(0.5,2*q1.n+q1.l) / (pow(alph1,3)*bm::factorial<double>(2*q1.n+2*q1.l+1));
+    auto bsq2 = pochhammer(0.5,q2.l+1 ) * pochhammer(0.5,2*q2.n+q2.l) / (pow(alph2,3)*bm::factorial<double>(2*q2.n+2*q2.l+1));
+    final_result *=  std::complex(sqrt(bsq1*bsq2));
 
     return final_result;
 }
@@ -73,8 +83,14 @@ energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2
 {
     functions[0].get_quantum_numbers().validate();
     functions[1].get_quantum_numbers().validate();
+    center_t new_centers[2];
 
-    energy_unit_t final_result = non_normalized_overlap(functions);
+    shift_first_center_to_origin(functions[0].get_center(), functions[1].get_center(), new_centers);
+
+    B_functions_representation_of_STO f1(functions[0] , new_centers[0]);
+    B_functions_representation_of_STO f2(functions[1], new_centers[1]);
+
+    energy_unit_t final_result = do_integrate(f1, f2);
     final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
 
     return final_result;
@@ -227,39 +243,37 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
 
 energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2> & functions)
 {
-    //S_{n1,l1,m1}^{n2,l2,m2}
     auto S1 = non_normalized_overlap(functions);
     auto q1 = functions[0].get_quantum_numbers();
     auto q2 = functions[1].get_quantum_numbers();
 
-    //maybe there's a nicer way to do the following
     energy_unit_t S2;
     sto_exponent_t coeff;
-
-    if(q1.n-1==0 && q2.n > 0 && q2.n-1 > q2.l ){
-        //S_{n1,l1,m1}^{n2-1,l2,m2} in eqn 29b
-        //create new STO function from second function for overlap with n2 = n2-1
-        Quantum_Numbers temp_q = {q2.n-1,q2.l,q2.m};
-        temp_q.validate();
-
-        STO_Basis_Function_Info info(functions[1].get_exponent(), temp_q);
-        STO_Basis_Function temp_function(info,functions[1].get_center());
-
-        S2 = non_normalized_overlap({functions[0],temp_function});
-        coeff = functions[1].get_exponent(); //beta
-    }
-    else if (q2.n-1==0 && q1.n > 0 && q1.n-1 > q1.l ){
-        //S_{n1-1,l1,m1}^{n2,l2,m2} in eqn 29a
-        //create new STO function from first function for overlap with n1 = n1-1
-        Quantum_Numbers temp_q = {q1.n-1,q1.l,q1.m};
-        temp_q.validate();
-        STO_Basis_Function_Info info(functions[0].get_exponent(), temp_q);
-        STO_Basis_Function temp_function(info,functions[0].get_center());
-
-        S2 = non_normalized_overlap({temp_function,functions[1]});
-        coeff = functions[0].get_exponent(); //alpha
-    }
-    else{
+//
+//    if(q1.n-1==0 && q2.n > 0 && q2.n-1 > q2.l ){
+//        //S_{n1,l1,m1}^{n2-1,l2,m2} in eqn 29b
+//        //create new STO function from second function for overlap with n2 = n2-1
+//        Quantum_Numbers temp_q = {q2.n-1,q2.l,q2.m};
+//        temp_q.validate();
+//
+//        STO_Basis_Function_Info info(functions[1].get_exponent(), temp_q);
+//        STO_Basis_Function temp_function(info,functions[1].get_center());
+//
+//        S2 = non_normalized_overlap({functions[0],temp_function});
+//        coeff = functions[1].get_exponent(); //beta
+//    }
+//    else if (q2.n-1==0 && q1.n > 0 && q1.n-1 > q1.l ){
+//        //S_{n1-1,l1,m1}^{n2,l2,m2} in eqn 29a
+//        //create new STO function from first function for overlap with n1 = n1-1
+//        Quantum_Numbers temp_q = {q1.n-1,q1.l,q1.m};
+//        temp_q.validate();
+//        STO_Basis_Function_Info info(functions[0].get_exponent(), temp_q);
+//        STO_Basis_Function temp_function(info,functions[0].get_center());
+//
+//        S2 = non_normalized_overlap({temp_function,functions[1]});
+//        coeff = functions[0].get_exponent(); //alpha
+//    }
+//    else{
 
         //Check case 31a or 31b
 
@@ -273,10 +287,16 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
         coeff = functions[0].get_exponent(); //alpha
         std::cout << "S1 " << S1 << " S2 " << S2 << " coeff " << coeff << std::endl;
 
-    }
-
+//    }
 
     auto T = -(1.0/2.0)*coeff*coeff*(S1-S2);
+
+    //Normalize the kinetic energy according to FORTRAN code
+    auto alph1 = functions[0].get_exponent();
+    auto alph2 = functions[1].get_exponent();
+    auto bsq1 = pochhammer(0.5,q1.l+1 ) * pochhammer(0.5,2*q1.n+q1.l) / (pow(alph1,3)*bm::factorial<double>(2*q1.n+2*q1.l+1));
+    auto bsq2 = pochhammer(0.5,q2.l+1 ) * pochhammer(0.5,2*q2.n+q2.l) / (pow(alph2,3)*bm::factorial<double>(2*q2.n+2*q2.l+1));
+    T *= 1.0 / std::complex(sqrt(bsq1*bsq2));
     return T;
 }
 
