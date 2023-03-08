@@ -38,8 +38,8 @@
 /* CC      - b34    : b34 = t*(1-t)                                    CCC */
 /* CC                                                                  CCC */
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
-doublereal calf4_(integer *nx, integer *lambda, doublereal *x, doublereal *
-	cnp, integer *nu12, integer *ng12, doublereal *ab, doublereal *a12, 
+doublereal calf4_(integer *nx, integer *lambda, doublereal *x, /* doublereal *
+	cnp , */ integer *nu12, integer *ng12, doublereal *ab, doublereal *a12,
 	doublereal *b12, integer *nu34, integer *ng34, doublereal *cd, 
 	doublereal *a34, doublereal *b34)
 {
@@ -58,7 +58,7 @@ doublereal calf4_(integer *nx, integer *lambda, doublereal *x, doublereal *
 	    doublereal *);
     extern doublereal hatk_(integer *, doublereal *);
     static doublereal xpnx;
-    extern doublereal sinf4_(integer *, integer *, doublereal *, doublereal *,
+    extern doublereal sinf4_(integer *, integer *, doublereal *, //doublereal *,
 	     doublereal *, doublereal *, integer *, integer *, doublereal *, 
 	    doublereal *, doublereal *, integer *, integer *, doublereal *, 
 	    doublereal *, doublereal *);
@@ -146,7 +146,7 @@ i */
 	i__1 = *nu34 + *lambda;
 	d__1 = z34 * *cd;
 	bessel_red__(&i__1, &d__1, besk34);
-	ret_val = sinf4_(nx, lambda, x, cnp, besk12, besk34, nu12, ng12, ab, &
+	ret_val = sinf4_(nx, lambda, x, /*cnp, */ besk12, besk34, nu12, ng12, ab, &
 		z12, b12, nu34, ng34, cd, &z34, b34);
     }
     return ret_val;

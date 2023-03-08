@@ -58,7 +58,7 @@ TEST_CASE( "electron repulsion integrals", "[four-center]" )
             printf("case %d: Fortran: %f    C++:  %f \n", i,
                    ti.dbar_res,  result.real());
         }
-        CHECK(misses==0);
+        REQUIRE(misses==0);
 
     }
 

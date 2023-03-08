@@ -15,7 +15,7 @@
 
 /* Table of constant values */
 
-static integer c__200 = 200;
+//static integer c__200 = 200;
 static integer c__100 = 100;
 static integer c__48 = 48;
 static integer c__20 = 20;
@@ -29,17 +29,20 @@ static doublereal c_b91 = 2.;
 static doublereal c_b101 = -1.;
 static doublereal c_b104 = -2.;
 
-static doublereal cnp[20302];
+//static doublereal cnp[20302];
 static doublereal fact[101],  rlag[256], xrac[3000000];
 static doublereal dfact[101], xbar[64];
 static doublereal xh2[64], xh3[64], wlag[256];
 static doublereal  xh[64], xbar2[64], xbar3[64];
 
+extern double boost_choose(unsigned n, unsigned k);
+
+
 void
 initarrays()
 {
     static int done = 0;
-    extern /* Subroutine */ int combinatorial_(integer *, doublereal *);
+  //  extern /* Subroutine */ int combinatorial_(integer *, doublereal *);
     extern /* Subroutine */ int factorial_(integer *, doublereal *);
     extern /* Subroutine */ int dfactorial_(integer *, doublereal *);
     extern /* Subroutine */ int gaussleg_(integer *, doublereal *, doublereal
@@ -48,7 +51,7 @@ initarrays()
 
 
     if ( !done ) {
-        combinatorial_(&c__200, cnp);
+    //    combinatorial_(&c__200, cnp);
         factorial_(&c__100, fact);
         dfactorial_(&c__100, dfact);
         gaussleg_(&c__48, xbar, xh);
@@ -164,7 +167,7 @@ int fortran_fourc(    integer np1, integer l1, integer m1, doublereal zeta1,
 	    doublereal *, integer *, integer *, doublereal *, doublereal *, 
 	    doublereal *, integer *, integer *, doublereal *, doublereal *, 
 	    doublereal *, integer *, integer *, doublereal *, doublereal *, 
-	    integer *, doublereal *, doublereal *, doublereal *, doublereal *,
+	    integer *, doublereal *, doublereal *, /* doublereal * ,*/  doublereal *,
 	     integer *, doublereal *);
     static doublereal cste;
     static integer lmin;
@@ -478,9 +481,10 @@ i */
 		      for (j12 = 0; j12 <= i__19; ++j12) {
 			  i__20 = delta_l34__;
 			  for (j34 = 0; j34 <= i__20; ++j34) {
-			      cnp1 = cnp[delta_l12__ * (delta_l12__ + 1) / 2 
-				      + j12] * cnp[delta_l34__ * (delta_l34__ 
-				      + 1) / 2 + j34];
+			   //   cnp1 = cnp[delta_l12__ * (delta_l12__ + 1) / 2
+				 //     + j12] * cnp[delta_l34__ * (delta_l34__
+				   //   + 1) / 2 + j34];
+                   cnp1 = boost_choose( delta_l12__ , j12) * boost_choose(delta_l34__, j34) ;
 			      i__21 = j12 + j34;
 			      cste_j__ = pow_di(&c_b104, &i__21) * cnp1 / (
 				      fact[n1 + n2 + l1 + l2 - j12 + 1] * 
@@ -551,8 +555,9 @@ i */
 						  a12, &b12, &nu34, &ng34, &
 						  cd, &a34, &b34, &jc, &c__20,
 						   xbar2, xh2, &c__96, rlag, 
-						  wlag, cnp, &valsd, &nsd, &
-						  tsd);
+						  wlag,
+                          //cnp,
+                          &valsd, &nsd, &tsd);
 					  coulbstf42_rsd__ += facts * valsd * 
 						  cosi;
 					  coulbstf42_isd__ += facts * valsd * 
