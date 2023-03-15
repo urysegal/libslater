@@ -16,7 +16,7 @@
 /* Table of constant values */
 
 //static integer c__200 = 200;
-static integer c__100 = 100;
+//static integer c__100 = 100;
 static integer c__48 = 48;
 static integer c__20 = 20;
 static integer c__96 = 96;
@@ -30,12 +30,18 @@ static doublereal c_b101 = -1.;
 static doublereal c_b104 = -2.;
 
 //static doublereal cnp[20302];
-static doublereal fact[101],  rlag[256], xrac[3000000];
-static doublereal dfact[101], xbar[64];
+static doublereal /*fact[101], */ rlag[256], xrac[3000000];
+static doublereal /* dfact[101], */ xbar[64];
 static doublereal xh2[64], xh3[64], wlag[256];
 static doublereal  xh[64], xbar2[64], xbar3[64];
 
+
+
+
 extern double boost_choose(unsigned n, unsigned k);
+
+extern double boost_factorial(unsigned  n);
+extern double boost_double_factorial(unsigned  n);
 
 
 void
@@ -43,8 +49,8 @@ initarrays()
 {
     static int done = 0;
   //  extern /* Subroutine */ int combinatorial_(integer *, doublereal *);
-    extern /* Subroutine */ int factorial_(integer *, doublereal *);
-    extern /* Subroutine */ int dfactorial_(integer *, doublereal *);
+   // extern /* Subroutine */ int factorial_(integer *, doublereal *);
+  //  extern /* Subroutine */ int dfactorial_(integer *, doublereal *);
     extern /* Subroutine */ int gaussleg_(integer *, doublereal *, doublereal
     *), zero_bsj__(integer *, integer *, doublereal *);
     extern /* Subroutine */ int  gausslag_(integer *, doublereal *, doublereal *);
@@ -52,8 +58,8 @@ initarrays()
 
     if ( !done ) {
     //    combinatorial_(&c__200, cnp);
-        factorial_(&c__100, fact);
-        dfactorial_(&c__100, dfact);
+      //  factorial_(&c__100, fact);
+    //    dfactorial_(&c__100, dfact);
         gaussleg_(&c__48, xbar, xh);
         gaussleg_(&c__20, xbar2, xh2);
         gaussleg_(&c__48, xbar3, xh3);
@@ -135,19 +141,18 @@ int fortran_fourc(    integer np1, integer l1, integer m1, doublereal zeta1,
     static doublereal cste_llp__;
     extern /* Subroutine */ int gaussleg_(integer *, doublereal *, doublereal 
 	    *), zero_bsj__(integer *, integer *, doublereal *), constlmp_(
-	    integer *, integer *, doublereal *, doublereal *, doublereal *);
+	    integer *, integer *,  doublereal *);
     static integer k, l, m;
     doublereal s, t, v[4096];
-    extern /* Subroutine */ int factorial_(integer *, doublereal *), 
-	    coeffbons_(integer *, integer *, integer *, integer *, doublereal 
-	    *, doublereal *, doublereal *);
+    extern /* Subroutine */ int
+	    coeffbons_(integer *, integer *, integer *, integer *, doublereal *);
     static integer n1, n2, n3, n4;
     static doublereal cstmprod12, cstmprod34, ab, a12, ad, b12, cd, a34, b34;
     static integer j12, jc, l12, m12;
     static doublereal dk;
     static integer j34, l34, m34, ni;
     static integer mp, lambda_min__, lambda_max__, mu, lp, nx, ns, nt;
-    extern /* Subroutine */ int dfactorial_(integer *, doublereal *);
+    //extern /* Subroutine */ int dfactorial_(integer *, doublereal *);
     doublereal ap1[22], ap2[22], ap3[22], ap4[22];
     static integer lp1, mp1;
 
@@ -313,17 +318,17 @@ i */
 	ttsd = 0.;
 	ttwd = 0.;
 /* .... Decomposition of STFs in terms of B functions. */
-	coeffbons_(&np1, &l1, &np1min, &np1max, fact, dfact, ap1);
-	coeffbons_(&np2, &l2, &np2min, &np2max, fact, dfact, ap2);
-	coeffbons_(&np3, &l3, &np3min, &np3max, fact, dfact, ap3);
-	coeffbons_(&np4, &l4, &np4min, &np4max, fact, dfact, ap4);
+	coeffbons_(&np1, &l1, &np1min, &np1max,  ap1);
+	coeffbons_(&np2, &l2, &np2min, &np2max,  ap2);
+	coeffbons_(&np3, &l3, &np3min, &np3max,  ap3);
+	coeffbons_(&np4, &l4, &np4min, &np4max,  ap4);
 /* .... evaluation of factors from the multiplication theorem of the */
 /* .... solid spherical harmonics. These coefficients are common */
 /* .... to all the B functions present in the integrals over Slater functions. */
-	constlmp_(&l1, &m1, fact, dfact, cstlmp1);
-	constlmp_(&l2, &m2, fact, dfact, cstlmp2);
-	constlmp_(&l3, &m3, fact, dfact, cstlmp3);
-	constlmp_(&l4, &m4, fact, dfact, cstlmp4);
+	constlmp_(&l1, &m1,  cstlmp1);
+	constlmp_(&l2, &m2,  cstlmp2);
+	constlmp_(&l3, &m3,  cstlmp3);
+	constlmp_(&l4, &m4,  cstlmp4);
 /* .... Spherical Haromincs */
 	i__2 = l1 + l2 + l3 + l4;
 	harmonique_(&thetab, &i__2, ylmab);
@@ -337,13 +342,13 @@ i */
 	i__2 = l1 + l2 + l3 + l4;
 	vharmonique2_(&i__2, &c__48, thetav, ylmv);
 /* .... Normalization constants */
-	cnorm1 = pow_di(&c_b91, &np1) * sqrt(zeta1 * 2. / fact[np1 * 2]) * 
+	cnorm1 = pow_di(&c_b91, &np1) * sqrt(zeta1 * 2. / boost_factorial(np1 * 2)) *
 		zeta1;
-	cnorm2 = pow_di(&c_b91, &np2) * sqrt(zeta2 * 2. / fact[np2 * 2]) * 
+	cnorm2 = pow_di(&c_b91, &np2) * sqrt(zeta2 * 2. / boost_factorial(np2 * 2)) *
 		zeta2;
-	cnorm3 = pow_di(&c_b91, &np3) * sqrt(zeta3 * 2. / fact[np3 * 2]) * 
+	cnorm3 = pow_di(&c_b91, &np3) * sqrt(zeta3 * 2. / boost_factorial(np3 * 2)) *
 		zeta3;
-	cnorm4 = pow_di(&c_b91, &np4) * sqrt(zeta4 * 2. / fact[np4 * 2]) * 
+	cnorm4 = pow_di(&c_b91, &np4) * sqrt(zeta4 * 2. / boost_factorial(np4 * 2)) *
 		zeta4;
 	cnormp = cnorm1 * cnorm2 * cnorm3 * cnorm4;
 /* ...  Constante d'integration */
@@ -354,9 +359,9 @@ i */
 	i__4 = l2 - 1;
 	i__5 = l3 - 1;
 	i__6 = l4 - 1;
-	const__ = d__2 * (d__1 * d__1) * 8192. / pow_di(&c_b91, &i__2) * 
-		dfact[(l1 << 1) + 1] * dfact[(l2 << 1) + 1] * dfact[(l3 << 1) 
-		+ 1] * dfact[(l4 << 1) + 1] * pow_di(&zeta1, &i__3) * pow_di(&
+	const__ = d__2 * (d__1 * d__1) * 8192. / pow_di(&c_b91, &i__2) *
+            boost_double_factorial((l1 << 1) + 1) * boost_double_factorial((l2 << 1) + 1) * boost_double_factorial((l3 << 1)
+		+ 1) * boost_double_factorial((l4 << 1) + 1) * pow_di(&zeta1, &i__3) * pow_di(&
 		zeta2, &i__4) * pow_di(&zeta3, &i__5) * pow_di(&zeta4, &i__6);
 	i__2 = l1;
 	for (lp1 = 0; lp1 <= i__2; ++lp1) {
@@ -469,9 +474,9 @@ i */
 		      i__21 = n3 << 1;
 		      i__22 = n4 << 1;
 		      i__23 = n1 + n2 + n3 + n4;
-		      cste = fact[n1 + l1 + n2 + l2 + 1] * fact[n3 + l3 + n4 
-			      + l4 + 1] / (fact[n1 + l1] * fact[n2 + l2] * 
-			      fact[n3 + l3] * fact[n4 + l4]) * pow_di(&zeta1, 
+		      cste = boost_factorial(n1 + l1 + n2 + l2 + 1) * boost_factorial(n3 + l3 + n4
+			      + l4 + 1) / (boost_factorial(n1 + l1) * boost_factorial(n2 + l2) *
+                                boost_factorial(n3 + l3)* boost_factorial(n4 + l4)) * pow_di(&zeta1,
 			      &i__19) * pow_di(&zeta2, &i__20) * pow_di(&
 			      zeta3, &i__21) * pow_di(&zeta4, &i__22) / 
 			      pow_di(&c_b91, &i__23);
@@ -487,8 +492,8 @@ i */
                    cnp1 = boost_choose( delta_l12__ , j12) * boost_choose(delta_l34__, j34) ;
 			      i__21 = j12 + j34;
 			      cste_j__ = pow_di(&c_b104, &i__21) * cnp1 / (
-				      fact[n1 + n2 + l1 + l2 - j12 + 1] * 
-				      fact[n3 + n4 + l3 + l4 - j34 + 1]);
+                          boost_factorial(n1 + n2 + l1 + l2 - j12 + 1) *
+                          boost_factorial(n3 + n4 + l3 + l4 - j34 + 1));
 /* .... Determinationof the integration parameters: */
 			      nx = l1 - lp1 + l2 - lp2 + l3 - lp3 + l4 - lp4;
 			      nu12 = n1 + n2 + l1 + l2 - l - j12;

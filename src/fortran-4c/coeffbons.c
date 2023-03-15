@@ -16,6 +16,10 @@
 
 static doublereal c_b2 = -1.;
 static doublereal c_b3 = 2.;
+extern double boost_factorial(unsigned  n);
+extern double boost_double_factorial(unsigned  n);
+
+
 
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
 /* CC                                                                  CCC */
@@ -28,7 +32,7 @@ static doublereal c_b3 = 2.;
 /* CC                                                                  CCC */
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
 /* Subroutine */ int coeffbons_(integer *n, integer *l, integer *pmin, 
-	integer *pmax, doublereal *fact, doublereal *dfact, doublereal *ap)
+	integer *pmax, doublereal *ap)
 {
     /* System generated locals */
     integer i__1, i__2, i__3;
@@ -45,9 +49,18 @@ static doublereal c_b3 = 2.;
     for (p = *pmin; p <= i__1; ++p) {
 	i__2 = *pmax - p;
 	i__3 = *l + p;
-	ap[p] = pow_di(&c_b2, &i__2) * pow_di(&c_b3, &i__3) * fact[*pmax] * 
-		fact[*l + p] / (fact[(p << 1) - *n + *l] * dfact[(*pmax - p) *
-		 2]);
+//	ap[p] = pow_di(&c_b2, &i__2) * pow_di(&c_b3, &i__3) * fact[*pmax] *
+//		fact[*l + p] / (fact[(p << 1) - *n + *l] * dfact[(*pmax - p) *
+//		 2]);
+
+     	ap[p] = pow_di(&c_b2, &i__2) *
+            pow_di(&c_b3, &i__3) *
+            boost_factorial(*pmax) *
+            boost_factorial(*l + p) /
+            (boost_factorial((p << 1) - *n + *l) * boost_double_factorial((*pmax - p) * 2));
+
+
+
     }
     return 0;
 } /* coeffbons_ */

@@ -32,21 +32,17 @@ add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp s
         include/slater-utils.h src/utils.cpp src/semi-infinite-3c.cpp include/nested_summation_debug.h
 
         src/fortran-4c/bessel_reduite.c
-        src/fortran-4c/binom.c
         src/fortran-4c/calf42.c
         src/fortran-4c/cartco.c
-        src/fortran-4c/cnp.c
         src/fortran-4c/coeffbons.c
         src/fortran-4c/constlmp.c
         src/fortran-4c/Dbsj.c
-        src/fortran-4c/dfactorial.c
         src/fortran-4c/DFj42.c
         src/fortran-4c/DG.c
         src/fortran-4c/dobin.c
         src/fortran-4c/Dtk.c
         src/fortran-4c/DX.c
         src/fortran-4c/fa42.c
-        src/fortran-4c/factorial.c
         src/fortran-4c/Fj42.c
         src/fortran-4c/FSCj.c
         src/fortran-4c/gaunt1.c

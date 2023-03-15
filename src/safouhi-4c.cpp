@@ -27,6 +27,17 @@ double boost_choose(unsigned n, unsigned k)
     return bm::binomial_coefficient<double>(n,k)  ;
 }
 
+extern double boost_factorial(unsigned  n)
+{
+    return bm::factorial<double>(n);
+}
+extern double boost_double_factorial(unsigned  n)
+{
+    return bm::double_factorial<double>(n);
+}
+
+
+
 }
 
 namespace slater
