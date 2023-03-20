@@ -241,53 +241,90 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
     return m + (switch_condition%2) ;
 }
 
+energy_unit_t Homeier_Integrator::calculate_B_function_kinetic(const B_function_details &first_func,
+                                           double first_coeff,
+                                           const B_function_details &second_func,
+                                           double second_coeff,
+                                                               energy_unit_t &S1,
+                                                               energy_unit_t &S2)
+{
+    S1 = integrate_using_b_functions(first_func, second_func);
+
+    std::cout << "Regular S1 " << S1 << std::endl;
+
+
+    Quantum_Numbers q1 =first_func.get_quantum_numbers();
+    auto alph1 = first_func.get_alpha();
+
+    Quantum_Numbers q2 =second_func.get_quantum_numbers();
+    auto alph2 = second_func.get_alpha();
+    auto bsq1 = pochhammer(0.5,q1.l+1 ) * pochhammer(0.5,2*q1.n+q1.l) / (pow(alph1,3)*bm::factorial<double>(2*q1.n+2*q1.l+1));
+    auto bsq2 = pochhammer(0.5,q2.l+1 ) * pochhammer(0.5,2*q2.n+q2.l) / (pow(alph2,3)*bm::factorial<double>(2*q2.n+2*q2.l+1));
+    S1 *=  std::complex(sqrt(bsq1*bsq2));
+
+
+    auto alpha_squared = first_func.get_alpha() * first_func.get_alpha();
+    auto lower_n_func = first_func;
+    lower_n_func.reduce_principlal_quantum_number(1);
+
+    assert(lower_n_func.get_quantum_numbers().n>=0);
+
+    S2 = integrate_using_b_functions(lower_n_func, second_func);
+
+    std::cout << "S1 " << S1 << " S2(?) " << S2 << std::endl;
+
+    auto partial_result = -(1.0/2.0) * alpha_squared * (S1 - S2) ;
+    partial_result *= first_coeff * second_coeff;
+    return partial_result;
+}
+
 energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2> & functions)
 {
-    auto S1 = non_normalized_overlap(functions);
-    auto q1 = functions[0].get_quantum_numbers();
-    auto q2 = functions[1].get_quantum_numbers();
+    functions[0].get_quantum_numbers().validate();
+    functions[1].get_quantum_numbers().validate();
+    center_t new_centers[2];
 
-    energy_unit_t S2;
-    sto_exponent_t coeff;
-//
-//    if(q1.n-1==0 && q2.n > 0 && q2.n-1 > q2.l ){
-//        //S_{n1,l1,m1}^{n2-1,l2,m2} in eqn 29b
-//        //create new STO function from second function for overlap with n2 = n2-1
-//        Quantum_Numbers temp_q = {q2.n-1,q2.l,q2.m};
-//        temp_q.validate();
-//
-//        STO_Basis_Function_Info info(functions[1].get_exponent(), temp_q);
-//        STO_Basis_Function temp_function(info,functions[1].get_center());
-//
-//        S2 = non_normalized_overlap({functions[0],temp_function});
-//        coeff = functions[1].get_exponent(); //beta
-//    }
-//    else if (q2.n-1==0 && q1.n > 0 && q1.n-1 > q1.l ){
-//        //S_{n1-1,l1,m1}^{n2,l2,m2} in eqn 29a
-//        //create new STO function from first function for overlap with n1 = n1-1
-//        Quantum_Numbers temp_q = {q1.n-1,q1.l,q1.m};
-//        temp_q.validate();
-//        STO_Basis_Function_Info info(functions[0].get_exponent(), temp_q);
-//        STO_Basis_Function temp_function(info,functions[0].get_center());
-//
-//        S2 = non_normalized_overlap({temp_function,functions[1]});
-//        coeff = functions[0].get_exponent(); //alpha
-//    }
-//    else{
+    shift_first_center_to_origin(functions[0].get_center(), functions[1].get_center(), new_centers);
 
-        //Check case 31a or 31b
+    B_functions_representation_of_STO f1(functions[0] , new_centers[0]);
+    B_functions_representation_of_STO f2(functions[1], new_centers[1]);
 
-        //recenter to 0 needed?
-        //create new STO function from second function for nuclear interaction with same center as first STO
-        //Gautam & Ury -- Add a call to nuclear attraction integral here
-        Quantum_Numbers temp_q = {q1.n-1, q1.l,q1.m};
-        STO_Basis_Function_Info info(functions[0].get_exponent(),temp_q);
-        STO_Basis_Function temp_function{info, functions[0].get_center()};
-        S2 = non_normalized_overlap({temp_function, functions[1]} );
-        coeff = functions[0].get_exponent(); //alpha
-        std::cout << "S1 " << S1 << " S2 " << S2 << " coeff " << coeff << std::endl;
+    create_integration_pairs(f1, f2);
 
-//    }
+    auto coeff1 = f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient();
+    auto coeff2 = functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
+
+
+    std::vector<energy_unit_t> partial_results;
+
+    for (auto const &p: equivalence_series) {
+        energy_unit_t S1=0, S2=0;
+
+        auto partial_result = calculate_B_function_kinetic(p.first.second, p.first.first, p.second.second, p.second.first,
+                                                           S1, S2);
+
+        std::cout << "in loop: S1 " << S1*coeff2*coeff1 << " S2(?) " << S2 << std::endl;
+        std::cout << "in loop: S1 " << S1*coeff1 << " S2(?) " << S2 << std::endl;
+        std::cout << "in loop: S1 " << S1*coeff2 << " S2(?) " << S2 << std::endl;
+
+
+        partial_results.emplace_back(partial_result);
+    }
+
+    // sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
+    energy_unit_t result = 0;
+    for (auto &pr: partial_results)
+        result += pr;
+
+    result *= coeff1;
+    result *= coeff2;
+
+
+
+
+    return result;
+
+#if 0
 
     auto T = -(1.0/2.0)*coeff*coeff*(S1-S2);
 
@@ -298,6 +335,7 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
     auto bsq2 = pochhammer(0.5,q2.l+1 ) * pochhammer(0.5,2*q2.n+q2.l) / (pow(alph2,3)*bm::factorial<double>(2*q2.n+2*q2.l+1));
     T *= 1.0 / std::complex(sqrt(bsq1*bsq2));
     return T;
+#endif
 }
 
 

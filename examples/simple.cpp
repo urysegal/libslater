@@ -11,7 +11,7 @@ main()
 {
 
 
-    Quantum_Numbers quantum_numbers1 = {2,0,0};
+    Quantum_Numbers quantum_numbers1 = {1,0,0};
     Quantum_Numbers quantum_numbers2 ={1,0,0};
 
 
