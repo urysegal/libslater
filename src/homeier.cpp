@@ -241,40 +241,36 @@ int Homeier_Integrator::get_l_min( const Quantum_Numbers &q1, const Quantum_Numb
     return m + (switch_condition%2) ;
 }
 
-energy_unit_t Homeier_Integrator::calculate_B_function_kinetic(const B_function_details &first_func,
-                                           double first_coeff,
-                                           const B_function_details &second_func,
-                                           double second_coeff,
+energy_unit_t Homeier_Integrator::calculate_B_function_kinetic(B_function_details p1,
+                                                               B_function_details p2,
                                                                energy_unit_t &S1,
-                                                               energy_unit_t &S2)
+                                                               energy_unit_t &S2,bool normalized=true)
 {
+    //First Overlap S1
+    auto first_func = p1;
+    auto second_func = p2;
     S1 = integrate_using_b_functions(first_func, second_func);
 
-    std::cout << "Regular S1 " << S1 << std::endl;
-
-
-    Quantum_Numbers q1 =first_func.get_quantum_numbers();
-    auto alph1 = first_func.get_alpha();
-
-    Quantum_Numbers q2 =second_func.get_quantum_numbers();
-    auto alph2 = second_func.get_alpha();
-    auto bsq1 = pochhammer(0.5,q1.l+1 ) * pochhammer(0.5,2*q1.n+q1.l) / (pow(alph1,3)*bm::factorial<double>(2*q1.n+2*q1.l+1));
-    auto bsq2 = pochhammer(0.5,q2.l+1 ) * pochhammer(0.5,2*q2.n+q2.l) / (pow(alph2,3)*bm::factorial<double>(2*q2.n+2*q2.l+1));
-    S1 *=  std::complex(sqrt(bsq1*bsq2));
-
-
-    auto alpha_squared = first_func.get_alpha() * first_func.get_alpha();
+    // Second Overlap S2 with n1=n1-1
     auto lower_n_func = first_func;
     lower_n_func.reduce_principlal_quantum_number(1);
-
     assert(lower_n_func.get_quantum_numbers().n>=0);
-
     S2 = integrate_using_b_functions(lower_n_func, second_func);
 
-    std::cout << "S1 " << S1 << " S2(?) " << S2 << std::endl;
-
+    // Compute Unnormalized Kinetic Energy
+    auto alph1 = p1.get_alpha();
+    auto alpha_squared = alph1*alph1;
     auto partial_result = -(1.0/2.0) * alpha_squared * (S1 - S2) ;
-    partial_result *= first_coeff * second_coeff;
+
+    // Normalize Kinetic Energy -- Same as FORTRAN
+    if (normalized){
+        Quantum_Numbers q1 =first_func.get_quantum_numbers();
+        Quantum_Numbers q2 =second_func.get_quantum_numbers();
+        auto alph2 = second_func.get_alpha();
+        auto bsq1 = pochhammer(0.5,q1.l+1 ) * pochhammer(0.5,2*q1.n+q1.l) / (pow(alph1,3)*bm::factorial<double>(2*q1.n+2*q1.l+1));
+        auto bsq2 = pochhammer(0.5,q2.l+1 ) * pochhammer(0.5,2*q2.n+q2.l) / (pow(alph2,3)*bm::factorial<double>(2*q2.n+2*q2.l+1));
+        partial_result *=  1.0/std::complex(sqrt(bsq1*bsq2));
+    }
     return partial_result;
 }
 
@@ -290,24 +286,16 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
     B_functions_representation_of_STO f2(functions[1], new_centers[1]);
 
     create_integration_pairs(f1, f2);
-
-    auto coeff1 = f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient();
-    auto coeff2 = functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
-
-
     std::vector<energy_unit_t> partial_results;
 
     for (auto const &p: equivalence_series) {
         energy_unit_t S1=0, S2=0;
 
-        auto partial_result = calculate_B_function_kinetic(p.first.second, p.first.first, p.second.second, p.second.first,
-                                                           S1, S2);
+        // int(B_1*B_2)
+        auto partial_result = calculate_B_function_kinetic(p.first.second, p.second.second, S1, S2, false);
 
-        std::cout << "in loop: S1 " << S1*coeff2*coeff1 << " S2(?) " << S2 << std::endl;
-        std::cout << "in loop: S1 " << S1*coeff1 << " S2(?) " << S2 << std::endl;
-        std::cout << "in loop: S1 " << S1*coeff2 << " S2(?) " << S2 << std::endl;
-
-
+        // Bcoeff1*Bcoeff2 * int(B_1*B_2) -- THIS MAY NEED TO BE CHANGED, COMPARE WITH FORTRAN
+        partial_result *= p.first.first * p.second.first;
         partial_results.emplace_back(partial_result);
     }
 
@@ -316,15 +304,40 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
     for (auto &pr: partial_results)
         result += pr;
 
-    result *= coeff1;
-    result *= coeff2;
+    // MAY NEED TO MULTIPLY WITH RESCALING COEFFICIENT ?
 
-
-
+    // alpha1^(-n1+1)*alpha2(-n2+1) * sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
+    result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient();
 
     return result;
 
 #if 0
+    Denormalization
+    Quantum_Numbers q1 =first_func.get_quantum_numbers();
+    auto alph1 = first_func.get_alpha();
+
+    Quantum_Numbers q2 =second_func.get_quantum_numbers();
+    auto alph2 = second_func.get_alpha();
+    auto bsq1 = pochhammer(0.5,q1.l+1 ) * pochhammer(0.5,2*q1.n+q1.l) / (pow(alph1,3)*bm::factorial<double>(2*q1.n+2*q1.l+1));
+    auto bsq2 = pochhammer(0.5,q2.l+1 ) * pochhammer(0.5,2*q2.n+q2.l) / (pow(alph2,3)*bm::factorial<double>(2*q2.n+2*q2.l+1));
+    S1 *=  std::complex(sqrt(bsq1*bsq2));
+
+
+    MATCH WITH
+    // sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
+    energy_unit_t result = 0;
+    for (auto &pr: partial_results)
+        result += pr;
+
+    result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient();
+    return result;
+
+    final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
+    return final_result;
+
+
+
+
 
     auto T = -(1.0/2.0)*coeff*coeff*(S1-S2);
 
