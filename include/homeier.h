@@ -54,11 +54,11 @@ public:
     static double calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s)  ;
     static std::complex<double> calculate_S(const B_function_details &f1, const B_function_details &f2, double s) ;
 
-    energy_unit_t calculate_B_function_kinetic(const B_function_details &first_func,
-                                                                   double first_coeff,
-                                                                   const B_function_details &second_func,
-                                                                   double second_coeff,
-                                               energy_unit_t &S1, energy_unit_t &S2);
+    energy_unit_t calculate_B_function_kinetic(B_function_details p1,
+                                               B_function_details p2,
+                                               energy_unit_t &S1,
+                                               energy_unit_t &S2,
+                                               bool normalized);
 
 
 private:
