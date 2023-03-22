@@ -14,8 +14,10 @@
 
 /* Table of constant values */
 
-static integer c__9 = 9;
-static integer c__1 = 1;
+//static integer c__9 = 9;
+//static integer c__1 = 1;
+extern double boost_factorial(unsigned  n);
+extern double boost_choose(unsigned n, unsigned k);
 
 /*     Last change:  S    14 Apr 2007   10:54 pm */
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
@@ -29,6 +31,8 @@ static integer c__1 = 1;
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
 doublereal binom_(integer *n, integer *m)
 {
+    return boost_choose(*n, *m);
+#if 0
     /* System generated locals */
     integer i__1;
     doublereal ret_val;
@@ -63,8 +67,9 @@ doublereal binom_(integer *n, integer *m)
 /* L5: */
 	}
 	i__1 = *n - *m;
-	ret_val = prod / fact_(&i__1);
+	ret_val = prod / boost_factorial(i__1);
     }
     return ret_val;
+#endif
 } /* binom_ */
 

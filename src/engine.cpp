@@ -73,6 +73,7 @@ complex STO_Integrator::do_integrate( const B_functions_representation_of_STO &f
     for (auto &pr: partial_results)
         result += pr;
 
+    // alpha1^(-n1+1)*alpha2(-n2+1) * sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
     result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient();
 
     return result;
@@ -127,8 +128,6 @@ energy_unit_t STO_Integrations::two_functions_integral(const std::array<STO_Basi
     assert(functions[0].get_quantum_numbers().l + functions[1].get_quantum_numbers().l
            <= Gaunt_Coefficient_Engine::get_maximal_gaunt_l());
 
-    functions[0].get_quantum_numbers().validate();
-    functions[1].get_quantum_numbers().validate();
 
 
     auto it = this->integrators.find(which_type);

@@ -11,6 +11,7 @@
 */
 
 #include "f2c.h"
+extern double boost_factorial(unsigned  n);
 
 /*     Last change:  S    14 Apr 2007   11:19 pm */
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
@@ -24,7 +25,7 @@
 /* CC                                                                  CCC */
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
 doublereal gaunt1_(integer *l3, integer *m3, integer *l2, integer *m2, 
-	integer *l1, integer *m1, doublereal *fact)
+	integer *l1, integer *m1)
 {
     /* Initialized data */
 
@@ -79,10 +80,10 @@ doublereal gaunt1_(integer *l3, integer *m3, integer *l2, integer *m2,
 	cste = sqrt((*l1 * 2. + 1.) * (*l2 * 2. + 1.) / (pi * 4. * (*l3 * 2. 
 		+ 1.)));
 /* .... first Clebsch-Gordan coefficient [l1 m1, l2 m2, l3 m3] */
-	a = fact[*l1 + *l2 - *l3] * fact[*l1 - *l2 + *l3] * fact[-(*l1) + *l2 
-		+ *l3] / fact[*l1 + *l2 + *l3 + 1];
-	b = fact[*l1 + *m1] * fact[*l2 + *m2] * fact[*l3 + *m3] * fact[*l1 - *
-		m1] * fact[*l2 - *m2] * fact[*l3 - *m3];
+	a = boost_factorial(*l1 + *l2 - *l3) * boost_factorial(*l1 - *l2 + *l3) * boost_factorial(-(*l1) + *l2
+		+ *l3) / boost_factorial(*l1 + *l2 + *l3 + 1);
+	b = boost_factorial(*l1 + *m1) * boost_factorial(*l2 + *m2) * boost_factorial(*l3 + *m3) * boost_factorial(*l1 - *
+		m1) * boost_factorial(*l2 - *m2) * boost_factorial(*l3 - *m3);
 /* .... the highest order for nu is determined by the smallest factorial */
 /* Computing MIN */
 /* Computing MIN */
@@ -96,9 +97,9 @@ doublereal gaunt1_(integer *l3, integer *m3, integer *l2, integer *m2,
 	    if (*l1 + *l2 - *l3 - nu >= 0 && *l1 - *m1 - nu >= 0 && *l2 + *m2 
 		    - nu >= 0 && *l3 - *l2 + *m1 + nu >= 0 && *l3 - *l1 - *m2 
 		    + nu >= 0) {
-		cnu = fact[*l1 + *l2 - *l3 - nu] * fact[*l1 - *m1 - nu] * 
-			fact[*l2 + *m2 - nu] * fact[*l3 - *l2 + *m1 + nu] * 
-			fact[*l3 - *l1 - *m2 + nu];
+		cnu = boost_factorial(*l1 + *l2 - *l3 - nu) * boost_factorial(*l1 - *m1 - nu) *
+                boost_factorial(*l2 + *m2 - nu) * boost_factorial(*l3 - *l2 + *m1 + nu) *
+                boost_factorial(*l3 - *l1 - *m2 + nu);
 		c__ += fact_nu__ / cnu;
 	    }
 	    dnu = (doublereal) (nu + 1);
@@ -106,8 +107,8 @@ doublereal gaunt1_(integer *l3, integer *m3, integer *l2, integer *m2,
 	}
 	cg1 = sqrt((*l3 * 2. + 1.) * a * b) * c__;
 /* .... second Clebsch-Gordan coefficient [l1 0, l2 0, l3 0] */
-	b = fact[*l1] * fact[*l1] * fact[*l2] * fact[*l2] * fact[*l3] * fact[*
-		l3];
+	b = boost_factorial(*l1) * boost_factorial(*l1) * boost_factorial(*l2) * boost_factorial(*l2) * boost_factorial(*l3) *
+            boost_factorial(*l3);
 /* .... the highest order for nu is determined by the smallest factorial */
 /* Computing MIN */
 	i__1 = *l1 + *l2 - *l3, i__2 = min(*l1,*l2);
@@ -118,8 +119,8 @@ doublereal gaunt1_(integer *l3, integer *m3, integer *l2, integer *m2,
 	for (nu = 0; nu <= i__1; ++nu) {
 	    if (*l1 + *l2 - *l3 - nu >= 0 && *l1 - nu >= 0 && *l2 - nu >= 0 &&
 		     *l3 - *l2 + nu >= 0 && *l3 - *l1 + nu >= 0) {
-		cnu = fact[*l1 + *l2 - *l3 - nu] * fact[*l1 - nu] * fact[*l2 
-			- nu] * fact[*l3 - *l2 + nu] * fact[*l3 - *l1 + nu];
+		cnu = boost_factorial(*l1 + *l2 - *l3 - nu) * boost_factorial(*l1 - nu) * boost_factorial(*l2
+			- nu) * boost_factorial(*l3 - *l2 + nu) * boost_factorial(*l3 - *l1 + nu);
 		c__ += fact_nu__ / cnu;
 	    }
 	    dnu = (doublereal) (nu + 1);

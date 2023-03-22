@@ -27,6 +27,12 @@ const Quantum_Numbers &B_function_details::get_quantum_numbers() const
     return quantum_numbers;
 }
 
+void B_function_details::reduce_principlal_quantum_number(int delta_n)
+{
+    quantum_numbers.n--;
+    assert(quantum_numbers.n>=0);
+}
+
 double B_functions_representation_of_STO::calculate_coefficient(const Quantum_Numbers &quantum_numbers,const unsigned int p) const
 {
     //TESTING NEEDED
@@ -52,9 +58,12 @@ B_functions_representation_of_STO::B_functions_representation_of_STO(const STO_B
     // X_{n,l}^m (alpha,r) = N * sum_p ^{n-l} Bcoeff * B_{p,l}^m (alpha,r)
     // p depends on even/odd n-l
     // Bcoeff is computed via calculate_coefficient
+
     auto quantum_numbers = sto.get_quantum_numbers();
     auto n = quantum_numbers.n;
     auto l = quantum_numbers.l;
+
+    // alpha^(-n+1)
     b_functions_sum_rescaling = std::pow(sto.get_exponent(), -quantum_numbers.n+1.0);
     int min_p;
 

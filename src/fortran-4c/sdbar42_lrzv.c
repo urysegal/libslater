@@ -12,6 +12,8 @@
 
 #include "f2c.h"
 
+extern double boost_choose(unsigned n, unsigned k);
+
 /*     Last change:  H     2 Mar 2009    1:35 pm */
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
 /* CC                                                                  CCC */
@@ -54,7 +56,9 @@
 	doublereal *b12, integer *nu34, integer *ng34, doublereal *cd, 
 	doublereal *a34, doublereal *b34, integer *jc, integer *nrac, 
 	doublereal *xbar, doublereal *xh, integer *nlag, doublereal *rlag, 
-	doublereal *wlag, doublereal *cnp, doublereal *sd, integer *nconv, 
+	doublereal *wlag,
+    //doublereal *cnp,
+    doublereal *sd, integer *nconv,
 	doublereal *t)
 {
     /* Initialized data */
@@ -83,7 +87,7 @@
     static doublereal vden[101], xijc, gxij, xden, vplb, xijk;
     static integer nint;
     static doublereal size, vnum[101], xnum;
-    extern doublereal calf4_(integer *, integer *, doublereal *, doublereal *,
+    extern doublereal calf4_(integer *, integer *, doublereal *, // doublereal *,
 	     integer *, integer *, doublereal *, doublereal *, doublereal *, 
 	    integer *, integer *, doublereal *, doublereal *, doublereal *);
     static doublereal xpnx, b_inf__, dxijc, b_sup__, vdenp[101], zpng12, 
@@ -220,7 +224,9 @@ i */
 		    xijk = ((b_sup__ - b_inf__) * xbar[k] + b_sup__ + b_inf__)
 			     * .5;
 		    uij += size * .5 * xh[k] * sin(xijk * *v) * calf4_(nx, 
-			    lambda, &xijk, cnp, nu12, ng12, ab, a12, b12, 
+			    lambda, &xijk,
+                //cnp,
+                nu12, ng12, ab, a12, b12,
 			    nu34, ng34, cd, a34, b34);
 		}
 		ui += uij;
@@ -234,7 +240,9 @@ i */
 	i__ = 0;
 	xijc = (doublereal) (i__ + 1 + *jc) * pi / *v;
 	dxijc = xijc * xijc;
-	gxij = calf4_(nx, lambda, &xijc, cnp, nu12, ng12, ab, a12, b12, nu34, 
+	gxij = calf4_(nx, lambda, &xijc,
+                  //cnp,
+                  nu12, ng12, ab, a12, b12, nu34,
 		ng34, cd, a34, b34);
 	vnum[i__] = v1[i__ + *jc] / (dxijc * gxij);
 	vden[i__] = 1. / (dxijc * gxij);
@@ -244,7 +252,9 @@ i */
 	i__ = 1;
 	xijc = (doublereal) (i__ + 1 + *jc) * pi / *v;
 	dxijc = xijc * xijc;
-	gxij = calf4_(nx, lambda, &xijc, cnp, nu12, ng12, ab, a12, b12, nu34, 
+	gxij = calf4_(nx, lambda, &xijc,
+                  //cnp,
+                  nu12, ng12, ab, a12, b12, nu34,
 		ng34, cd, a34, b34);
 	vnum[i__] = v1[i__ + *jc] / (dxijc * gxij);
 	vden[i__] = 1. / (dxijc * gxij);
@@ -268,7 +278,9 @@ i */
 	    dijc = pow_di(&dnjc, &n);
 	    xijc = dnjc * pi / *v;
 	    dxijc = xijc * xijc;
-	    gxij = calf4_(nx, lambda, &xijc, cnp, nu12, ng12, ab, a12, b12, 
+	    gxij = calf4_(nx, lambda, &xijc,
+                      //cnp,
+                      nu12, ng12, ab, a12, b12,
 		    nu34, ng34, cd, a34, b34);
 /* .... calculation of F[x_{n+1+jc}] */
 	    v1[n + 1 + *jc] = v1[n + *jc];
@@ -283,7 +295,9 @@ i */
 		    xijk = ((b_sup__ - b_inf__) * xbar[k] + b_sup__ + b_inf__)
 			     * .5;
 		    uij += size * .5 * xh[k] * sin(xijk * *v) * calf4_(nx, 
-			    lambda, &xijk, cnp, nu12, ng12, ab, a12, b12, 
+			    lambda, &xijk,
+                //cnp,
+                nu12, ng12, ab, a12, b12,
 			    nu34, ng34, cd, a34, b34);
 		}
 		ui += uij;

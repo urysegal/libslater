@@ -16,6 +16,9 @@
 
 static doublereal c_b2 = -1.;
 
+extern double boost_choose(unsigned n, unsigned k);
+
+
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
 /* CC                                                                  CCC */
 /* CC   Function: sinf4                                                CCC */
@@ -42,7 +45,7 @@ static doublereal c_b2 = -1.;
 /* CC      - b34  : b34 = t*(1-t)                                      CCC */
 /* CC                                                                  CCC */
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
-doublereal sinf4_(integer *nx, integer *nj, doublereal *x, doublereal *cnp, 
+doublereal sinf4_(integer *nx, integer *nj, doublereal *x, //doublereal *cnp,
 	doublereal *besk12, doublereal *besk34, integer *nu12, integer *ng12, 
 	doublereal *ab, doublereal *z12, doublereal *b12, integer *nu34, 
 	integer *ng34, doublereal *cd, doublereal *z34, doublereal *b34)
@@ -120,12 +123,14 @@ i */
     }
     i__1 = *nj;
     for (l = 0; l <= i__1; ++l) {
-	binol = cnp[*nj * (*nj + 1) / 2 + l];
+    binol = boost_choose(*nj,l);
+	//binol = cnp[*nj * (*nj + 1) / 2 + l];
 	cste_l__ = binol * xbg34[l] * dob[*nj - l];
 	termj = 0.;
 	i__2 = l;
 	for (j = 0; j <= i__2; ++j) {
-	    binoj = cnp[l * (l + 1) / 2 + j];
+        binoj = boost_choose(l, j);
+	    //binoj = cnp[l * (l + 1) / 2 + j];
 	    cste_j__ = binoj * xbg[j];
 	    if ((*nu12 << 1) + 1 == *ng12) {
 		termi = pow_di(&c_b2, &j) * besk12[*nu12 + j];
@@ -134,7 +139,8 @@ i */
 		dmupi = 1.;
 		i__3 = j;
 		for (i__ = 0; i__ <= i__3; ++i__) {
-		    binoi = cnp[j * (j + 1) / 2 + i__];
+            binoi = boost_choose(j, i__);
+		    //binoi = cnp[j * (j + 1) / 2 + i__];
 		    cste_i__ = dmupi * binoi * dob12[j - i__] * besk12[*nu12 
 			    + i__];
 		    dmupi = -dmupi;
@@ -149,7 +155,8 @@ i */
 		dmupk = 1.;
 		i__3 = l - j;
 		for (k = 0; k <= i__3; ++k) {
-		    binok = cnp[(l - j) * (l - j + 1) / 2 + k];
+            binok = boost_choose(l-j, k);
+		   // binok = cnp[(l - j) * (l - j + 1) / 2 + k];
 		    cste_k__ = dmupk * binok * dob34[l - j - k] * besk34[*
 			    nu34 + k];
 		    dmupk = -dmupk;

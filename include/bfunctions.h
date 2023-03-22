@@ -31,6 +31,10 @@ public:
     const Quantum_Numbers &get_quantum_numbers() const;
     center_t get_center() const { return center; }
 
+    /// Reduce the principal quantum number by the given number
+    /// \param delta_n how much to modify by
+    void reduce_principlal_quantum_number(int delta_n);
+
 };
 
 

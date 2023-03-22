@@ -11,18 +11,20 @@ main()
 {
 
 
-    Quantum_Numbers quantum_numbers1 = {5,4,-3};
-    Quantum_Numbers quantum_numbers2 = {4,3,2};
+
+    Quantum_Numbers quantum_numbers1 = {1,0,0};
+    Quantum_Numbers quantum_numbers2 ={1,0,0};
 
 
     STO_Basis_Function_Info oxygen_s( 1, quantum_numbers1);
-    STO_Basis_Function_Info oxygen_p(2, quantum_numbers2);
+    STO_Basis_Function_Info oxygen_p(1, quantum_numbers2);
 
     STO_Basis_Function_Info hydrogen_s( 1, quantum_numbers1);
 
 
-    STO_Basis_Function oxygen_1_s(oxygen_s, {2, 0, 0});
+    STO_Basis_Function oxygen_1_s(oxygen_s, {2, 0, 1});
     STO_Basis_Function oxygen_2_p(oxygen_p, {0, 0, 1});
+
     STO_Basis_Function hydrogen_1_s(hydrogen_s, {0.70710678, 0, 0.56568542});
     STO_Basis_Function hydrogen_2_s(hydrogen_s, {-0.70710678, 0, 0.56568542});
 
@@ -33,7 +35,6 @@ main()
     if (engine) {
 
         STO_Integration_Options options;
-        options.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(options);
         auto result = engine->overlap({basis_set[0], basis_set[1]});
@@ -43,8 +44,8 @@ main()
 
         std::cout << "Overlap: " << result << std::endl;
 
-        //result = engine->kinetic({basis_set[0], basis_set[1]});
-        //std::cout << "Kinetic: " << result << std::endl;
+        result = engine->kinetic({basis_set[0], basis_set[1]});
+        std::cout << "Kinetic: " << result << std::endl;
 
 
         {

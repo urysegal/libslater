@@ -11,6 +11,8 @@
 */
 
 #include "f2c.h"
+extern double boost_factorial(unsigned  n);
+extern double boost_double_factorial(unsigned  n);
 
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
 /* CC                                                                  CCC */
@@ -31,8 +33,7 @@
 /* CC                 Cstlmp[lp*(lp+1)+mp] contains the term (lp, mp). CCC */
 /* CC                                                                  CCC */
 /* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC */
-/* Subroutine */ int constlmp_(integer *l, integer *m, doublereal *fact, 
-	doublereal *dfact, doublereal *cstlmp)
+/* Subroutine */ int constlmp_(integer *l, integer *m,  doublereal *cstlmp)
 {
     /* System generated locals */
     integer i__1, i__2, i__3, i__4;
@@ -40,7 +41,7 @@
     /* Local variables */
     static integer lp, mp;
     extern doublereal gaunt1_(integer *, integer *, integer *, integer *, 
-	    integer *, integer *, doublereal *);
+	    integer *, integer *);
 
     i__1 = *l;
     for (lp = 0; lp <= i__1; ++lp) {
@@ -48,9 +49,9 @@
 	for (mp = -lp; mp <= i__2; ++mp) {
 	    i__3 = *l - lp;
 	    i__4 = *m - mp;
-	    cstlmp[lp * (lp + 1) + mp] = gaunt1_(l, m, &lp, &mp, &i__3, &i__4,
-		     fact) / (dfact[(lp << 1) + 1] * dfact[((*l - lp) << 1) + 1]
-		    );
+	    cstlmp[lp * (lp + 1) + mp] = gaunt1_(l, m, &lp, &mp, &i__3, &i__4
+		     ) / (boost_double_factorial((lp << 1) + 1) * boost_double_factorial(((*l - lp) << 1) + 1)
+                                                      );
 	}
     }
     return 0;

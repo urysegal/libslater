@@ -41,7 +41,6 @@ main(int argc, const char *argv[])
 
 
     STO_Integration_Options parameters;
-    parameters.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
     engine->init(parameters);
 

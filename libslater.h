@@ -9,10 +9,6 @@
 
 namespace slater {
 
-/// Parameter to specify if we use normalized B functions
-static constexpr const char *Use_Normalized_B_Functions_Parameter_Name = "use_normalized_b_functions" ;
-/// Parameter to specify number of quadrature points
-static constexpr const char *Number_of_quadrature_points_Parameter_Name = "number_of_quadrature_points" ;
 /// Parameter to specify the with Algorithm we use for Safouhi 4C quadratures
 static constexpr const char *Quadrature_4C_algorithm_Parameter_Name = "four_C_quadrature_algo" ;
 

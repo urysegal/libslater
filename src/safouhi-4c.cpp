@@ -1,7 +1,14 @@
+#include <complex>
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/special_functions/factorials.hpp>
+#include <boost/math/quadrature/gauss.hpp>
+#include <boost/math/special_functions.hpp>
+
 #include "safouhi-4c.h"
 #include "f2c.h"
 
 using namespace std;
+namespace bm = boost::math;
 
 extern "C" {
 int fortran_fourc(integer np1, integer l1, integer m1, doublereal zeta1,
@@ -14,6 +21,23 @@ int fortran_fourc(integer np1, integer l1, integer m1, doublereal zeta1,
                   doublereal xd, doublereal yd, doublereal zd,
                   doublereal *sdbar_res, doublereal *wgrep_res /* out vars */
 );
+
+double boost_choose(unsigned n, unsigned k)
+{
+    return bm::binomial_coefficient<double>(n,k)  ;
+}
+
+extern double boost_factorial(unsigned  n)
+{
+    return bm::factorial<double>(n);
+}
+extern double boost_double_factorial(unsigned  n)
+{
+    return bm::double_factorial<double>(n);
+}
+
+
+
 }
 
 namespace slater

@@ -54,12 +54,16 @@ public:
     static double calculate_W_hat(const B_function_details &f1, const B_function_details &f2, double s)  ;
     static std::complex<double> calculate_S(const B_function_details &f1, const B_function_details &f2, double s) ;
 
+    energy_unit_t calculate_B_function_kinetic(B_function_details p1,
+                                               B_function_details p2,
+                                               energy_unit_t &S1,
+                                               energy_unit_t &S2,
+                                               bool normalized);
+
+
 private:
 
     integration_types which_type = integration_types::OVERLAP;
-
-    bool use_normalized_b_functions = false; /// Should we calculate with normalized B functions?
-    int number_of_quadrature_points = 30; /// How many quadrature points we should calculate
 
     static B_function_Engine B_function_engine; /// B-functions evaluator
 

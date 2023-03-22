@@ -42,7 +42,6 @@ TEST_CASE( "One overlap integral", "[overlap]" ) {
     if (engine) {
 
         STO_Integration_Options parameters;
-        parameters.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
         engine->init(parameters);
 
@@ -73,7 +72,7 @@ TEST_CASE( "One nuclear attraction integral", "[nuclear]" ) {
     if (engine) {
 
         STO_Integration_Options parameters;
-        parameters.set(Number_of_quadrature_points_Parameter_Name,30);
+
         engine->init(parameters);
 
         auto result = engine->nuclear_attraction({oxygen_1_s, hydrogen_1_s}, {0,0.5,-1});
@@ -96,28 +95,28 @@ TEST_CASE( "nonexistent engine", "[api]" )
 TEST_CASE("Options behavior", "[api]")
 {
     STO_Integration_Options options;
-
+    const char *test_param_name = "test";
     bool no_value = false;
     CHECK(options.get("no such option as this", no_value) == false);
 
     {
-        options.set(Use_Normalized_B_Functions_Parameter_Name, true);
+        options.set("test", true);
         bool check_value = false;
-        options.get(Use_Normalized_B_Functions_Parameter_Name, check_value);
+        options.get(test_param_name, check_value);
         CHECK(check_value == true);
     }
 
     {
-        options.set(Number_of_quadrature_points_Parameter_Name, int(180));
+        options.set(test_param_name, int(180));
         int check_value = false;
-        options.get(Number_of_quadrature_points_Parameter_Name, check_value);
+        options.get(test_param_name, check_value);
         CHECK(check_value == 180);
     }
 
     {
-        options.set(Number_of_quadrature_points_Parameter_Name, (double)0.45);
+        options.set(test_param_name, (double)0.45);
         double check_value = false;
-        options.get(Number_of_quadrature_points_Parameter_Name, check_value);
+        options.get(test_param_name, check_value);
         CHECK(check_value == 0.45);
     }
 

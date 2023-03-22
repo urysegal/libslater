@@ -5,6 +5,8 @@
 #include <catch2/interfaces/catch_interfaces_reporter.hpp>
 
 #include "libslater.h"
+#include <iostream>
+
 using namespace slater;
 
 struct test_info {
@@ -54,7 +56,6 @@ TEST_CASE( "overlap integrals", "[homier]" )
 
 
             STO_Integration_Options parameters;
-            parameters.set(Use_Normalized_B_Functions_Parameter_Name, true);
 
             engine->init(parameters);
 
@@ -67,5 +68,87 @@ TEST_CASE( "overlap integrals", "[homier]" )
         delete engine;
 
     }
+
+TEST_CASE( "kinetic energy", "[homier]" )
+{
+
+    auto epsilon = 10e-8;
+
+    STO_Integration_Engine engine_factory;
+    std::map<slater::integration_types, std::string> engines;
+    auto engine = engine_factory.create(engines);
+    CHECK(engine != nullptr);
+    {
+        Quantum_Numbers quantum_numbers1 = {1, 0, 0};
+        Quantum_Numbers quantum_numbers2 = {1, 0, 0};
+
+        STO_Basis_Function_Info fi1(1, quantum_numbers1);
+        STO_Basis_Function_Info fi2(2, quantum_numbers2);
+
+        STO_Basis_Function f1(fi1, {2, 0, 0});
+        STO_Basis_Function f2(fi2, {0, 0, 1});
+
+
+        STO_Integration_Options parameters;
+
+        engine->init(parameters);
+
+        energy_unit_t result = engine->kinetic({f1, f2});
+        CHECK(fabs(result.imag() - 0) < epsilon);
+        std::cout << "98 " << result.real() << std::endl;
+        CHECK(fabs(result.real() - 0.00279383) < epsilon);
+    }
+
+    {
+
+        Quantum_Numbers quantum_numbers1 = {1,0,0};
+        Quantum_Numbers quantum_numbers2 ={1,0,0};
+
+
+        STO_Basis_Function_Info fi1( 3, quantum_numbers1);
+        STO_Basis_Function_Info fi2(2, quantum_numbers2);
+
+        STO_Basis_Function f1(fi1, {2, 0, 1});
+        STO_Basis_Function f2(fi2, {0, 0, 1});
+
+
+        STO_Integration_Options parameters;
+
+        engine->init(parameters);
+
+        energy_unit_t result = engine->kinetic({f1, f2});
+        CHECK(fabs(result.imag() - 0) < epsilon);
+        std::cout << "123 " << result.real() << std::endl;
+
+        CHECK(fabs(result.real() - (-0.000693991)) < epsilon);
+    }
+
+    {
+
+        Quantum_Numbers quantum_numbers1 = {1,0,0};
+        Quantum_Numbers quantum_numbers2 ={1,0,0};
+
+
+        STO_Basis_Function_Info fi1( 1, quantum_numbers1);
+        STO_Basis_Function_Info fi2(1, quantum_numbers2);
+
+        STO_Basis_Function f1(fi1, {2, 0, 1});
+        STO_Basis_Function f2(fi2, {0, 0, 1});
+
+
+        STO_Integration_Options parameters;
+
+        engine->init(parameters);
+
+        energy_unit_t result = engine->kinetic({f1, f2});
+        CHECK(fabs(result.imag() - 0) < epsilon);
+        std::cout << "140 " << result.real() << std::endl;
+
+        CHECK(fabs(result.real() - (0.0281949) ) < epsilon);
+    }
+ 
+    delete engine;
+
+}
 
 #include "homeier-test-data.h"
