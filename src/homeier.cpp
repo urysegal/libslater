@@ -286,6 +286,7 @@ energy_unit_t Homeier_Integrator::kinetic(const std::array<STO_Basis_Function, 2
 
     // alpha1^(-n1+1)*alpha2(-n2+1) * sum(sum(Bcoeff1*Bcoeff2 * int(B_1 B_2)))
     result *= f1.get_rescaling_coefficient() * f2.get_rescaling_coefficient();
+    result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
 
     return result;
 
