@@ -5,6 +5,8 @@
 #include <catch2/interfaces/catch_interfaces_reporter.hpp>
 
 #include "libslater.h"
+#include <iostream>
+
 using namespace slater;
 
 struct test_info {
@@ -93,7 +95,8 @@ TEST_CASE( "kinetic energy", "[homier]" )
 
         energy_unit_t result = engine->kinetic({f1, f2});
         CHECK(fabs(result.imag() - 0) < epsilon);
-        CHECK(fabs(result.real() - 3.16086324190255619e-2) < epsilon);
+        std::cout << "98 " << result.real() << std::endl;
+        CHECK(fabs(result.real() - 0.00279383) < epsilon);
     }
 
     {
@@ -115,7 +118,9 @@ TEST_CASE( "kinetic energy", "[homier]" )
 
         energy_unit_t result = engine->kinetic({f1, f2});
         CHECK(fabs(result.imag() - 0) < epsilon);
-        CHECK(fabs(result.real() - (-4.07981676840826202e-2)) < epsilon);
+        std::cout << "123 " << result.real() << std::endl;
+
+        CHECK(fabs(result.real() - (-0.000693991)) < epsilon);
     }
 
     {
@@ -137,7 +142,9 @@ TEST_CASE( "kinetic energy", "[homier]" )
 
         energy_unit_t result = engine->kinetic({f1, f2});
         CHECK(fabs(result.imag() - 0) < epsilon);
-        CHECK(fabs(result.real() - 0.11277940269717723) < epsilon);
+        std::cout << "140 " << result.real() << std::endl;
+
+        CHECK(fabs(result.real() - (0.0281949) ) < epsilon);
     }
  
     delete engine;

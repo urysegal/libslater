@@ -55,28 +55,6 @@ void shift_first_center_to_origin(const center_t &c1, center_t c2, center_t *new
     new_centers[0] = {0,0,0};
 }
 
-energy_unit_t Homeier_Integrator::non_normalized_overlap(const std::array<STO_Basis_Function, 2> &functions)
-{
-    // Compute Unnormalized Bfunctions
-    //    Do the S
-    center_t new_centers[2];
-    shift_first_center_to_origin(functions[0].get_center(), functions[1].get_center(), new_centers);
-    B_functions_representation_of_STO f1(functions[0] , new_centers[0]);
-    B_functions_representation_of_STO f2(functions[1], new_centers[1]);
-    energy_unit_t final_result = do_integrate(f1, f2);
-    Quantum_Numbers q1 =functions[0].get_quantum_numbers();
-    auto alph1 = functions[0].get_exponent();
-    final_result *= functions[0].get_normalization_coefficient() * functions[1].get_normalization_coefficient() ;
-
-    //HACKY: Denormalize the normalized overlap according to FORTRAN code
-    Quantum_Numbers q2 =functions[1].get_quantum_numbers();
-    auto alph2 = functions[1].get_exponent();
-    auto bsq1 = pochhammer(0.5,q1.l+1 ) * pochhammer(0.5,2*q1.n+q1.l) / (pow(alph1,3)*bm::factorial<double>(2*q1.n+2*q1.l+1));
-    auto bsq2 = pochhammer(0.5,q2.l+1 ) * pochhammer(0.5,2*q2.n+q2.l) / (pow(alph2,3)*bm::factorial<double>(2*q2.n+2*q2.l+1));
-    final_result *=  std::complex(sqrt(bsq1*bsq2));
-
-    return final_result;
-}
 
 
 energy_unit_t Homeier_Integrator::overlap(const std::array<STO_Basis_Function, 2> &functions)

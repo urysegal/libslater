@@ -71,11 +71,6 @@ private:
     /// \return the resulting energy quantity
     virtual energy_unit_t overlap(const std::array<STO_Basis_Function, 2> &) ;
 
-    /// Calculate the non-normalized Overlap integral between the two given STO basis functions
-    /// \return the resulting energy quantity
-    virtual energy_unit_t non_normalized_overlap(const std::array<STO_Basis_Function, 2> &) ;
-
-
     /// Calculate the Overlap integral between the two given STO basis functions
     /// \return the resulting energy quantity
     virtual energy_unit_t kinetic(const std::array<STO_Basis_Function, 2> &) ;
