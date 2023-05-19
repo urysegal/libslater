@@ -1,10 +1,9 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
 #include <boost/math/special_functions.hpp>
-
+#include "coordinates.h"
 #include "slater-utils.h"
 #include "libslater.h"
-
 namespace bg = boost::geometry;
 namespace bm = boost::math;
 
@@ -42,26 +41,42 @@ center_t scale_vector( const center_t &P, double factor)
 double pochhammer(const double x, const double n){
     return std::tgamma(x+n) / std::tgamma(x);
 }
-std::complex<double> eval_spherical_harmonics(const Quantum_Numbers &quantumNumbers,const double theta,const double phi)
+std::complex<double> eval_spherical_harmonics(const Quantum_Numbers &quantumNumbers,const Spherical_Coordinates &spherical)
 {
     // Evaluates Spherical Harmonics Y_l^m(theta,phi)
-    auto pi = bm::constants::pi<double>();
-    std::complex<double>  i(0,1);
-
     auto m = quantumNumbers.m;
     auto l = quantumNumbers.l;
-    auto Plm = bm::legendre_p(l,m,std::cos(theta)); //Associated Legendre Polynomial
 
-    //Using Wikipedia's accoustics definition to stay consistent with legendre_p function in boost
-    // which includes the Condon-Shortley phase term
-    std::complex<double> Y;
-    double Y_pow = 0.5;
-    Y = pow( ( (2.0l*l + 1) * bm::factorial<double>(l-m) ) / (4.0l * pi * bm::factorial<double>(l + m)) , Y_pow);
-    Y *= Plm;
-    Y *= std::exp(std::complex<double>(0,m*phi));
+//   compute spherical harmonic for m
+    auto Y = bm::spherical_harmonic(l,m,spherical.theta,spherical.phi);
 
     return Y;
 }
+
+    std::complex<double> eval_spherical_harmonics_real(const Quantum_Numbers &quantumNumbers,const Spherical_Coordinates &spherical)
+    {
+        // Evaluates Spherical Harmonics Y_l^m(theta,phi)
+        auto m = quantumNumbers.m;
+        auto l = quantumNumbers.l;
+
+//   compute spherical harmonic for POSITIVE m
+        auto Y = bm::spherical_harmonic(l,m,spherical.theta,spherical.phi);
+
+//   compute spherical harmonic for NEGATIVE m
+        auto Yn = bm::spherical_harmonic(l,-1*m,spherical.theta,spherical.phi);
+
+        m = quantumNumbers.m;
+        if (m<0){
+            // Ylm  = i/sqrt(2) * (Yl(m) - (-1)^m * Yl(-m))
+            Y = std::complex<double>(0,1)*(1.0/sqrt(2.0))*(Y-pow(-1,m) *Yn);
+        }
+        else if (m>0){
+            // Ylm  = 1/sqrt(2) * (Yl(-m) + (-1)^m * Yl(m))
+            Y = (1.0/sqrt(2.0))*(Yn + pow(-1,m) *Y);
+        }
+        return Y;
+    }
+
 double compute_reduced_bessel_function_half(const double order,const double z){
     auto pi = bm::constants::pi<double>();
     double k_tilde=0;

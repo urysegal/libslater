@@ -65,9 +65,8 @@ namespace slater {
 
 
             Spherical_Coordinates v_vec_spherical{v};
-            auto theta = v_vec_spherical.theta;
-            auto phi = v_vec_spherical.phi;
-            return eval_spherical_harmonics(quantumNumbers, theta, phi);
+
+            return eval_spherical_harmonics(quantumNumbers, v_vec_spherical);
         }
 
 
@@ -200,9 +199,8 @@ namespace slater {
 
         static complex calculate_Ylm(Sum_State *s) {
             Quantum_Numbers quantumNumbers({0, s->l, s->m2_tag - s->m1_tag});
-            auto theta = s->R2_spherical.theta;
-            auto phi = s->R2_spherical.phi;
-            return eval_spherical_harmonics(quantumNumbers, theta, phi);
+
+            return eval_spherical_harmonics(quantumNumbers, s->R2_spherical);
         }
 
         static complex calculate_expression(Sum_State *s) {
