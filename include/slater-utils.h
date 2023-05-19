@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libslater.h"
+#include "coordinates.h"
 
 namespace slater {
 
@@ -37,8 +38,11 @@ namespace slater {
 
     std::complex<double> eval_spherical_harmonics(
             const Quantum_Numbers &quantumNumbers,
-            const double theta,
-            const double phi
+            const Spherical_Coordinates &spherical
+    );
+    std::complex<double> eval_spherical_harmonics_real(
+            const Quantum_Numbers &quantumNumbers,
+            const Spherical_Coordinates &spherical
     );
 
     double compute_reduced_bessel_function_half(
