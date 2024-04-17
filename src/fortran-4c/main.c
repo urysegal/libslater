@@ -19,7 +19,7 @@
 //static integer c__100 = 100;
 static integer c__48 = 48;
 static integer c__20 = 20;
-static integer c__96 = 96;
+static integer c__96 = 24;
 static integer c__30 = 30;
 static integer c__10000 = 10000;
 static integer c__3 = 3;

@@ -1,7 +1,6 @@
 #include <iostream>
 #include "libslater.h"
 #include <stdlib.h>
-#include <iomanip>
 #include <assert.h>
 #include "../test/three-c-tests.h"
 
