@@ -1,0 +1,1 @@
+/usr/bin/c++ -fsanitize=address CMakeFiles/simple4c.dir/examples/simple4c.cpp.o -o simple4c  -Wl,-rpath,/home/avleen/softwares/libslater/build liblibslater.so /usr/lib/x86_64-linux-gnu/libspdlog.so.1.9.2 /usr/lib/x86_64-linux-gnu/libfmt.so.8.1.1 -Wl,--as-needed -lf2c -lm 

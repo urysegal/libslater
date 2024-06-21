@@ -73,6 +73,7 @@ add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp s
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})
 
+
 find_package(spdlog REQUIRED)
 target_link_libraries(libslater PUBLIC spdlog::spdlog)
 target_link_libraries (libslater PUBLIC Eigen3::Eigen)
@@ -107,6 +108,13 @@ target_include_directories(simple4c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(simple4c PUBLIC ${COMPILE_FLAGS})
 target_link_options(simple4c PUBLIC ${LINK_FLAGS})
 target_link_libraries(simple4c libslater)
+
+add_executable(simple4c_any examples/simple4c_any.cpp)
+add_dependencies(simple4c_any libslater)
+target_include_directories(simple4c_any PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(simple4c_any PUBLIC ${COMPILE_FLAGS})
+target_link_options(simple4c_any PUBLIC ${LINK_FLAGS})
+target_link_libraries(simple4c_any libslater)
 
 add_executable(test3c examples/test3c.cpp)
 add_dependencies(test3c libslater)
