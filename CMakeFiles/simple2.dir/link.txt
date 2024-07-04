@@ -1,0 +1,1 @@
+/usr/bin/c++ -fsanitize=address CMakeFiles/simple2.dir/examples/simple2.cpp.o -o simple2  -Wl,-rpath,/home/avleen/softwares/libslater liblibslater.so /usr/lib/x86_64-linux-gnu/libspdlog.so.1.9.2 /usr/lib/x86_64-linux-gnu/libfmt.so.8.1.1 -Wl,--as-needed -lf2c -lm 

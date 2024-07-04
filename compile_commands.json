@@ -256,6 +256,16 @@
 },
 {
   "directory": "/home/avleen/softwares/libslater",
+  "command": "/usr/bin/c++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/avleen/softwares/libslater -I/home/avleen/softwares/libslater/include -isystem /usr/include/eigen3 -g -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread -std=gnu++20 -o CMakeFiles/simple2.dir/examples/simple2.cpp.o -c /home/avleen/softwares/libslater/examples/simple2.cpp",
+  "file": "/home/avleen/softwares/libslater/examples/simple2.cpp"
+},
+{
+  "directory": "/home/avleen/softwares/libslater",
+  "command": "/usr/bin/c++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/avleen/softwares/libslater -I/home/avleen/softwares/libslater/include -isystem /usr/include/eigen3 -g -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread -std=gnu++20 -o CMakeFiles/simple3.dir/examples/simple3.cpp.o -c /home/avleen/softwares/libslater/examples/simple3.cpp",
+  "file": "/home/avleen/softwares/libslater/examples/simple3.cpp"
+},
+{
+  "directory": "/home/avleen/softwares/libslater",
   "command": "/usr/bin/c++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/avleen/softwares/libslater -I/home/avleen/softwares/libslater/include -isystem /usr/include/eigen3 -g -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread -std=gnu++20 -o CMakeFiles/simple4c.dir/examples/simple4c.cpp.o -c /home/avleen/softwares/libslater/examples/simple4c.cpp",
   "file": "/home/avleen/softwares/libslater/examples/simple4c.cpp"
 },
@@ -273,6 +283,11 @@
   "directory": "/home/avleen/softwares/libslater",
   "command": "/usr/bin/c++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/avleen/softwares/libslater -I/home/avleen/softwares/libslater/include -isystem /usr/include/eigen3 -g -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread -std=gnu++20 -o CMakeFiles/test4c.dir/examples/test4c.cpp.o -c /home/avleen/softwares/libslater/examples/test4c.cpp",
   "file": "/home/avleen/softwares/libslater/examples/test4c.cpp"
+},
+{
+  "directory": "/home/avleen/softwares/libslater",
+  "command": "/usr/bin/c++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/avleen/softwares/libslater -I/home/avleen/softwares/libslater/include -isystem /usr/include/eigen3 -g -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread -std=gnu++20 -o CMakeFiles/test-sph-harm.dir/examples/test-sph-harm.cpp.o -c /home/avleen/softwares/libslater/examples/test-sph-harm.cpp",
+  "file": "/home/avleen/softwares/libslater/examples/test-sph-harm.cpp"
 },
 {
   "directory": "/home/avleen/softwares/libslater/test",

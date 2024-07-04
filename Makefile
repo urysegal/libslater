@@ -565,6 +565,32 @@ simple/fast:
 .PHONY : simple/fast
 
 #=============================================================================
+# Target rules for targets named simple2
+
+# Build rule for target.
+simple2: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simple2
+.PHONY : simple2
+
+# fast build rule for target.
+simple2/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple2.dir/build.make CMakeFiles/simple2.dir/build
+.PHONY : simple2/fast
+
+#=============================================================================
+# Target rules for targets named simple3
+
+# Build rule for target.
+simple3: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simple3
+.PHONY : simple3
+
+# fast build rule for target.
+simple3/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple3.dir/build.make CMakeFiles/simple3.dir/build
+.PHONY : simple3/fast
+
+#=============================================================================
 # Target rules for targets named simple4c
 
 # Build rule for target.
@@ -615,6 +641,19 @@ test4c: cmake_check_build_system
 test4c/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test4c.dir/build.make CMakeFiles/test4c.dir/build
 .PHONY : test4c/fast
+
+#=============================================================================
+# Target rules for targets named test-sph-harm
+
+# Build rule for target.
+test-sph-harm: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test-sph-harm
+.PHONY : test-sph-harm
+
+# fast build rule for target.
+test-sph-harm/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test-sph-harm.dir/build.make CMakeFiles/test-sph-harm.dir/build
+.PHONY : test-sph-harm/fast
 
 #=============================================================================
 # Target rules for targets named cleancov
@@ -692,6 +731,54 @@ examples/simple.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/examples/simple.cpp.s
 .PHONY : examples/simple.cpp.s
 
+examples/simple2.o: examples/simple2.cpp.o
+.PHONY : examples/simple2.o
+
+# target to build an object file
+examples/simple2.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple2.dir/build.make CMakeFiles/simple2.dir/examples/simple2.cpp.o
+.PHONY : examples/simple2.cpp.o
+
+examples/simple2.i: examples/simple2.cpp.i
+.PHONY : examples/simple2.i
+
+# target to preprocess a source file
+examples/simple2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple2.dir/build.make CMakeFiles/simple2.dir/examples/simple2.cpp.i
+.PHONY : examples/simple2.cpp.i
+
+examples/simple2.s: examples/simple2.cpp.s
+.PHONY : examples/simple2.s
+
+# target to generate assembly for a file
+examples/simple2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple2.dir/build.make CMakeFiles/simple2.dir/examples/simple2.cpp.s
+.PHONY : examples/simple2.cpp.s
+
+examples/simple3.o: examples/simple3.cpp.o
+.PHONY : examples/simple3.o
+
+# target to build an object file
+examples/simple3.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple3.dir/build.make CMakeFiles/simple3.dir/examples/simple3.cpp.o
+.PHONY : examples/simple3.cpp.o
+
+examples/simple3.i: examples/simple3.cpp.i
+.PHONY : examples/simple3.i
+
+# target to preprocess a source file
+examples/simple3.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple3.dir/build.make CMakeFiles/simple3.dir/examples/simple3.cpp.i
+.PHONY : examples/simple3.cpp.i
+
+examples/simple3.s: examples/simple3.cpp.s
+.PHONY : examples/simple3.s
+
+# target to generate assembly for a file
+examples/simple3.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple3.dir/build.make CMakeFiles/simple3.dir/examples/simple3.cpp.s
+.PHONY : examples/simple3.cpp.s
+
 examples/simple4c.o: examples/simple4c.cpp.o
 .PHONY : examples/simple4c.o
 
@@ -739,6 +826,30 @@ examples/simple4c_any.s: examples/simple4c_any.cpp.s
 examples/simple4c_any.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple4c_any.dir/build.make CMakeFiles/simple4c_any.dir/examples/simple4c_any.cpp.s
 .PHONY : examples/simple4c_any.cpp.s
+
+examples/test-sph-harm.o: examples/test-sph-harm.cpp.o
+.PHONY : examples/test-sph-harm.o
+
+# target to build an object file
+examples/test-sph-harm.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test-sph-harm.dir/build.make CMakeFiles/test-sph-harm.dir/examples/test-sph-harm.cpp.o
+.PHONY : examples/test-sph-harm.cpp.o
+
+examples/test-sph-harm.i: examples/test-sph-harm.cpp.i
+.PHONY : examples/test-sph-harm.i
+
+# target to preprocess a source file
+examples/test-sph-harm.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test-sph-harm.dir/build.make CMakeFiles/test-sph-harm.dir/examples/test-sph-harm.cpp.i
+.PHONY : examples/test-sph-harm.cpp.i
+
+examples/test-sph-harm.s: examples/test-sph-harm.cpp.s
+.PHONY : examples/test-sph-harm.s
+
+# target to generate assembly for a file
+examples/test-sph-harm.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test-sph-harm.dir/build.make CMakeFiles/test-sph-harm.dir/examples/test-sph-harm.cpp.s
+.PHONY : examples/test-sph-harm.cpp.s
 
 examples/test3c.o: examples/test3c.cpp.o
 .PHONY : examples/test3c.o
@@ -2034,20 +2145,32 @@ help:
 	@echo "... Catch2WithMain"
 	@echo "... libslater"
 	@echo "... simple"
+	@echo "... simple2"
+	@echo "... simple3"
 	@echo "... simple4c"
 	@echo "... simple4c_any"
 	@echo "... test-all"
+	@echo "... test-sph-harm"
 	@echo "... test3c"
 	@echo "... test4c"
 	@echo "... examples/simple.o"
 	@echo "... examples/simple.i"
 	@echo "... examples/simple.s"
+	@echo "... examples/simple2.o"
+	@echo "... examples/simple2.i"
+	@echo "... examples/simple2.s"
+	@echo "... examples/simple3.o"
+	@echo "... examples/simple3.i"
+	@echo "... examples/simple3.s"
 	@echo "... examples/simple4c.o"
 	@echo "... examples/simple4c.i"
 	@echo "... examples/simple4c.s"
 	@echo "... examples/simple4c_any.o"
 	@echo "... examples/simple4c_any.i"
 	@echo "... examples/simple4c_any.s"
+	@echo "... examples/test-sph-harm.o"
+	@echo "... examples/test-sph-harm.i"
+	@echo "... examples/test-sph-harm.s"
 	@echo "... examples/test3c.o"
 	@echo "... examples/test3c.i"
 	@echo "... examples/test3c.s"

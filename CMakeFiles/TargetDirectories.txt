@@ -28,10 +28,13 @@
 /home/avleen/softwares/libslater/CMakeFiles/ContinuousSubmit.dir
 /home/avleen/softwares/libslater/CMakeFiles/libslater.dir
 /home/avleen/softwares/libslater/CMakeFiles/simple.dir
+/home/avleen/softwares/libslater/CMakeFiles/simple2.dir
+/home/avleen/softwares/libslater/CMakeFiles/simple3.dir
 /home/avleen/softwares/libslater/CMakeFiles/simple4c.dir
 /home/avleen/softwares/libslater/CMakeFiles/simple4c_any.dir
 /home/avleen/softwares/libslater/CMakeFiles/test3c.dir
 /home/avleen/softwares/libslater/CMakeFiles/test4c.dir
+/home/avleen/softwares/libslater/CMakeFiles/test-sph-harm.dir
 /home/avleen/softwares/libslater/CMakeFiles/cleancov.dir
 /home/avleen/softwares/libslater/CMakeFiles/test.dir
 /home/avleen/softwares/libslater/CMakeFiles/edit_cache.dir
