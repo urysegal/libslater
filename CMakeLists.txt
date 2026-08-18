@@ -13,7 +13,10 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 #option(COVERAGE "Coverage" ON)
 #set(COMPILE_FLAGS -g -Wall -Werror -fno-omit-frame-pointer -pthread)
 
-set(COMPILE_FLAGS -g -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread)
+set(COMPILE_FLAGS -g -Wall -Werror -fsanitize=address -fno-omit-frame-pointer -pthread)
+if(NOT APPLE)
+    list(APPEND COMPILE_FLAGS -fsanitize=leak)
+endif()
 set(LINK_FLAGS -fsanitize=address)
 
 
@@ -73,6 +76,10 @@ add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp s
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})
 
+# fortran-4c/ is machine-translated (f2c) legacy code; modern compilers flag
+# patterns (e.g. uninitialized-variable) that f2c's output doesn't avoid.
+file(GLOB FORTRAN4C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/fortran-4c/*.c)
+set_source_files_properties(${FORTRAN4C_SOURCES} PROPERTIES COMPILE_OPTIONS "-Wno-error")
 
 find_package(spdlog REQUIRED)
 target_link_libraries(libslater PUBLIC spdlog::spdlog)

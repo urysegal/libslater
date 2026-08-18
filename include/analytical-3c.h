@@ -158,8 +158,6 @@ private:
 
     Sum_State state;
 
-    int number_of_quadrature_points = 30; /// How many quadrature points we should calculate
-
     Quantum_Numbers q1;
     Quantum_Numbers q2;
     sto_exponent_t zeta1 = 0;
