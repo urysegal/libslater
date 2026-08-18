@@ -30,3 +30,27 @@
 *.exe
 *.out
 *.app
+/simple
+/simple2
+/simple3
+/simple4c
+/simple4c_any
+/test3c
+/test4c
+/test-sph-harm
+
+# Fortran scratch/unit files written by the f2c-translated code at runtime
+fort.*
+
+# Out-of-source and accidental in-source CMake build trees
+/build/
+/CMakeCache.txt
+/CMakeFiles/
+/Makefile
+/cmake_install.cmake
+/CTestTestfile.cmake
+/DartConfiguration.tcl
+/compile_commands.json
+/_deps/
+/generated-includes/
+.cache/
