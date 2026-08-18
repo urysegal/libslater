@@ -44,13 +44,16 @@ fort.*
 
 # Out-of-source and accidental in-source CMake build trees
 /build/
-/CMakeCache.txt
-/CMakeFiles/
-/Makefile
-/cmake_install.cmake
-/CTestTestfile.cmake
-/DartConfiguration.tcl
-/compile_commands.json
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+CTestTestfile.cmake
+DartConfiguration.tcl
+compile_commands.json
 /_deps/
 /generated-includes/
 .cache/
+test-all_include-*.cmake
+test-all_tests-*.cmake
+/test/test-all
