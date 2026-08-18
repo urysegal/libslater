@@ -13,7 +13,10 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 #option(COVERAGE "Coverage" ON)
 #set(COMPILE_FLAGS -g -Wall -Werror -fno-omit-frame-pointer -pthread)
 
-set(COMPILE_FLAGS -g -Wall -Werror -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -pthread)
+set(COMPILE_FLAGS -g -Wall -Werror -fsanitize=address -fno-omit-frame-pointer -pthread)
+if(NOT APPLE)
+    list(APPEND COMPILE_FLAGS -fsanitize=leak)
+endif()
 set(LINK_FLAGS -fsanitize=address)
 
 
@@ -73,6 +76,11 @@ add_library(libslater SHARED src/libslater.cpp include/logger.h src/logger.cpp s
 target_compile_options(libslater PUBLIC ${COMPILE_FLAGS})
 target_link_options(libslater PUBLIC ${LINK_FLAGS})
 
+# fortran-4c/ is machine-translated (f2c) legacy code; modern compilers flag
+# patterns (e.g. uninitialized-variable) that f2c's output doesn't avoid.
+file(GLOB FORTRAN4C_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/fortran-4c/*.c)
+set_source_files_properties(${FORTRAN4C_SOURCES} PROPERTIES COMPILE_OPTIONS "-Wno-error")
+
 find_package(spdlog REQUIRED)
 target_link_libraries(libslater PUBLIC spdlog::spdlog)
 target_link_libraries (libslater PUBLIC Eigen3::Eigen)
@@ -86,6 +94,34 @@ target_include_directories(simple PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(simple PUBLIC ${COMPILE_FLAGS})
 target_link_options(simple PUBLIC ${LINK_FLAGS})
 target_link_libraries(simple libslater)
+
+add_executable(simple2 examples/simple2.cpp)
+add_dependencies(simple2 libslater)
+target_include_directories(simple2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(simple2 PUBLIC ${COMPILE_FLAGS})
+target_link_options(simple2 PUBLIC ${LINK_FLAGS})
+target_link_libraries(simple2 libslater)
+
+add_executable(simple3 examples/simple3.cpp)
+add_dependencies(simple3 libslater)
+target_include_directories(simple3 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(simple3 PUBLIC ${COMPILE_FLAGS})
+target_link_options(simple3 PUBLIC ${LINK_FLAGS})
+target_link_libraries(simple3 libslater)
+
+add_executable(simple4c examples/simple4c.cpp)
+add_dependencies(simple4c libslater)
+target_include_directories(simple4c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(simple4c PUBLIC ${COMPILE_FLAGS})
+target_link_options(simple4c PUBLIC ${LINK_FLAGS})
+target_link_libraries(simple4c libslater)
+
+add_executable(simple4c_any examples/simple4c_any.cpp)
+add_dependencies(simple4c_any libslater)
+target_include_directories(simple4c_any PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(simple4c_any PUBLIC ${COMPILE_FLAGS})
+target_link_options(simple4c_any PUBLIC ${LINK_FLAGS})
+target_link_libraries(simple4c_any libslater)
 
 add_executable(test3c examples/test3c.cpp)
 add_dependencies(test3c libslater)
@@ -101,6 +137,12 @@ target_compile_options(test4c PUBLIC ${COMPILE_FLAGS})
 target_link_options(test4c PUBLIC ${LINK_FLAGS})
 target_link_libraries(test4c libslater)
 
+add_executable(test-sph-harm examples/test-sph-harm.cpp)
+add_dependencies(test-sph-harm libslater)
+target_include_directories(test-sph-harm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(test-sph-harm PUBLIC ${COMPILE_FLAGS})
+target_link_options(test-sph-harm PUBLIC ${LINK_FLAGS})
+target_link_libraries(test-sph-harm libslater)
 
 
 if(COVERAGE)

@@ -90,7 +90,7 @@ std::complex<double> STO_Basis_Function::evaluate(const center_t &point) const
 
     Spherical_Coordinates spherical(point);
 
-    auto Y = eval_spherical_harmonics(this->get_quantum_numbers(),spherical.theta,spherical.phi);
+    auto Y = eval_spherical_harmonics(this->get_quantum_numbers(),spherical);
 
     return this->get_normalization_coefficient() * pow(spherical.radius, n - 1) * exp(-alpha * spherical.radius) * Y;
 }

@@ -40,16 +40,6 @@ private:
     Quantum_Numbers q3;
     Quantum_Numbers q4;
 
-    sto_exponent_t zeta1 = 0;
-    sto_exponent_t zeta2 = 0;
-    sto_exponent_t zeta3 = 0;
-    sto_exponent_t zeta4 = 0;
-
-    center_t A = {};
-    center_t B = {};
-    center_t C = {};
-    center_t D = {};
-
     bool use_sdbar = true ; // Use the SDBar algorithm. If false, uses the WGREP algorithm.
 
     [[nodiscard]] std::complex<double> integrate_using_b_functions(const B_function_details &f1, const B_function_details &f2) override;
