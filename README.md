@@ -18,6 +18,10 @@ The four-center electron repulsion integrals are computed by an f2c translation 
 H. Safouhi's Fortran code (`src/fortran-4c/`), using the S\bar{D} and GREP-W methods.
 
 
+If you're embedding the ERI code in a service or another backend, also read
+[`INTEGRATING.md`](INTEGRATING.md). It covers thread safety, process-exit hazards, stdout output and performance.
+
+
 ## Dependencies
 
 | Package | Notes |
