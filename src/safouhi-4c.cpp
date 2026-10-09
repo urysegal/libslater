@@ -119,6 +119,7 @@ std::complex<double> Safouhi_4C_evaluator::integrate_using_b_functions(const B_f
 {
     // This is only relevant for 1-e integrals
     assert(false);
+    return {};
 }
 
 }
