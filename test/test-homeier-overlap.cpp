@@ -71,6 +71,8 @@ TEST_CASE( "overlap integrals", "[homier]" )
 
 TEST_CASE( "kinetic energy", "[homier]" )
 {
+    // Expected values are for normalized STOs (kinetic() normalizes since d4e9035).
+    // The third case matches the closed form T = 1/2 e^-R (1 + R - R^2/3) for 1s, zeta=1, R=2.
 
     auto epsilon = 10e-8;
 
@@ -96,7 +98,7 @@ TEST_CASE( "kinetic energy", "[homier]" )
         energy_unit_t result = engine->kinetic({f1, f2});
         CHECK(fabs(result.imag() - 0) < epsilon);
         std::cout << "98 " << result.real() << std::endl;
-        CHECK(fabs(result.real() - 0.00279383) < epsilon);
+        CHECK(fabs(result.real() - 0.0316086324) < epsilon);
     }
 
     {
@@ -120,7 +122,7 @@ TEST_CASE( "kinetic energy", "[homier]" )
         CHECK(fabs(result.imag() - 0) < epsilon);
         std::cout << "123 " << result.real() << std::endl;
 
-        CHECK(fabs(result.real() - (-0.000693991)) < epsilon);
+        CHECK(fabs(result.real() - (-0.0407981677)) < epsilon);
     }
 
     {
@@ -144,7 +146,7 @@ TEST_CASE( "kinetic energy", "[homier]" )
         CHECK(fabs(result.imag() - 0) < epsilon);
         std::cout << "140 " << result.real() << std::endl;
 
-        CHECK(fabs(result.real() - (0.0281949) ) < epsilon);
+        CHECK(fabs(result.real() - (0.1127794027) ) < epsilon);
     }
  
     delete engine;

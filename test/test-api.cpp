@@ -76,7 +76,7 @@ TEST_CASE( "One nuclear attraction integral", "[nuclear]" ) {
         engine->init(parameters);
 
         auto result = engine->nuclear_attraction({oxygen_1_s, hydrogen_1_s}, {0,0.5,-1});
-        CHECK(result.imag() == 0 );
+        CHECK(fabs(result.imag()) < 1e-12 );
         //CHECK(abs(result.real() + 93.2411967435 ) < 0.000001 );
         //CHECK(abs(result.real() == 0 );
         delete engine;
